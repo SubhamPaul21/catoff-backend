@@ -1,8 +1,4 @@
 const { sequelize } = require("../db/db.js");
-
-
-
-
 const { DataTypes } = require("sequelize");
 
 const User = sequelize.define('User', {
@@ -40,6 +36,10 @@ const User = sequelize.define('User', {
       allowNull: false,
       defaultValue: true
     },
+    Password: {
+      type: DataTypes.STRING(255),
+      allowNull: false
+    }
     // Password: Handle encryption in your application logic
   }, {
     tableName: 'Users',
