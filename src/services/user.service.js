@@ -10,7 +10,7 @@ module.exports.signUp = async (email, userName, password) => {
             where: {email}
         });
         if (userExists) {
-            return res.status(400).send('Email is already associated with an account');
+            throw new Error('User already exist');
         }
         const newUser = new User({
             email: email,
