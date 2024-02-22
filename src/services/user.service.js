@@ -40,6 +40,7 @@ module.exports.login = async (email, password)=>{
         const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, {
             expiresIn: '1h',
         });
+        await user.update({ LastLoginDate: new Date() });
         return token;
     }
     catch(e){
