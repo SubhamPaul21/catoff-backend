@@ -13,31 +13,33 @@ module.exports.signUp = async (email, userName, password) => {
             throw new Error('User already exist');
         }
         const newUser = new User({
-            email: email,
-            userName: userName,
+            Email: email,
+            UserName: userName,
             RegistrationDate: new Date(),
             LastLoginDate: null,
             IsEmailVerified: false,
             IsActive: true,
-            password: await bcrypt.hash(password, 15),
+            Password: await bcrypt.hash(password, 15),
         });
+        newUser.save()
         return newUser;
     } catch (e) {
+        console.log(e)
         return e;
     }
 }
 
 module.exports.login = async (email, password)=>{
     try{
-        const user = await User.findOne({ username });
+        const user = await User.findOne({ email });
         if (!user) {
             throw new Error('Authentication failed');
         }
-        const passwordMatch = await bcrypt.compare(password, user.password);
+        const passwordMatch = await bcrypt.compare(password, user.Password);
         if (!passwordMatch) {
             throw new Error('Authentication failed');
         }
-        const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ userId: user.UserId }, process.env.JWT_SECRET, {
             expiresIn: '1h',
         });
         await user.update({ LastLoginDate: new Date() });
