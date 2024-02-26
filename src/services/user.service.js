@@ -6,8 +6,9 @@ require('dotenv').config();
 
 module.exports.signUp = async (email, userName, password) => {
     try {
+        console.log("hey")
         const userExists = await User.findOne({
-            where: {email}
+            where: {Email: email}
         });
         if (userExists) {
             throw new Error('User already exist');
@@ -29,9 +30,9 @@ module.exports.signUp = async (email, userName, password) => {
     }
 }
 
-module.exports.login = async (email, password)=>{
+module.exports.login = async (userName, password)=>{
     try{
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ UserName: userName });
         if (!user) {
             throw new Error('Authentication failed');
         }
