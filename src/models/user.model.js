@@ -28,7 +28,7 @@ const User = sequelize.define('User', {
     },
     IsEmailVerified: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
+      allowNull: true,
       defaultValue: false
     },
     IsActive: {
@@ -40,10 +40,11 @@ const User = sequelize.define('User', {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    // Password: {
-    //   type: DataTypes.STRING(255),
-    //   allowNull: false
-    // }
+
+    Password: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    }
     // Password: Handle encryption in your application logic
   }, {
     tableName: 'Users',
