@@ -1,31 +1,31 @@
-const { sequelize } = require("../db/db.js");
-const { DataTypes } = require("sequelize");
+const { sequelize } = require('../db/db.js');
+const { DataTypes } = require('sequelize');
 
-
-const Game = sequelize.define('Game', {
+const Game = sequelize.define(
+  'Game',
+  {
     GameId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      allowNull: false
+      allowNull: false,
     },
     GameType: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
-    GameDescription:{
-        type: DataTypes.STRING(255),
-        allowNull: false
-    }
-  }, {
+    GameDescription: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+  },
+  {
     tableName: 'Game',
-    timestamps: false
-  });
+    timestamps: false,
+  }
+);
 
-
-  Game.sync().then(() => {
-    console.log("Game Model synced");
-  });
-  module.exports = Game;
-
-  
+Game.sync().then(() => {
+  console.log('Game Model synced');
+});
+module.exports = Game;
