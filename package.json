@@ -3,8 +3,18 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "start": "nodemon ./bin/www",
+    "prettier-check": "prettier --check .",
+    "prettier-write": "prettier --write ."
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json,css,md}": "prettier --write"
+  },  
   "dependencies": {
     "@solana/web3.js": "^1.90.0",
     "bcrypt": "^5.1.1",
@@ -23,5 +33,10 @@
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.33.0"
+  },
+  "devDependencies": {
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5"
   }
 }
