@@ -1,40 +1,42 @@
-const { sequelize } = require("../db/db.js");
-const { DataTypes } = require("sequelize");
+const { sequelize } = require('../db/db.js');
+const { DataTypes } = require('sequelize');
 
-const User = sequelize.define('User', {
+const User = sequelize.define(
+  'User',
+  {
     UserID: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true,
-      allowNull: false
+      allowNull: false,
     },
     Email: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      unique: true
+      unique: true,
     },
     UserName: {
       type: DataTypes.STRING(50),
       allowNull: true,
-      unique: true
+      unique: true,
     },
     RegistrationDate: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
     },
     LastLoginDate: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
     },
     IsEmailVerified: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
-      defaultValue: false
+      defaultValue: false,
     },
     IsActive: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true
+      defaultValue: true,
     },
     PublicKey: {
       type: DataTypes.STRING,
@@ -43,15 +45,17 @@ const User = sequelize.define('User', {
 
     Password: {
       type: DataTypes.STRING(255),
-      allowNull: true
-    }
+      allowNull: true,
+    },
     // Password: Handle encryption in your application logic
-  }, {
+  },
+  {
     tableName: 'Users',
-    timestamps: false
-  });
-  
-  User.sync().then(() => {
-    console.log("User Model synced");
-  });
-  module.exports = User;
+    timestamps: false,
+  }
+);
+
+User.sync().then(() => {
+  console.log('User Model synced');
+});
+module.exports = User;
