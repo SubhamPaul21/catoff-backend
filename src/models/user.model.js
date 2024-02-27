@@ -10,17 +10,17 @@ const User = sequelize.define('User', {
     },
     Email: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       unique: true
     },
     UserName: {
       type: DataTypes.STRING(50),
-      allowNull: false,
+      allowNull: true,
       unique: true
     },
     RegistrationDate: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true
     },
     LastLoginDate: {
       type: DataTypes.DATE,
@@ -36,10 +36,14 @@ const User = sequelize.define('User', {
       allowNull: false,
       defaultValue: true
     },
-    Password: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    }
+    PublicKey: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    // Password: {
+    //   type: DataTypes.STRING(255),
+    //   allowNull: false
+    // }
     // Password: Handle encryption in your application logic
   }, {
     tableName: 'Users',

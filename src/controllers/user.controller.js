@@ -1,12 +1,11 @@
-let user =  require('../models/user.model');
-let {signUp, login} = require('../services/user.service') 
+let {AddUserDetails, siwsVerification} = require('../services/user.service') 
 let {makeResponse} = require('../utils/responseMaker')
 
-module.exports.signUp = async (req, res, next) => {
+module.exports.addUserDetails = async (req, res, next) => {
     try {
-        const {email, username,  password } = req.body;
-        console.log(email, username, password);
-        let newUser = await signUp(email, username, password);
+        const {email, username } = req.body;
+        console.log(req.userId, email, username);
+        let newUser = await AddUserDetails(req.userId, email, username);
         return makeResponse(res, 200, true, "user registration successful", newUser)
     } catch (e) {
         console.log(e)
@@ -16,12 +15,12 @@ module.exports.signUp = async (req, res, next) => {
 
 module.exports.login = async (req, res, next) => {
     try {
-        const {username,  password } = req.body;
-        console.log(username, password);
-        let token = await login(username, password)
+        const {signature, message, publicKey } = req.body;
+        // console.log(signature, message, publicKey);
+        let token = await siwsVerification(signature, message, publicKey)
         return makeResponse(res, 200, true, "login successful", {token});
     } catch (e) {
         console.log(e)
-        return makeResponse(res, 500, false, "login failed" );
+        return makeResponse(res, e.statusCode, false, "login failed" );
     }
 }
