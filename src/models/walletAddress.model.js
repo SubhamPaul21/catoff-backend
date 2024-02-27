@@ -1,11 +1,7 @@
 
 const { sequelize } = require("../db/db.js");
-
 const { DataTypes } = require("sequelize");
 var User = require("./user.model.js")
-
-
-
 
 const WalletAddress = sequelize.define('WalletAddress', {
     WalletID: {
