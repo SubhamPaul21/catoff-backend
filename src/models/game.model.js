@@ -19,9 +19,9 @@ const Game = sequelize.define('Game', {
   });
 
 
-  User.sync().then(() => {
-    console.log("User Model synced");
+  Game.sync().then(() => {
+    console.log("Game Model synced");
   });
-  module.exports = User;
+  module.exports = Game;
 
   
