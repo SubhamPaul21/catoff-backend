@@ -12,6 +12,10 @@ const Game = sequelize.define('Game', {
     GameType: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    GameDescription:{
+        type: DataTypes.STRING(255),
+        allowNull: false
     }
   }, {
     tableName: 'Game',

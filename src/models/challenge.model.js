@@ -55,12 +55,12 @@ const Challenge = sequelize.define('Challenge', {
       allowNull: false
     },
     Winners: {
-      type: DataTypes.ARRAY(DataTypes.INTEGER),
+      type: DataTypes.INTEGER,
       allowNull: false,
-    //   references: {
-    //     model: User,
-    //     key: 'UserID'
-    //   }
+      references: {
+        model: User,
+        key: 'UserID'
+      }
       // Add references in associations
     }
   }, {
