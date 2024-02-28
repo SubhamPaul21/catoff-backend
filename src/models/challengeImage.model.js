@@ -1,14 +1,15 @@
+const { sequelize } = require('../db/db.js');
+const { DataTypes } = require('sequelize');
+var player = require('./player.model.js');
 
-const { sequelize } = require("../db/db.js");
-const { DataTypes } = require("sequelize");
-var player = require("./player.model.js")
-
-const ChallengeImage = sequelize.define('ChallengeImage', {
+const ChallengeImage = sequelize.define(
+  'ChallengeImage',
+  {
     ImageID: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      allowNull: false
+      allowNull: false,
     },
     playerID: {
       type: DataTypes.INTEGER,
@@ -16,28 +17,29 @@ const ChallengeImage = sequelize.define('ChallengeImage', {
       // Add references in associations
       references: {
         model: player,
-        key: 'playerId'
-      }
+        key: 'playerId',
+      },
     },
     ImageURL: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: false,
     },
     UploadDate: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: false,
     },
     Description: {
       type: DataTypes.STRING(255),
-      allowNull: true
-    }
-  }, {
+      allowNull: true,
+    },
+  },
+  {
     tableName: 'ChallengeImage',
-    timestamps: false
-  });
+    timestamps: false,
+  }
+);
 
-
-  ChallengeImage.sync().then(() => {
-    console.log("ChallengeImage Model synced");
-  });
-  module.exports = ChallengeImage;
+ChallengeImage.sync().then(() => {
+  console.log('ChallengeImage Model synced');
+});
+module.exports = ChallengeImage;
