@@ -1,50 +1,51 @@
+const { sequelize } = require('../db/db.js');
+const { DataTypes } = require('sequelize');
+var User = require('./user.model.js');
 
-const { sequelize } = require("../db/db.js");
-const { DataTypes } = require("sequelize");
-var User = require("./user.model.js")
-
-const WalletAddress = sequelize.define('WalletAddress', {
+const WalletAddress = sequelize.define(
+  'WalletAddress',
+  {
     WalletID: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true,
-      allowNull: false
+      allowNull: false,
     },
     UserID: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
         model: User,
-        key: 'UserID'
-      }
+        key: 'UserID',
+      },
     },
     WalletAddress: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      unique: true
+      unique: true,
     },
     IsVerified: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false
+      defaultValue: false,
     },
     Signature: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: true,
     },
     AddedDate: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: false,
     },
-  }, {
+  },
+  {
     tableName: 'WalletAddresses',
-    timestamps: false
-  });
-  
+    timestamps: false,
+  }
+);
 
-  WalletAddress.sync().then(() => {
-    console.log("WalletAddress Model synced");
-  });
-  
-  
-  module.exports = WalletAddress;
+WalletAddress.sync().then(() => {
+  console.log('WalletAddress Model synced');
+});
+
+module.exports = WalletAddress;
