@@ -16,7 +16,7 @@ const validateGameUpdate = [
     .optional()
     .isLength({ min: 1 })
     .withMessage('GameDescription is required'),
-  param('id').isInt().withMessage('Game ID must be a valid integer'),
+  param('ID').isInt().withMessage('Game ID must be a valid integer'),
 ];
 
 module.exports = {

@@ -20,14 +20,14 @@ router.post(
   validationHandler,
   createChallengeHandler
 );
-router.get('/challenges/:id', getChallengeHandler);
+router.get('/challenges/:ID', getChallengeHandler);
 router.put(
-  '/challenges/:id',
+  '/challenges/:ID',
   validateChallengeUpdate,
   validationHandler,
   updateChallengeHandler
 );
-router.delete('/challenges/:id', deleteChallengeHandler);
+router.delete('/challenges/:ID', deleteChallengeHandler);
 
 // Middleware to handle validation results
 function validationHandler(req, res, next) {

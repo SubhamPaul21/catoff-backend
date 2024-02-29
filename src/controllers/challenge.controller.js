@@ -19,7 +19,7 @@ const createChallengeHandler = async (req, res) => {
 
 const getChallengeHandler = async (req, res) => {
   try {
-    const challenge = await getChallenge(req.params.id);
+    const challenge = await getChallenge(req.params.ID);
     if (!challenge)
       return res.status(404).json({ message: 'Challenge not found' });
     res.json(challenge);
@@ -32,7 +32,7 @@ const getChallengeHandler = async (req, res) => {
 
 const updateChallengeHandler = async (req, res) => {
   try {
-    const [updated] = await updateChallenge(req.params.id, req.body);
+    const [updated] = await updateChallenge(req.params.ID, req.body);
     if (!updated)
       return res.status(404).json({ message: 'Challenge not found' });
     res.json({ message: 'Challenge updated successfully' });
@@ -45,7 +45,7 @@ const updateChallengeHandler = async (req, res) => {
 
 const deleteChallengeHandler = async (req, res) => {
   try {
-    const deleted = await deleteChallenge(req.params.id);
+    const deleted = await deleteChallenge(req.params.ID);
     if (!deleted)
       return res.status(404).json({ message: 'Challenge not found' });
     res.json({ message: 'Challenge deleted successfully' });

@@ -19,14 +19,14 @@ router.post(
   validationHandler,
   createPlayerHandler
 );
-router.get('/:id', getPlayerHandler);
+router.get('/:ID', getPlayerHandler);
 router.put(
-  '/:id',
+  '/:ID',
   validatePlayerUpdate,
   validationHandler,
   updatePlayerHandler
 );
-router.delete('/:id', deletePlayerHandler);
+router.delete('/:ID', deletePlayerHandler);
 
 // Middleware to handle validation results, similar to challengeRoutes
 function validationHandler(req, res, next) {
