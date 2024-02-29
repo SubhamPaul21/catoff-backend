@@ -18,7 +18,7 @@ const createGameHandler = async (req, res) => {
 
 const getGameHandler = async (req, res) => {
   try {
-    const game = await getGame(req.params.id);
+    const game = await getGame(req.params.ID);
     if (!game) return res.status(404).json({ message: 'Game not found' });
     res.json(game);
   } catch (error) {
@@ -30,7 +30,7 @@ const getGameHandler = async (req, res) => {
 
 const updateGameHandler = async (req, res) => {
   try {
-    const updated = await updateGame(req.params.id, req.body);
+    const updated = await updateGame(req.params.ID, req.body);
     if (!updated) return res.status(404).json({ message: 'Game not found' });
     res.json({ message: 'Game updated successfully' });
   } catch (error) {
@@ -42,7 +42,7 @@ const updateGameHandler = async (req, res) => {
 
 const deleteGameHandler = async (req, res) => {
   try {
-    const deleted = await deleteGame(req.params.id);
+    const deleted = await deleteGame(req.params.ID);
     if (!deleted) return res.status(404).json({ message: 'Game not found' });
     res.json({ message: 'Game deleted successfully' });
   } catch (error) {

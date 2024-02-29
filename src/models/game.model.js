@@ -4,7 +4,7 @@ const { DataTypes } = require('sequelize');
 const Game = sequelize.define(
   'Game',
   {
-    GameId: {
+    GameID: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -20,7 +20,7 @@ const Game = sequelize.define(
     },
   },
   {
-    tableName: 'Game',
+    tableName: 'Games',
     timestamps: false,
   }
 );

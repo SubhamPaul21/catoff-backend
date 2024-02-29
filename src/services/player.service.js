@@ -19,7 +19,7 @@ const getPlayer = async (id) => {
 
 const updatePlayer = async (id, playerData) => {
   try {
-    return await Players.update(playerData, { where: { playerId: id } });
+    return await Players.update(playerData, { where: { PlayerID: id } });
   } catch (error) {
     throw error;
   }
@@ -27,7 +27,7 @@ const updatePlayer = async (id, playerData) => {
 
 const deletePlayer = async (id) => {
   try {
-    return await Players.destroy({ where: { playerId: id } });
+    return await Players.destroy({ where: { PlayerID: id } });
   } catch (error) {
     throw error;
   }

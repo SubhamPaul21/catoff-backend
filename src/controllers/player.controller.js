@@ -19,7 +19,7 @@ const createPlayerHandler = async (req, res) => {
 
 const getPlayerHandler = async (req, res) => {
   try {
-    const player = await getPlayer(req.params.id);
+    const player = await getPlayer(req.params.ID);
     if (!player) return res.status(404).json({ message: 'Player not found' });
     res.json(player);
   } catch (error) {
@@ -31,7 +31,7 @@ const getPlayerHandler = async (req, res) => {
 
 const updatePlayerHandler = async (req, res) => {
   try {
-    const updated = await updatePlayer(req.params.id, req.body);
+    const updated = await updatePlayer(req.params.ID, req.body);
     if (!updated) return res.status(404).json({ message: 'Player not found' });
     res.json({ message: 'Player updated successfully' });
   } catch (error) {
@@ -43,7 +43,7 @@ const updatePlayerHandler = async (req, res) => {
 
 const deletePlayerHandler = async (req, res) => {
   try {
-    const deleted = await deletePlayer(req.params.id);
+    const deleted = await deletePlayer(req.params.ID);
     if (!deleted) return res.status(404).json({ message: 'Player not found' });
     res.json({ message: 'Player deleted successfully' });
   } catch (error) {

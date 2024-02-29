@@ -3,8 +3,8 @@ let { makeResponse } = require('../utils/responseMaker');
 
 module.exports.addUserDetails = async (req, res, next) => {
   try {
-    const { email, username } = req.body;
-    let newUser = await AddUserDetails(req.userId, email, username);
+    const { Email, UserName } = req.body;
+    let newUser = await AddUserDetails(req.UserID, Email, UserName);
     return makeResponse(
       res,
       200,
@@ -20,8 +20,8 @@ module.exports.addUserDetails = async (req, res, next) => {
 
 module.exports.login = async (req, res, next) => {
   try {
-    const { signature, message, publicKey } = req.body;
-    let token = await siwsVerification(signature, message, publicKey);
+    const { Signature, Message, PublicKey } = req.body;
+    let token = await siwsVerification(Signature, Message, PublicKey);
     return makeResponse(res, 200, true, 'login successful', { token });
   } catch (e) {
     console.log(e);

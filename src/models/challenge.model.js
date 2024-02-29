@@ -6,21 +6,21 @@ const Game = require('./game.model.js');
 const Challenge = sequelize.define(
   'Challenge',
   {
-    ChallengeId: {
+    ChallengeID: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
       allowNull: false,
     },
-    challengeName: {
+    ChallengeName: {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    challengeDescription: {
+    ChallengeDescription: {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    challengeCreator: {
+    ChallengeCreator: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -29,7 +29,7 @@ const Challenge = sequelize.define(
       },
       // Add references in associations
     },
-    startDate: {
+    StartDate: {
       type: DataTypes.DATE,
       allowNull: false,
     },
@@ -37,20 +37,20 @@ const Challenge = sequelize.define(
       type: DataTypes.DATE,
       allowNull: false,
     },
-    creationDate: {
+    CreationDate: {
       type: DataTypes.DATE,
       allowNull: false,
     },
-    challengeType: {
+    ChallengeType: {
       type: DataTypes.INTEGER,
       allowNull: false,
       // Add references in associations
       references: {
         model: Game,
-        key: 'GameId',
+        key: 'GameID',
       },
     },
-    isActive: {
+    IsActive: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },
@@ -65,7 +65,7 @@ const Challenge = sequelize.define(
     },
   },
   {
-    tableName: 'Challenge',
+    tableName: 'Challenges',
 
     timestamps: false,
   }

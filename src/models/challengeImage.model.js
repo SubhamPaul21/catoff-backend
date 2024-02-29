@@ -11,13 +11,13 @@ const ChallengeImage = sequelize.define(
       autoIncrement: true,
       allowNull: false,
     },
-    playerID: {
+    PlayerID: {
       type: DataTypes.INTEGER,
       allowNull: false,
       // Add references in associations
       references: {
         model: player,
-        key: 'playerId',
+        key: 'PlayerID',
       },
     },
     ImageURL: {

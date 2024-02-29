@@ -3,16 +3,16 @@ const { DataTypes } = require('sequelize');
 var User = require('./user.model.js');
 var challenge = require('./challenge.model.js');
 
-const Players = sequelize.define(
-  'Players',
+const Player = sequelize.define(
+  'Player',
   {
-    playerId: {
+    PlayerID: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
       allowNull: false,
     },
-    userId: {
+    UserID: {
       type: DataTypes.INTEGER,
       allowNull: false,
       // Add references in associations
@@ -21,16 +21,16 @@ const Players = sequelize.define(
         key: 'UserID',
       },
     },
-    challengeId: {
+    ChallengeID: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: challenge,
-        key: 'ChallengeId',
+        key: 'ChallengeID',
       },
       // Add references in associations
     },
-    value: {
+    Value: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -41,7 +41,7 @@ const Players = sequelize.define(
   }
 );
 
-Players.sync().then(() => {
+Player.sync().then(() => {
   console.log('Players Model synced');
 });
-module.exports = Players;
+module.exports = Player;

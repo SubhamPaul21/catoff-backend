@@ -2,19 +2,19 @@
 const { body, param } = require('express-validator');
 
 const validateChallengeCreation = [
-  body('challengeName')
+  body('ChallengeName')
     .isLength({ min: 1 })
     .withMessage('Challenge name is required'),
-  body('challengeDescription')
+  body('ChallengeDescription')
     .isLength({ min: 1 })
     .withMessage('Challenge description is required'),
-  body('challengeCreator')
+  body('ChallengeCreator')
     .isInt()
     .withMessage('Valid challenge creator is required'),
-  body('startDate').isISO8601().withMessage('Valid start date is required'),
+  body('StartDate').isISO8601().withMessage('Valid start date is required'),
   body('EndDate').isISO8601().withMessage('Valid end date is required'),
-  body('challengeType').isInt().withMessage('Valid challenge type is required'),
-  body('isActive').isBoolean().withMessage('isActive must be a boolean'),
+  body('ChallengeType').isInt().withMessage('Valid challenge type is required'),
+  body('IsActive').isBoolean().withMessage('isActive must be a boolean'),
   // Winners array validation could be more complex depending on requirements
 ];
 

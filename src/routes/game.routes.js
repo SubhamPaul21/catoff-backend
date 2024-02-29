@@ -14,9 +14,9 @@ const { validationResult } = require('express-validator');
 const router = express.Router();
 
 router.post('/', validateGameCreation, validationHandler, createGameHandler);
-router.get('/:id', getGameHandler);
-router.put('/:id', validateGameUpdate, validationHandler, updateGameHandler);
-router.delete('/:id', deleteGameHandler);
+router.get('/:ID', getGameHandler);
+router.put('/:ID', validateGameUpdate, validationHandler, updateGameHandler);
+router.delete('/:ID', deleteGameHandler);
 
 // Middleware to handle validation results
 function validationHandler(req, res, next) {

@@ -18,7 +18,7 @@ const getGame = async (id) => {
 
 const updateGame = async (id, gameData) => {
   try {
-    return await Game.update(gameData, { where: { GameId: id } });
+    return await Game.update(gameData, { where: { GameID: id } });
   } catch (error) {
     throw error;
   }
@@ -26,7 +26,7 @@ const updateGame = async (id, gameData) => {
 
 const deleteGame = async (id) => {
   try {
-    return await Game.destroy({ where: { GameId: id } });
+    return await Game.destroy({ where: { GameID: id } });
   } catch (error) {
     throw error;
   }
