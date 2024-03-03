@@ -22,7 +22,7 @@ const Challenge = sequelize.define(
     },
     ChallengeCreator: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: User,
         key: 'UserID',
@@ -40,6 +40,7 @@ const Challenge = sequelize.define(
     CreationDate: {
       type: DataTypes.DATE,
       allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
     ChallengeType: {
       type: DataTypes.INTEGER,
@@ -56,7 +57,7 @@ const Challenge = sequelize.define(
     },
     Winners: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: User,
         key: 'UserID',

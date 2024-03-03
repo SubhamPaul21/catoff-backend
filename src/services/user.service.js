@@ -2,6 +2,7 @@ let User = require('../models/user.model');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Connection, PublicKey } = require('@solana/web3.js');
+const { Op } = require('sequelize');
 let ExpressError = require('../utils/expressErrors');
 const nacl = require('tweetnacl');
 const bs58 = require('bs58');
@@ -23,7 +24,7 @@ module.exports.AddUserDetails = async (userId, email, userName) => {
     return user;
   } catch (e) {
     console.log(e);
-    return e;
+    throw e;
   }
 };
 
@@ -83,6 +84,21 @@ module.exports.siwsVerification = async (signature, message, publicKey) => {
     return token;
   } catch (e) {
     console.log(e);
-    return e;
+    throw e;
+  }
+};
+
+module.exports.getUserIds = async (searchTerm) => {
+  try {
+    const users = await User.findAll({
+      attributes: ['UserID'],
+      where: {
+        UserName: { [Op.like]: `%${searchTerm}%` },
+      },
+    });
+    let arr = users.map((ele) => ele['UserID']);
+    return arr;
+  } catch (e) {
+    throw e;
   }
 };

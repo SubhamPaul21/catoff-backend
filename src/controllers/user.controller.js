@@ -20,8 +20,8 @@ module.exports.addUserDetails = async (req, res, next) => {
 
 module.exports.login = async (req, res, next) => {
   try {
-    const { Signature, Message, PublicKey } = req.body;
-    let token = await siwsVerification(Signature, Message, PublicKey);
+    const { signature, message, publicKey } = req.body;
+    let token = await siwsVerification(signature, message, publicKey);
     return makeResponse(res, 200, true, 'login successful', { token });
   } catch (e) {
     console.log(e);

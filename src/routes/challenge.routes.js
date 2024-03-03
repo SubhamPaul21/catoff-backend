@@ -9,8 +9,10 @@ const {
   getChallengeHandler,
   updateChallengeHandler,
   deleteChallengeHandler,
+  searchChallengeHandler,
 } = require('../controllers/challenge.controller');
 const { validationResult } = require('express-validator');
+let verifyToken = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -28,6 +30,8 @@ router.put(
   updateChallengeHandler
 );
 router.delete('/challenges/:ID', deleteChallengeHandler);
+
+router.get('/challenges/search/:searchTerm',verifyToken,searchChallengeHandler);
 
 // Middleware to handle validation results
 function validationHandler(req, res, next) {
