@@ -22,7 +22,7 @@ const Challenge = sequelize.define(
     },
     ChallengeCreator: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: User,
         key: 'UserID',
