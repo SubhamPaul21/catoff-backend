@@ -6,6 +6,7 @@ const { Op } = require('sequelize');
 let ExpressError = require('../utils/expressErrors');
 const nacl = require('tweetnacl');
 const bs58 = require('bs58');
+const WalletAddress = require('../models/walletAddress.model');
 require('dotenv').config();
 
 module.exports.AddUserDetails = async (userId, email, userName) => {
@@ -63,8 +64,14 @@ module.exports.siwsVerification = async (signature, message, publicKey) => {
     if (!verified) {
       throw new ExpressError('Invalid Signature', 401);
     }
-    user = await User.findOne({ PublicKey: publicKey });
-    if (!user) {
+    let wallet = await WalletAddress.findOne({ WalletAddress: publicKey });
+    if (!wallet) {
+       wallet = new WalletAddress({
+        WalletAddress: publicKey,
+        Signature: signature,
+      });
+      
+      wallet = await wallet.save();
       // create new user
       user = new User({
         // Email: email,
@@ -73,10 +80,12 @@ module.exports.siwsVerification = async (signature, message, publicKey) => {
         LastLoginDate: null,
         IsEmailVerified: false,
         IsActive: true,
-        PublicKey: publicKey,
+        WalletID: wallet.WalletID
       });
-      user.save();
+      await user.save();
     }
+    user = await User.findOne({WalletID:wallet.WalletID})
+    // console.log(user)
     const token = jwt.sign({ userId: user.UserID }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });

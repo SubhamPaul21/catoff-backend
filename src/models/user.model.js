@@ -1,5 +1,6 @@
 const { sequelize } = require('../db/db.js');
 const { DataTypes } = require('sequelize');
+const WalletAddress = require('./walletAddress.model')
 
 const User = sequelize.define(
   'User',
@@ -38,9 +39,13 @@ const User = sequelize.define(
       allowNull: false,
       defaultValue: true,
     },
-    PublicKey: {
-      type: DataTypes.STRING,
-      allowNull: false,
+    WalletID: {
+      type: DataTypes.INTEGER,
+      allowNull: false, // or false depending on your requirements
+      references: {
+        model: WalletAddress,
+        key: 'WalletID',
+      },
     },
 
     Password: {

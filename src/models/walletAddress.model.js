@@ -11,14 +11,14 @@ const WalletAddress = sequelize.define(
       primaryKey: true,
       allowNull: false,
     },
-    UserID: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'UserID',
-      },
-    },
+    // UserID: {
+    //   type: DataTypes.INTEGER.UNSIGNED,
+    //   allowNull: false,
+    //   references: {
+    //     model: User,
+    //     key: 'UserID',
+    //   },
+    // },
     WalletAddress: {
       type: DataTypes.STRING(255),
       allowNull: false,
@@ -36,6 +36,7 @@ const WalletAddress = sequelize.define(
     AddedDate: {
       type: DataTypes.DATE,
       allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
   },
   {
