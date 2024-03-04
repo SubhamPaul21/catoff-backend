@@ -4,7 +4,9 @@ const {
   getChallenge,
   updateChallenge,
   deleteChallenge,
+  searchChallenge,
 } = require('../services/challenge.service');
+let { makeResponse } = require('../utils/responseMaker');
 
 const createChallengeHandler = async (req, res) => {
   try {
@@ -56,9 +58,20 @@ const deleteChallengeHandler = async (req, res) => {
   }
 };
 
+const searchChallengeHandler = async (req, res) => {
+  try {
+    const searchTerm = req.params.searchTerm;
+    const challenges = await searchChallenge(searchTerm);
+    return makeResponse(res, 200, true, 'search successful', challenges);
+  } catch (e) {
+    return makeResponse(res, e.status, false, 'search failed', null);
+  }
+};
+
 module.exports = {
   createChallengeHandler,
   getChallengeHandler,
   updateChallengeHandler,
   deleteChallengeHandler,
+  searchChallengeHandler,
 };

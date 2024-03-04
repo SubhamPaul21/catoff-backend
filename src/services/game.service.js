@@ -1,4 +1,5 @@
 const Game = require('../models/game.model');
+const { Op } = require('sequelize');
 
 const createGame = async (gameData) => {
   try {
@@ -32,9 +33,25 @@ const deleteGame = async (id) => {
   }
 };
 
+const getGameIds = async (searchTerm) => {
+  try {
+    const gameIDs = await Game.findAll({
+      attributes: ['GameID'],
+      where: {
+        GameDescription: { [Op.like]: `%${searchTerm}%` },
+      },
+    });
+    let arr = gameIDs.map((ele) => ele['GameID']);
+    return arr;
+  } catch (e) {
+    throw e;
+  }
+};
+
 module.exports = {
   createGame,
   getGame,
   updateGame,
   deleteGame,
+  getGameIds,
 };
