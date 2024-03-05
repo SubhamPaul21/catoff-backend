@@ -5,6 +5,7 @@ const {
   updateChallenge,
   deleteChallenge,
   searchChallenge,
+  getOngoingChallenges
 } = require('../services/challenge.service');
 let { makeResponse } = require('../utils/responseMaker');
 
@@ -68,10 +69,23 @@ const searchChallengeHandler = async (req, res) => {
   }
 };
 
+const getOnGoingChallengesHandler = async(req, res)=>{
+  try{
+    const type = req.params.type;
+    const page = req.query.page;
+    const challenges = await getOngoingChallenges(type, page);
+    return makeResponse(res, 200, true, "query successful", challenges)
+  } catch(e){
+    console.log(e)
+    return makeResponse(res, 500, false, "unable to retrieve", null)
+  }
+}
+
 module.exports = {
   createChallengeHandler,
   getChallengeHandler,
   updateChallengeHandler,
   deleteChallengeHandler,
   searchChallengeHandler,
+  getOnGoingChallengesHandler
 };
