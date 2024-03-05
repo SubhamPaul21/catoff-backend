@@ -21,14 +21,17 @@ module.exports.addUserDetails = async (req, res, next) => {
 module.exports.login = async (req, res, next) => {
   try {
     const { signature, message, publicKey } = req.body;
-    let token = await userService.siwsVerification(signature, message, publicKey);
+    let token = await userService.siwsVerification(
+      signature,
+      message,
+      publicKey
+    );
     return makeResponse(res, 200, true, 'login successful', { token });
   } catch (e) {
     console.log(e);
     return makeResponse(res, 500, false, 'login failed');
   }
 };
-
 
 exports.createUser = async (req, res) => {
   try {

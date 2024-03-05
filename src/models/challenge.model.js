@@ -67,7 +67,7 @@ const Challenge = sequelize.define(
     Media: {
       type: DataTypes.STRING(255),
       allowNull: true,
-    }
+    },
   },
   {
     sequelize,

@@ -10,9 +10,9 @@ const Game = sequelize.define(
       autoIncrement: true,
       allowNull: false,
     },
-    GameName:{
+    GameName: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: false,
     },
     GameType: {
       type: DataTypes.INTEGER,
