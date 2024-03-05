@@ -47,7 +47,10 @@ const User = sequelize.define(
         key: 'WalletID',
       },
     },
-
+    Credits :{
+      type: DataTypes.FLOAT,
+      allowNull: false, // or false depending on your requirements
+    },
     Password: {
       type: DataTypes.STRING(255),
       allowNull: true,
