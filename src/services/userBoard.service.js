@@ -1,5 +1,6 @@
 const { Player, Challenge } = require('../models/index');
 const { Op } = require('sequelize');
+const { Transaction } = require('../models/index'); // Adjust the path as necessary
 
 const getUserCurrentStandings = async (userId) => {
   try {
@@ -72,6 +73,73 @@ const getUserCurrentStandings = async (userId) => {
   }
 };
 
+// Helper function to format date as YYYY-MM-DD HH:MM where MM is the nearest 15-minute block
+const formatToNearest15Min = (date) => {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const nearest15Min = minutes - (minutes % 15);
+  return `${date.toISOString().split('T')[0]} ${String(hours).padStart(2, '0')}:${String(nearest15Min).padStart(2, '0')}`;
+};
+
+const getUserProgressData = async (userId, period) => {
+  let dateFrom;
+  let aggregateByInterval = false; // Adjusted from aggregateByHour for clarity
+
+  switch (period) {
+    case '30days':
+      dateFrom = new Date(new Date().setDate(new Date().getDate() - 30));
+      break;
+    case '24hours':
+      dateFrom = new Date(
+        new Date().setTime(new Date().getTime() - 24 * 60 * 60 * 1000)
+      );
+      aggregateByInterval = true; // We'll aggregate by the nearest 15-minute interval
+      break;
+    case 'all':
+      dateFrom = new Date(0); // Start from the Unix Epoch (1970-01-01)
+      break;
+    default:
+      throw new Error('Invalid period specified');
+  }
+
+  const transactions = await Transaction.findAll({
+    where: {
+      UserID: userId,
+      Timestamp: {
+        [Op.gte]: dateFrom,
+      },
+    },
+    order: [['Timestamp', 'ASC']],
+    attributes: ['Amount', 'Timestamp'],
+  });
+
+  // Aggregate data for graph
+  const aggregatedData = transactions.reduce((acc, { Amount, Timestamp }) => {
+    const key = aggregateByInterval
+      ? formatToNearest15Min(Timestamp)
+      : Timestamp.toISOString().split('T')[0];
+    if (!acc[key]) {
+      acc[key] = 0;
+    }
+    acc[key] += Amount;
+    return acc;
+  }, {});
+
+  // Convert aggregatedData into the desired format for the response
+  const creditsGraph = Object.entries(aggregatedData).map(
+    ([time, creditsEarned]) => ({
+      time,
+      creditsEarned,
+    })
+  );
+
+  return {
+    creditsGraph,
+    // You can add more graphs or data as needed
+  };
+};
+
 module.exports = {
   getUserCurrentStandings,
+  getUserProgressData,
 };

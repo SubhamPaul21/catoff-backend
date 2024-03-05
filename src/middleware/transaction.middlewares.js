@@ -6,7 +6,6 @@ const validateTransactionCreation = [
   body('Description')
     .isLength({ min: 1 })
     .withMessage('Description is required'),
-  body('Timestamp').isISO8601().withMessage('Valid Timestamp is required'),
 ];
 
 const validateTransactionUpdate = [
