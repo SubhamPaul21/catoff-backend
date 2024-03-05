@@ -111,3 +111,56 @@ module.exports.getUserIds = async (searchTerm) => {
     throw e;
   }
 };
+
+exports.createUser = async (userData) => {
+  try {
+    const user = await User.create(userData);
+    return user;
+  } catch (error) {
+    throw new Error('Error creating user');
+  }
+};
+
+exports.getAllUsers = async () => {
+  try {
+    const users = await User.findAll();
+    return users;
+  } catch (error) {
+    throw new Error('Error retrieving users');
+  }
+};
+
+exports.getUserById = async (id) => {
+  try {
+    const user = await User.findByPk(id);
+    return user;
+  } catch (error) {
+    throw new Error('Error finding user');
+  }
+};
+
+exports.updateUser = async (id, updateData) => {
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      return null;
+    }
+    const updatedUser = await user.update(updateData);
+    return updatedUser;
+  } catch (error) {
+    throw new Error('Error updating user');
+  }
+};
+
+exports.deleteUser = async (id) => {
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      return null;
+    }
+    await user.destroy();
+    return true;
+  } catch (error) {
+    throw new Error('Error deleting user');
+  }
+};
