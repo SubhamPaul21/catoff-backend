@@ -69,7 +69,7 @@ const searchChallengeHandler = async (req, res) => {
   }
 };
 
-const getChallengesHandler = async(req, res)=>{
+const getOnGoingChallengesHandler = async(req, res)=>{
   try{
     const type = req.params.type;
     const page = req.query.page;
@@ -87,5 +87,5 @@ module.exports = {
   updateChallengeHandler,
   deleteChallengeHandler,
   searchChallengeHandler,
-  getChallengesHandler
+  getOnGoingChallengesHandler
 };
