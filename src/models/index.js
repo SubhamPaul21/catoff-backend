@@ -1,6 +1,7 @@
 const User = require('./user.model');
 const Player = require('./player.model');
 const Challenge = require('./challenge.model');
+const Transaction = require('./transaction.model');
 // Import other models as needed
 
 // Define associations
@@ -14,4 +15,5 @@ module.exports = {
   User,
   Player,
   Challenge,
+  Transaction,
 };
