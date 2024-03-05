@@ -1,7 +1,7 @@
 const { sequelize } = require('../db/db.js');
 const { DataTypes } = require('sequelize');
 var User = require('./user.model.js');
-var challenge = require('./challenge.model.js');
+var Challenge = require('./challenge.model.js');
 
 const Player = sequelize.define(
   'Player',
@@ -25,7 +25,7 @@ const Player = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: challenge,
+        model: Challenge,
         key: 'ChallengeID',
       },
       // Add references in associations
