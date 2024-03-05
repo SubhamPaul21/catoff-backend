@@ -64,10 +64,14 @@ const Challenge = sequelize.define(
       },
       // Add references in associations
     },
+    Media: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    }
   },
   {
+    sequelize,
     tableName: 'Challenges',
-
     timestamps: false,
   }
 );

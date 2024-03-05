@@ -10,6 +10,10 @@ const Game = sequelize.define(
       autoIncrement: true,
       allowNull: false,
     },
+    GameName:{
+      type: DataTypes.STRING(50),
+      allowNull: false
+    },
     GameType: {
       type: DataTypes.INTEGER,
       allowNull: false,

@@ -38,7 +38,7 @@ const getGameIds = async (searchTerm) => {
     const gameIDs = await Game.findAll({
       attributes: ['GameID'],
       where: {
-        GameDescription: { [Op.like]: `%${searchTerm}%` },
+        GameName: { [Op.like]: `%${searchTerm}%` },
       },
     });
     let arr = gameIDs.map((ele) => ele['GameID']);
@@ -47,6 +47,7 @@ const getGameIds = async (searchTerm) => {
     throw e;
   }
 };
+
 
 module.exports = {
   createGame,

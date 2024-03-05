@@ -61,10 +61,41 @@ const searchChallenge = async (searchTerm) => {
   }
 };
 
+const getOngoingChallenges = async(type, page)=>{
+  try{
+    const limit = 10;
+    const offset = (page - 1) * 10;
+    let challenges;
+    if(type == 'all'){
+      challenges = await Challenge.findAll({
+        where: { IsActive: true }, // Add a where clause to check for IsActive true
+        order: [['CreationDate', 'DESC']], // Assuming CreationDate determines the "hotness"
+        offset,
+        limit,
+      });
+    } else{
+      let gameIDs = await getGameIds(type);
+      challenges = await Challenge.findAll({
+        where: { IsActive: true, ChallengeType: {
+          [Op.in]: [gameIDs],
+        },}, // Add a where clause to check for IsActive true and category ID
+        order: [['CreationDate', 'DESC']], // Assuming CreationDate determines the "hotness"
+        offset,
+        limit,
+      });
+      
+    }
+    return challenges;
+  }catch(e){
+    throw e
+  }
+}
+
 module.exports = {
   createChallenge,
   getChallenge,
   updateChallenge,
   deleteChallenge,
   searchChallenge,
+  getOngoingChallenges,
 };
