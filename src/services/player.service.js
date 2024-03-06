@@ -33,13 +33,13 @@ const deletePlayer = async (id) => {
   }
 };
 
-const getAllPlayersOfChallenge = async(challengeId)=>{
-  try{
-    return await Players.findAll({where:{ChallengeID: challengeId}});
-  } catch(e){
+const getAllPlayersOfChallenge = async (challengeId) => {
+  try {
+    return await Players.findAll({ where: { ChallengeID: challengeId } });
+  } catch (e) {
     return e;
   }
-}
+};
 
 module.exports = {
   createPlayer,

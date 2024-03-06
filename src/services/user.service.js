@@ -89,7 +89,7 @@ module.exports.siwsVerification = async (signature, message, publicKey) => {
       });
       await user.save();
     }
-    user = await User.findOne({ WalletID: wallet.WalletID });
+    user = await User.findOne({ where: { WalletID: wallet.WalletID } });
     // console.log("+++++++++++++++++++++++++",wallet.WalletID)
     // console.log("==========================", user)
     const token = jwt.sign({ userId: user.UserID }, process.env.JWT_SECRET, {

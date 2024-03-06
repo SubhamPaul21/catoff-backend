@@ -4,7 +4,7 @@ const {
   getPlayer,
   updatePlayer,
   deletePlayer,
-  getAllPlayersOfChallenge
+  getAllPlayersOfChallenge,
 } = require('../services/player.service');
 let { makeResponse } = require('../utils/responseMaker');
 
@@ -55,14 +55,14 @@ const deletePlayerHandler = async (req, res) => {
   }
 };
 
-const getAllPlayersOfChallengeHandler = async(req,res)=>{
-  try{
+const getAllPlayersOfChallengeHandler = async (req, res) => {
+  try {
     const players = await getAllPlayersOfChallenge(req.params.ID);
-    return makeResponse(res,200, true, "players fetched successful", players);
-  }catch(e){
-    return makeResponse(res, 500, false, "unable to retrieve", null);
+    return makeResponse(res, 200, true, 'players fetched successful', players);
+  } catch (e) {
+    return makeResponse(res, 500, false, 'unable to retrieve', null);
   }
-}
+};
 
 module.exports = {
   createPlayerHandler,
