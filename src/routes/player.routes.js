@@ -11,6 +11,7 @@ const {
   getAllPlayersOfChallengeHandler,
 } = require('../controllers/player.controller');
 const { validationResult } = require('express-validator');
+let verifyToken = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -29,7 +30,7 @@ router.put(
 );
 router.delete('/:ID', deletePlayerHandler);
 
-router.get('/challenge/:ID', getAllPlayersOfChallengeHandler);
+router.get('/challenge/:ID', verifyToken ,getAllPlayersOfChallengeHandler);
 
 // Middleware to handle validation results, similar to challengeRoutes
 function validationHandler(req, res, next) {

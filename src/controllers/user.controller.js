@@ -13,8 +13,7 @@ module.exports.addUserDetails = async (req, res, next) => {
       newUser
     );
   } catch (e) {
-    console.log(e);
-    return makeResponse(res, 500, false, `user registration failed: ${e}`);
+    return makeResponse(res, 500, false,e.message, null);
   }
 };
 
