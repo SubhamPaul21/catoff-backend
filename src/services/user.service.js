@@ -1,7 +1,5 @@
 let User = require('../models/user.model');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { Connection, PublicKey } = require('@solana/web3.js');
 const { Op } = require('sequelize');
 let ExpressError = require('../utils/expressErrors');
 const nacl = require('tweetnacl');
@@ -17,6 +15,16 @@ module.exports.AddUserDetails = async (userId, email, userName) => {
     if (!user) {
       throw new ExpressError('User doesnt exist', 401);
     }
+    console.log(user.Email, email)
+    let doUserExist = await User.findOne({where: {Email: email}})
+    if(doUserExist){
+      console.log("here", email)
+      throw new ExpressError("User email already exist", 500)
+    }
+    doUserExist = await User.findOne({where:{UserName: userName}})
+    if(doUserExist){
+      throw new ExpressError("User name already exist",500)
+    }
     let updates = {
       Email: email,
       UserName: userName,
@@ -24,7 +32,6 @@ module.exports.AddUserDetails = async (userId, email, userName) => {
     await user.update(updates);
     return user;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -68,7 +75,6 @@ module.exports.siwsVerification = async (signature, message, publicKey) => {
     let wallet = await WalletAddress.findOne({
       where: { WalletAddress: publicKey },
     });
-    // console.log("================",wallet)
     if (!wallet) {
       wallet = new WalletAddress({
         WalletAddress: publicKey,
@@ -90,8 +96,6 @@ module.exports.siwsVerification = async (signature, message, publicKey) => {
       await user.save();
     }
     user = await User.findOne({ where: { WalletID: wallet.WalletID } });
-    // console.log("+++++++++++++++++++++++++",wallet.WalletID)
-    // console.log("==========================", user)
     const token = jwt.sign({ userId: user.UserID }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
