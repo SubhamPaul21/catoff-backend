@@ -11,11 +11,55 @@ const {
   deleteTransactionHandler,
   getAllTransactionsHandler,
 } = require('../controllers/transaction.controller');
+const logger = require('../utils/logger');
 
-router.post('/', validateTransactionCreation, createTransactionHandler);
-router.get('/:TxID', getTransactionHandler);
-router.get('/', getAllTransactionsHandler); // For fetching all transactions
-router.put('/:TxID', validateTransactionUpdate, updateTransactionHandler);
-router.delete('/:TxID', deleteTransactionHandler);
+router.post(
+  '/',
+  validateTransactionCreation,
+  (req, res, next) => {
+    logger.info('POST /transactions - Creating a new transaction');
+    next();
+  },
+  createTransactionHandler
+);
+router.get(
+  '/:TxID',
+  (req, res, next) => {
+    logger.info(
+      `GET /transactions/${req.params.TxID} - Retrieving a transaction`
+    );
+    next();
+  },
+  getTransactionHandler
+);
+router.get(
+  '/',
+  (req, res, next) => {
+    logger.info('GET /transactions - Retrieving all transactions');
+    next();
+  },
+  getAllTransactionsHandler
+);
+router.put(
+  '/:TxID',
+  validateTransactionUpdate,
+  (req, res, next) => {
+    logger.info(
+      `PUT /transactions/${req.params.TxID} - Updating a transaction`
+    );
+    next();
+  },
+  updateTransactionHandler
+);
+router.delete(
+  '/:TxID',
+  (req, res, next) => {
+    logger.info(
+      `DELETE /transactions/${req.params.TxID} - Deleting a transaction`
+    );
+    next();
+  },
+  deleteTransactionHandler
+);
 
 module.exports = router;

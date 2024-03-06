@@ -15,15 +15,15 @@ module.exports.AddUserDetails = async (userId, email, userName) => {
     if (!user) {
       throw new ExpressError('User doesnt exist', 401);
     }
-    console.log(user.Email, email)
-    let doUserExist = await User.findOne({where: {Email: email}})
-    if(doUserExist){
-      console.log("here", email)
-      throw new ExpressError("User email already exist", 500)
+    console.log(user.Email, email);
+    let doUserExist = await User.findOne({ where: { Email: email } });
+    if (doUserExist) {
+      console.log('here', email);
+      throw new ExpressError('User email already exist', 500);
     }
-    doUserExist = await User.findOne({where:{UserName: userName}})
-    if(doUserExist){
-      throw new ExpressError("User name already exist",500)
+    doUserExist = await User.findOne({ where: { UserName: userName } });
+    if (doUserExist) {
+      throw new ExpressError('User name already exist', 500);
     }
     let updates = {
       Email: email,

@@ -1,7 +1,7 @@
 const userService = require('../services/user.service');
 const { makeResponse } = require('../utils/responseMaker');
 
-module.exports.addUserDetails = async (req, res, next) => {
+exports.addUserDetails = async (req, res, next) => {
   try {
     const { Email, UserName } = req.body;
     let newUser = await userService.AddUserDetails(req.UserID, Email, UserName);
@@ -13,11 +13,11 @@ module.exports.addUserDetails = async (req, res, next) => {
       newUser
     );
   } catch (e) {
-    return makeResponse(res, 500, false,e.message, null);
+    return makeResponse(res, 500, false, e.message, null);
   }
 };
 
-module.exports.login = async (req, res, next) => {
+exports.login = async (req, res, next) => {
   try {
     const { signature, message, publicKey } = req.body;
     let token = await userService.siwsVerification(
