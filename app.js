@@ -24,6 +24,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Enable CORS for all routes
+app.use(cors());
+
 app.use('/challenge', challenge);
 app.use('/user', userRoutes);
 app.use('/player', playerRoutes);
