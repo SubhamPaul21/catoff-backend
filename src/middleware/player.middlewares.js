@@ -3,7 +3,6 @@ const { body, param } = require('express-validator');
 const validatePlayerCreation = [
   body('UserID').isInt().withMessage('User ID must be an integer'),
   body('ChallengeID').isInt().withMessage('Challenge ID must be an integer'),
-  body('Value').isInt().withMessage('Value must be an integer'),
 ];
 
 const validatePlayerUpdate = [

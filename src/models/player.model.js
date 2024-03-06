@@ -33,6 +33,7 @@ const Player = sequelize.define(
     Value: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 0
     },
   },
   {
