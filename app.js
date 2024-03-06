@@ -10,6 +10,7 @@ var challenge = require('./src/routes/challenge.routes');
 let playerRoutes = require('./src/routes/player.routes');
 let gameRoutes = require('./src/routes/game.routes');
 let transactionRoutes = require('./src/routes/transaction.routes');
+const userBoardRoutes = require('./src/routes/userBoard.routes');
 
 var app = express();
 
@@ -28,6 +29,7 @@ app.use('/user', userRoutes);
 app.use('/player', playerRoutes);
 app.use('/game', gameRoutes);
 app.use('/transactions', transactionRoutes);
+app.use('/userBoard', userBoardRoutes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -45,7 +47,7 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-const PORT = 3005;
+const PORT = process.env.PORT_APP || 3005;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

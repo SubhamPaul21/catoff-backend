@@ -10,7 +10,7 @@ const {
   updateChallengeHandler,
   deleteChallengeHandler,
   searchChallengeHandler,
-  getOnGoingChallengesHandler
+  getOnGoingChallengesHandler,
 } = require('../controllers/challenge.controller');
 const { validationResult } = require('express-validator');
 let verifyToken = require('../middleware/authMiddleware');
@@ -32,9 +32,17 @@ router.put(
 );
 router.delete('/challenges/:ID', deleteChallengeHandler);
 
-router.get('/challenges/search/:searchTerm',verifyToken,searchChallengeHandler);
+router.get(
+  '/challenges/search/:searchTerm',
+  verifyToken,
+  searchChallengeHandler
+);
 
-router.get('/challenges/onGoing/category/:type', verifyToken, getOnGoingChallengesHandler);
+router.get(
+  '/challenges/onGoing/category/:type',
+  verifyToken,
+  getOnGoingChallengesHandler
+);
 
 // Middleware to handle validation results
 function validationHandler(req, res, next) {

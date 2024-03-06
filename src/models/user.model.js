@@ -1,6 +1,6 @@
 const { sequelize } = require('../db/db.js');
 const { DataTypes } = require('sequelize');
-const WalletAddress = require('./walletAddress.model')
+const WalletAddress = require('./walletAddress.model');
 
 const User = sequelize.define(
   'User',
@@ -47,7 +47,10 @@ const User = sequelize.define(
         key: 'WalletID',
       },
     },
-
+    Credits: {
+      type: DataTypes.FLOAT,
+      allowNull: false, // or false depending on your requirements
+    },
     Password: {
       type: DataTypes.STRING(255),
       allowNull: true,
