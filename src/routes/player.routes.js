@@ -8,7 +8,7 @@ const {
   getPlayerHandler,
   updatePlayerHandler,
   deletePlayerHandler,
-  getAllPlayersOfChallengeHandler
+  getAllPlayersOfChallengeHandler,
 } = require('../controllers/player.controller');
 const { validationResult } = require('express-validator');
 
@@ -29,7 +29,7 @@ router.put(
 );
 router.delete('/:ID', deletePlayerHandler);
 
-router.get('/challenge/:ID',getAllPlayersOfChallengeHandler)
+router.get('/challenge/:ID', getAllPlayersOfChallengeHandler);
 
 // Middleware to handle validation results, similar to challengeRoutes
 function validationHandler(req, res, next) {
