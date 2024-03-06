@@ -1,6 +1,5 @@
-const { Player, Challenge } = require('../models/index');
+const { Player, Challenge, Transaction, Users } = require('../models/index');
 const { Op } = require('sequelize');
-const { Transaction } = require('../models/index'); // Adjust the path as necessary
 
 const getUserCurrentStandings = async (userId) => {
   try {
@@ -139,7 +138,56 @@ const getUserProgressData = async (userId, period) => {
   };
 };
 
+const getUserDetailsData = async (userId) => {
+  // Fetch Challenge IDs from Player table where the user has participated
+  const participatedChallengeIds = await Player.findAll({
+    where: { UserID: userId },
+    attributes: ['ChallengeID'],
+  }).map((participation) => participation.ChallengeID);
+
+  // If no participation, return early with zeros
+  if (!participatedChallengeIds.length) {
+    return {
+      UserID: userId,
+      TotalRewardsWon: 0,
+      PastChallenges: 0,
+      CurrentActiveChallenges: 0,
+    };
+  }
+
+  // Total Rewards Won
+  const totalRewardsWon = await Transaction.sum('Amount', {
+    where: { UserID: userId },
+  });
+
+  // Past Challenges
+  const pastChallengesCount = await Challenge.count({
+    where: {
+      ChallengeID: { [Op.in]: participatedChallengeIds },
+      EndDate: { [Op.lt]: new Date() },
+    },
+  });
+
+  // Current Active Challenges
+  const currentActiveChallengesCount = await Challenge.count({
+    where: {
+      ChallengeID: { [Op.in]: participatedChallengeIds },
+      StartDate: { [Op.lte]: new Date() },
+      EndDate: { [Op.gt]: new Date() },
+    },
+  });
+
+  // Return the aggregated data
+  return {
+    UserID: userId,
+    TotalRewardsWon: totalRewardsWon || 0, // Ensure a default value in case of null
+    PastChallenges: pastChallengesCount,
+    CurrentActiveChallenges: currentActiveChallengesCount,
+  };
+};
+
 module.exports = {
   getUserCurrentStandings,
   getUserProgressData,
+  getUserDetailsData,
 };
