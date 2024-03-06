@@ -28,6 +28,7 @@ const Transaction = sequelize.define(
     Timestamp: {
       type: DataTypes.DATE,
       allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
   },
   {

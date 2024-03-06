@@ -1,10 +1,10 @@
-const user = require('../services/user.service');
+const userService = require('../services/user.service');
 const { makeResponse } = require('../utils/responseMaker');
 
 module.exports.addUserDetails = async (req, res, next) => {
   try {
     const { Email, UserName } = req.body;
-    let newUser = await user.AddUserDetails(req.UserID, Email, UserName);
+    let newUser = await userService.AddUserDetails(req.UserID, Email, UserName);
     return makeResponse(
       res,
       200,
@@ -14,21 +14,24 @@ module.exports.addUserDetails = async (req, res, next) => {
     );
   } catch (e) {
     console.log(e);
-    return makeResponse(res, 500, false, 'user registration failed');
+    return makeResponse(res, 500, false, `user registration failed: ${e}`);
   }
 };
 
 module.exports.login = async (req, res, next) => {
   try {
     const { signature, message, publicKey } = req.body;
-    let token = await user.siwsVerification(signature, message, publicKey);
+    let token = await userService.siwsVerification(
+      signature,
+      message,
+      publicKey
+    );
     return makeResponse(res, 200, true, 'login successful', { token });
   } catch (e) {
     console.log(e);
-    return makeResponse(res, e.statusCode, false, 'login failed');
+    return makeResponse(res, 500, false, 'login failed');
   }
 };
-
 
 exports.createUser = async (req, res) => {
   try {

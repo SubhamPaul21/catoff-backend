@@ -64,13 +64,17 @@ module.exports.siwsVerification = async (signature, message, publicKey) => {
     if (!verified) {
       throw new ExpressError('Invalid Signature', 401);
     }
-    let wallet = await WalletAddress.findOne({ WalletAddress: publicKey });
+    console.log(publicKey);
+    let wallet = await WalletAddress.findOne({
+      where: { WalletAddress: publicKey },
+    });
+    // console.log("================",wallet)
     if (!wallet) {
-       wallet = new WalletAddress({
+      wallet = new WalletAddress({
         WalletAddress: publicKey,
         Signature: signature,
       });
-      
+
       wallet = await wallet.save();
       // create new user
       user = new User({
@@ -80,12 +84,14 @@ module.exports.siwsVerification = async (signature, message, publicKey) => {
         LastLoginDate: null,
         IsEmailVerified: false,
         IsActive: true,
-        WalletID: wallet.WalletID
+        WalletID: wallet.WalletID,
+        Credits: 0.0,
       });
       await user.save();
     }
-    user = await User.findOne({WalletID:wallet.WalletID})
-    // console.log(user)
+    user = await User.findOne({ WalletID: wallet.WalletID });
+    // console.log("+++++++++++++++++++++++++",wallet.WalletID)
+    // console.log("==========================", user)
     const token = jwt.sign({ userId: user.UserID }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });

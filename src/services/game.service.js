@@ -48,7 +48,6 @@ const getGameIds = async (searchTerm) => {
   }
 };
 
-
 module.exports = {
   createGame,
   getGame,
