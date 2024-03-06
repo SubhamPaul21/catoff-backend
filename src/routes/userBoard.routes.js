@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   getUserCurrentTable,
   getUserProgressGraph,
+  getUserDetails,
 } = require('../controllers/userBoard.controller');
 const verifyToken = require('../middleware/authMiddleware');
 
@@ -12,5 +13,6 @@ router.get(
   verifyToken,
   getUserProgressGraph
 );
+router.get('/dashboard/userDetails', verifyToken, getUserDetails);
 
 module.exports = router;

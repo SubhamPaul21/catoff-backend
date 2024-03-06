@@ -1,6 +1,7 @@
 const {
   getUserCurrentStandings,
   getUserProgressData,
+  getUserDetailsData,
 } = require('../services/userBoard.service');
 
 exports.getUserCurrentTable = async (req, res) => {
@@ -27,5 +28,18 @@ exports.getUserProgressGraph = async (req, res) => {
     res
       .status(500)
       .json({ message: 'Error fetching user progress', error: error.message });
+  }
+};
+
+exports.getUserDetails = async (req, res) => {
+  try {
+    const userId = req.UserID; // Assuming JWT middleware adds the user object to req
+    const userDetails = await getUserDetailsData(userId);
+
+    res.json(userDetails);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'Error fetching user details', error: error.message });
   }
 };
