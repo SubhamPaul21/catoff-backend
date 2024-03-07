@@ -6,32 +6,43 @@ const nacl = require('tweetnacl');
 const bs58 = require('bs58');
 const WalletAddress = require('../models/walletAddress.model');
 require('dotenv').config();
+const logger = require('../utils/logger');
 
-module.exports.AddUserDetails = async (userId, email, userName) => {
+const AddUserDetails = async (userId, email, userName) => {
+  logger.debug(
+    `[UserService] Attempting to add user details for UserID: ${userId}`
+  );
   try {
     const user = await User.findOne({
       where: { UserID: userId },
     });
     if (!user) {
+      logger.error('[UserService] User does not exist');
       throw new ExpressError('User doesnt exist', 401);
     }
-    console.log(user.Email, email);
+
     let doUserExist = await User.findOne({ where: { Email: email } });
     if (doUserExist) {
-      console.log('here', email);
+      logger.error('[UserService] User email already exist');
       throw new ExpressError('User email already exist', 500);
     }
+
     doUserExist = await User.findOne({ where: { UserName: userName } });
     if (doUserExist) {
+      logger.error('[UserService] User name already exist');
       throw new ExpressError('User name already exist', 500);
     }
+
     let updates = {
       Email: email,
       UserName: userName,
     };
+
     await user.update(updates);
+    logger.info('[UserService] User details added successfully');
     return user;
   } catch (e) {
+    logger.error(`[UserService] Error adding user details: ${e.message}`);
     throw e;
   }
 };
@@ -57,9 +68,11 @@ module.exports.AddUserDetails = async (userId, email, userName) => {
 //     }
 // }
 
-module.exports.siwsVerification = async (signature, message, publicKey) => {
+const siwsVerification = async (signature, message, publicKey) => {
+  logger.debug(
+    `[UserService] Attempting SIWS verification for publicKey: ${publicKey}`
+  );
   try {
-    let user;
     const decodedPublicKey = bs58.decode(publicKey);
     const publicKeyUint8Array = new Uint8Array(decodedPublicKey);
     const signatureBuffer = Buffer.from(bs58.decode(signature));
@@ -68,109 +81,150 @@ module.exports.siwsVerification = async (signature, message, publicKey) => {
       signatureBuffer,
       publicKeyUint8Array
     );
+
     if (!verified) {
+      logger.error('[UserService] Invalid signature');
       throw new ExpressError('Invalid Signature', 401);
     }
-    console.log(publicKey);
+
     let wallet = await WalletAddress.findOne({
       where: { WalletAddress: publicKey },
     });
+
     if (!wallet) {
-      wallet = new WalletAddress({
+      wallet = await WalletAddress.create({
         WalletAddress: publicKey,
         Signature: signature,
       });
+    }
 
-      wallet = await wallet.save();
-      // create new user
-      user = new User({
-        // Email: email,
-        // UserName: userName,
+    user =
+      (await User.findOne({ where: { WalletID: wallet.WalletID } })) ||
+      (await User.create({
         RegistrationDate: new Date(),
         LastLoginDate: null,
         IsEmailVerified: false,
         IsActive: true,
         WalletID: wallet.WalletID,
         Credits: 0.0,
-      });
-      await user.save();
-    }
-    user = await User.findOne({ where: { WalletID: wallet.WalletID } });
+      }));
+
     const token = jwt.sign({ userId: user.UserID }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
     await user.update({ LastLoginDate: new Date() });
+    logger.info('[UserService] SIWS verification successful, token issued');
     return token;
   } catch (e) {
-    console.log(e);
+    logger.error(`[UserService] SIWS verification failed: ${e.message}`);
     throw e;
   }
 };
 
-module.exports.getUserIds = async (searchTerm) => {
+const getUserIds = async (searchTerm) => {
+  logger.debug(`[UserService] Fetching user IDs by searchTerm: ${searchTerm}`);
   try {
     const users = await User.findAll({
       attributes: ['UserID'],
-      where: {
-        UserName: { [Op.like]: `%${searchTerm}%` },
-      },
+      where: { UserName: { [Op.like]: `%${searchTerm}%` } },
     });
-    let arr = users.map((ele) => ele['UserID']);
-    return arr;
+    const userIds = users.map((ele) => ele['UserID']);
+    logger.info('[UserService] User IDs fetched successfully');
+    return userIds;
   } catch (e) {
+    logger.error(`[UserService] Error fetching user IDs: ${e.message}`);
     throw e;
   }
 };
 
-exports.createUser = async (userData) => {
+const createUser = async (userData) => {
+  logger.debug('[UserService] Attempting to create a new user');
   try {
     const user = await User.create(userData);
+    logger.info('[UserService] User created successfully');
     return user;
   } catch (error) {
+    logger.error(`[UserService] Error creating user: ${error.message}`);
     throw new Error('Error creating user');
   }
 };
 
-exports.getAllUsers = async () => {
+const getAllUsers = async () => {
+  logger.debug('[UserService] Fetching all users');
   try {
     const users = await User.findAll();
+    logger.info('[UserService] All users fetched successfully');
     return users;
   } catch (error) {
+    logger.error(`[UserService] Error retrieving users: ${error.message}`);
     throw new Error('Error retrieving users');
   }
 };
 
-exports.getUserById = async (id) => {
+const getUserById = async (id) => {
+  logger.debug(`[UserService] Fetching user by ID: ${id}`);
   try {
     const user = await User.findByPk(id);
+    if (!user) {
+      logger.info(`[UserService] User not found, ID: ${id}`);
+      return null;
+    }
+    logger.info(`[UserService] User fetched successfully, ID: ${id}`);
     return user;
   } catch (error) {
+    logger.error(
+      `[UserService] Error finding user by ID: ${id}, Error: ${error.message}`
+    );
     throw new Error('Error finding user');
   }
 };
 
-exports.updateUser = async (id, updateData) => {
+const updateUser = async (id, updateData) => {
+  logger.debug(`[UserService] Attempting to update user, ID: ${id}`);
   try {
     const user = await User.findByPk(id);
     if (!user) {
+      logger.info(`[UserService] User not found for update, ID: ${id}`);
       return null;
     }
     const updatedUser = await user.update(updateData);
+    logger.info(`[UserService] User updated successfully, ID: ${id}`);
     return updatedUser;
   } catch (error) {
+    logger.error(
+      `[UserService] Error updating user, ID: ${id}, Error: ${error.message}`
+    );
     throw new Error('Error updating user');
   }
 };
 
-exports.deleteUser = async (id) => {
+const deleteUser = async (id) => {
+  logger.debug(`[UserService] Attempting to delete user, ID: ${id}`);
   try {
     const user = await User.findByPk(id);
     if (!user) {
+      logger.info(`[UserService] User not found for deletion, ID: ${id}`);
       return null;
     }
     await user.destroy();
+    logger.info(`[UserService] User deleted successfully, ID: ${id}`);
     return true;
   } catch (error) {
+    logger.error(
+      `[UserService] Error deleting user, ID: ${id}, Error: ${error.message}`
+    );
     throw new Error('Error deleting user');
   }
+};
+
+module.exports = {
+  AddUserDetails,
+  // login,
+  siwsVerification,
+  getUserIds,
+  createUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
 };
