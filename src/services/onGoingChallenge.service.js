@@ -1,10 +1,12 @@
-// services/player.service.js
-
 const { Op } = require('sequelize');
 const Player = require('../models/player.model');
-const Challenge = require('../models/challenge.model'); // Adjust the path as necessary
+const Challenge = require('../models/challenge.model');
+const logger = require('../utils/logger');
 
 exports.getOngoingChallengesByUserId = async (userId) => {
+  logger.debug(
+    `[OngoingChallengeService] Fetching ongoing challenges for user ID: ${userId}`
+  );
   try {
     const ongoingChallenges = await Player.findAll({
       where: { UserID: userId },
@@ -13,7 +15,6 @@ exports.getOngoingChallengesByUserId = async (userId) => {
           model: Challenge,
           where: {
             IsActive: true,
-            // Optionally, filter by StartDate and EndDate if you want to find only currently active challenges
             StartDate: { [Op.lte]: new Date() },
             EndDate: { [Op.gte]: new Date() },
           },
@@ -21,8 +22,15 @@ exports.getOngoingChallengesByUserId = async (userId) => {
         },
       ],
     });
-    return ongoingChallenges.map((player) => player.Challenge);
+    const challenges = ongoingChallenges.map((player) => player.Challenge);
+    logger.info(
+      `[OngoingChallengeService] Successfully fetched ongoing challenges for user ID: ${userId}`
+    );
+    return challenges;
   } catch (error) {
-    throw new Error('Error retrieving ongoing challenges for user');
+    logger.error(
+      `[OngoingChallengeService] Error fetching ongoing challenges for user ID: ${userId}: ${error.message}`
+    );
+    throw error;
   }
 };
