@@ -1,7 +1,11 @@
 const { Player, Challenge, Transaction, Users } = require('../models/index');
 const { Op } = require('sequelize');
+const logger = require('../utils/logger'); // Ensure this path is correct for your logger setup
 
 const getUserCurrentStandings = async (userId) => {
+  logger.debug(
+    `[UserService] Fetching current standings for user ID: ${userId}`
+  );
   try {
     // Step 1: Fetch all player records for the given userId
     const userChallenges = await Player.findAll({
@@ -46,10 +50,9 @@ const getUserCurrentStandings = async (userId) => {
       const currentUserRank = rankedPlayers.find((rp) => rp.userId === userId);
 
       if (currentUserRank) {
-        // Each challenge is one JSON entry
         results.push({
           challengeId: challengeId,
-          challengeType: playersInChallenge[0].Challenge.ChallengeType, // Assuming ChallengeType is consistent within the challenge
+          challengeType: playersInChallenge[0].Challenge.ChallengeType,
           currentValue: currentUserRank.value,
           rank: currentUserRank.rank,
         });
@@ -65,9 +68,14 @@ const getUserCurrentStandings = async (userId) => {
       {}
     );
 
+    logger.info(
+      `[UserService] Current standings fetched successfully for user ID: ${userId}`
+    );
     return formattedResults;
   } catch (error) {
-    console.error('Error fetching user standings:', error);
+    logger.error(
+      `[UserService] Error fetching user standings for user ID: ${userId}: ${error}`
+    );
     throw error;
   }
 };
@@ -81,8 +89,11 @@ const formatToNearest15Min = (date) => {
 };
 
 const getUserProgressData = async (userId, period) => {
+  logger.debug(
+    `[UserService] Fetching user progress data for ID: ${userId}, Period: ${period}`
+  );
   let dateFrom;
-  let aggregateByInterval = false; // Adjusted from aggregateByHour for clarity
+  let aggregateByInterval = false; // Adjusted for clarity
 
   switch (period) {
     case '30days':
@@ -98,92 +109,103 @@ const getUserProgressData = async (userId, period) => {
       dateFrom = new Date(0); // Start from the Unix Epoch (1970-01-01)
       break;
     default:
+      logger.error(
+        '[UserService] Invalid period specified for user progress data'
+      );
       throw new Error('Invalid period specified');
   }
 
-  const transactions = await Transaction.findAll({
-    where: {
-      UserID: userId,
-      Timestamp: {
-        [Op.gte]: dateFrom,
+  try {
+    const transactions = await Transaction.findAll({
+      where: {
+        UserID: userId,
+        Timestamp: {
+          [Op.gte]: dateFrom,
+        },
       },
-    },
-    order: [['Timestamp', 'ASC']],
-    attributes: ['Amount', 'Timestamp'],
-  });
+      order: [['Timestamp', 'ASC']],
+      attributes: ['Amount', 'Timestamp'],
+    });
 
-  // Aggregate data for graph
-  const aggregatedData = transactions.reduce((acc, { Amount, Timestamp }) => {
-    const key = aggregateByInterval
-      ? formatToNearest15Min(Timestamp)
-      : Timestamp.toISOString().split('T')[0];
-    if (!acc[key]) {
-      acc[key] = 0;
-    }
-    acc[key] += Amount;
-    return acc;
-  }, {});
+    // Aggregate data for graph
+    const aggregatedData = transactions.reduce((acc, { Amount, Timestamp }) => {
+      const key = aggregateByInterval
+        ? formatToNearest15Min(Timestamp)
+        : Timestamp.toISOString().split('T')[0];
+      if (!acc[key]) acc[key] = 0;
+      acc[key] += Amount;
+      return acc;
+    }, {});
 
-  // Convert aggregatedData into the desired format for the response
-  const creditsGraph = Object.entries(aggregatedData).map(
-    ([time, creditsEarned]) => ({
-      time,
-      creditsEarned,
-    })
-  );
+    const creditsGraph = Object.entries(aggregatedData).map(
+      ([time, creditsEarned]) => ({ time, creditsEarned })
+    );
 
-  return {
-    creditsGraph,
-    // You can add more graphs or data as needed
-  };
+    logger.info(
+      `[UserService] User progress data fetched successfully for ID: ${userId}`
+    );
+    return { creditsGraph };
+  } catch (error) {
+    logger.error(
+      `[UserService] Error fetching user progress data for ID: ${userId}: ${error}`
+    );
+    throw error;
+  }
 };
 
 const getUserDetailsData = async (userId) => {
-  // Fetch Challenge IDs from Player table where the user has participated
-  const participatedChallengeIds = await Player.findAll({
-    where: { UserID: userId },
-    attributes: ['ChallengeID'],
-  }).map((participation) => participation.ChallengeID);
+  logger.debug(`[UserService] Fetching user details data for ID: ${userId}`);
+  try {
+    const participatedChallengeIds = (
+      await Player.findAll({
+        where: { UserID: userId },
+        attributes: ['ChallengeID'],
+      })
+    ).map((participation) => participation.ChallengeID);
 
-  // If no participation, return early with zeros
-  if (!participatedChallengeIds.length) {
+    if (!participatedChallengeIds.length) {
+      logger.info(
+        `[UserService] No participation found for user ID: ${userId}`
+      );
+      return {
+        UserID: userId,
+        TotalRewardsWon: 0,
+        PastChallenges: 0,
+        CurrentActiveChallenges: 0,
+      };
+    }
+
+    const totalRewardsWon =
+      (await Transaction.sum('Amount', { where: { UserID: userId } })) || 0;
+    const pastChallengesCount = await Challenge.count({
+      where: {
+        ChallengeID: { [Op.in]: participatedChallengeIds },
+        EndDate: { [Op.lt]: new Date() },
+      },
+    });
+    const currentActiveChallengesCount = await Challenge.count({
+      where: {
+        ChallengeID: { [Op.in]: participatedChallengeIds },
+        StartDate: { [Op.lte]: new Date() },
+        EndDate: { [Op.gt]: new Date() },
+      },
+    });
+
+    logger.info(
+      `[UserService] User details data fetched successfully for ID: ${userId}`
+    );
     return {
       UserID: userId,
-      TotalRewardsWon: 0,
-      PastChallenges: 0,
-      CurrentActiveChallenges: 0,
+      TotalRewardsWon: totalRewardsWon,
+      PastChallenges: pastChallengesCount,
+      CurrentActiveChallenges: currentActiveChallengesCount,
     };
+  } catch (error) {
+    logger.error(
+      `[UserService] Error fetching user details data for ID: ${userId}: ${error}`
+    );
+    throw error;
   }
-
-  // Total Rewards Won
-  const totalRewardsWon = await Transaction.sum('Amount', {
-    where: { UserID: userId },
-  });
-
-  // Past Challenges
-  const pastChallengesCount = await Challenge.count({
-    where: {
-      ChallengeID: { [Op.in]: participatedChallengeIds },
-      EndDate: { [Op.lt]: new Date() },
-    },
-  });
-
-  // Current Active Challenges
-  const currentActiveChallengesCount = await Challenge.count({
-    where: {
-      ChallengeID: { [Op.in]: participatedChallengeIds },
-      StartDate: { [Op.lte]: new Date() },
-      EndDate: { [Op.gt]: new Date() },
-    },
-  });
-
-  // Return the aggregated data
-  return {
-    UserID: userId,
-    TotalRewardsWon: totalRewardsWon || 0, // Ensure a default value in case of null
-    PastChallenges: pastChallengesCount,
-    CurrentActiveChallenges: currentActiveChallengesCount,
-  };
 };
 
 module.exports = {
