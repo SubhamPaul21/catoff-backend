@@ -10,7 +10,7 @@ const createGameHandler = async (req, res) => {
   logger.debug('[GameController] Attempting to create a new game');
   try {
     const game = await createGame(req.body);
-    logger.info('[GameController] Game created successfully');
+    logger.debug('[GameController] Game created successfully');
     res.status(201).json(game);
   } catch (error) {
     logger.error(`[GameController] Error creating game: ${error.message}`);
@@ -28,10 +28,10 @@ const getGameHandler = async (req, res) => {
   try {
     const game = await getGame(gameId);
     if (!game) {
-      logger.info(`[GameController] Game not found with ID: ${gameId}`);
+      logger.debug(`[GameController] Game not found with ID: ${gameId}`);
       return res.status(404).json({ message: 'Game not found' });
     }
-    logger.info(
+    logger.debug(
       `[GameController] Game retrieved successfully with ID: ${gameId}`
     );
     res.json(game);
@@ -51,12 +51,12 @@ const updateGameHandler = async (req, res) => {
   try {
     const updated = await updateGame(gameId, req.body);
     if (!updated) {
-      logger.info(
+      logger.debug(
         `[GameController] Game not found for update with ID: ${gameId}`
       );
       return res.status(404).json({ message: 'Game not found' });
     }
-    logger.info(
+    logger.debug(
       `[GameController] Game updated successfully with ID: ${gameId}`
     );
     res.json({ message: 'Game updated successfully' });
@@ -76,12 +76,12 @@ const deleteGameHandler = async (req, res) => {
   try {
     const deleted = await deleteGame(gameId);
     if (!deleted) {
-      logger.info(
+      logger.debug(
         `[GameController] Game not found for deletion with ID: ${gameId}`
       );
       return res.status(404).json({ message: 'Game not found' });
     }
-    logger.info(
+    logger.debug(
       `[GameController] Game deleted successfully with ID: ${gameId}`
     );
     res.json({ message: 'Game deleted successfully' });

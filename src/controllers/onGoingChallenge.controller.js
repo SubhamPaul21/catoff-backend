@@ -9,7 +9,7 @@ exports.getOngoingChallengesByUser = async (req, res) => {
   try {
     const ongoingChallenges =
       await playerService.getOngoingChallengesByUserId(userId);
-    logger.info(
+    logger.debug(
       `[onGoingChallengeController] Successfully fetched ongoing challenges for user ID: ${userId}`
     );
     res.status(200).json(ongoingChallenges);

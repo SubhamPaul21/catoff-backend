@@ -13,7 +13,7 @@ const createChallengeHandler = async (req, res) => {
   logger.debug('[ChallengeController] Attempting to create a challenge');
   try {
     const challenge = await createChallenge(req.body);
-    logger.info('[ChallengeController] Challenge created successfully');
+    logger.debug('[ChallengeController] Challenge created successfully');
     res.status(201).json(challenge);
   } catch (error) {
     logger.error(
@@ -33,12 +33,12 @@ const getChallengeHandler = async (req, res) => {
   try {
     const challenge = await getChallenge(challengeId);
     if (!challenge) {
-      logger.info(
+      logger.debug(
         `[ChallengeController] Challenge not found with ID: ${challengeId}`
       );
       return res.status(404).json({ message: 'Challenge not found' });
     }
-    logger.info(
+    logger.debug(
       `[ChallengeController] Challenge retrieved successfully with ID: ${challengeId}`
     );
     res.json(challenge);
@@ -60,12 +60,12 @@ const updateChallengeHandler = async (req, res) => {
   try {
     const [updated] = await updateChallenge(challengeId, req.body);
     if (!updated) {
-      logger.info(
+      logger.debug(
         `[ChallengeController] Challenge not found for update with ID: ${challengeId}`
       );
       return res.status(404).json({ message: 'Challenge not found' });
     }
-    logger.info(
+    logger.debug(
       `[ChallengeController] Challenge updated successfully with ID: ${challengeId}`
     );
     res.json({ message: 'Challenge updated successfully' });
@@ -87,12 +87,12 @@ const deleteChallengeHandler = async (req, res) => {
   try {
     const deleted = await deleteChallenge(challengeId);
     if (!deleted) {
-      logger.info(
+      logger.debug(
         `[ChallengeController] Challenge not found for deletion with ID: ${challengeId}`
       );
       return res.status(404).json({ message: 'Challenge not found' });
     }
-    logger.info(
+    logger.debug(
       `[ChallengeController] Challenge deleted successfully with ID: ${challengeId}`
     );
     res.json({ message: 'Challenge deleted successfully' });
@@ -113,7 +113,7 @@ const searchChallengeHandler = async (req, res) => {
   );
   try {
     const challenges = await searchChallenge(searchTerm);
-    logger.info('[ChallengeController] Search successful');
+    logger.debug('[ChallengeController] Search successful');
     makeResponse(res, 200, true, 'Search successful', challenges);
   } catch (error) {
     logger.error(
@@ -131,7 +131,7 @@ const getOnGoingChallengesHandler = async (req, res) => {
   );
   try {
     const challenges = await getOngoingChallenges(type, page);
-    logger.info('[ChallengeController] Ongoing challenges query successful');
+    logger.debug('[ChallengeController] Ongoing challenges query successful');
     makeResponse(res, 200, true, 'Query successful', challenges);
   } catch (error) {
     logger.error(

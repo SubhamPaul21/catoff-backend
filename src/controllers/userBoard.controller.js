@@ -7,12 +7,12 @@ const logger = require('../utils/logger');
 
 exports.getUserCurrentTable = async (req, res) => {
   const userID = req.UserID;
-  logger.info(
+  logger.debug(
     `[UserBoardController] Fetching current standings for user ID: ${userID}`
   );
   try {
     const standings = await getUserCurrentStandings(userID);
-    logger.info(
+    logger.debug(
       `[UserBoardController] Successfully fetched current standings for user ID: ${userID}, Result count: ${standings.length}`
     );
     res.json(standings);
@@ -29,12 +29,12 @@ exports.getUserCurrentTable = async (req, res) => {
 exports.getUserProgressGraph = async (req, res) => {
   const userID = req.UserID;
   const { period } = req.params;
-  logger.info(
+  logger.debug(
     `[UserBoardController] Fetching user progress for user ID: ${userID}, period: ${period}`
   );
   try {
     const progressData = await getUserProgressData(userID, period);
-    logger.info(
+    logger.debug(
       `[UserBoardController] Successfully fetched user progress for user ID: ${userID}, period: ${period}, Data points: ${progressData.length}`
     );
     res.json(progressData);
@@ -50,10 +50,10 @@ exports.getUserProgressGraph = async (req, res) => {
 
 exports.getUserDetails = async (req, res) => {
   const userId = req.UserID;
-  logger.info(`[UserBoardController] Fetching details for user ID: ${userId}`);
+  logger.debug(`[UserBoardController] Fetching details for user ID: ${userId}`);
   try {
     const userDetails = await getUserDetailsData(userId);
-    logger.info(
+    logger.debug(
       `[UserBoardController] Successfully fetched details for user ID: ${userId}`
     );
     res.json(userDetails);

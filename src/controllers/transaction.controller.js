@@ -14,7 +14,7 @@ const createTransactionHandler = async (req, res) => {
   );
   try {
     const transaction = await createTransaction(req.body);
-    logger.info('[TransactionController] Transaction created successfully');
+    logger.debug('[TransactionController] Transaction created successfully');
     makeResponse(
       res,
       201,
@@ -38,10 +38,10 @@ const getTransactionHandler = async (req, res) => {
   try {
     const transaction = await getTransaction(txID);
     if (!transaction) {
-      logger.info(`[TransactionController] Transaction not found: ${txID}`);
+      logger.debug(`[TransactionController] Transaction not found: ${txID}`);
       return makeResponse(res, 404, false, 'Transaction not found');
     }
-    logger.info('[TransactionController] Transaction retrieved successfully');
+    logger.debug('[TransactionController] Transaction retrieved successfully');
     makeResponse(
       res,
       200,
@@ -69,7 +69,7 @@ const getAllTransactionsHandler = async (req, res) => {
   );
   try {
     const transactions = await getAllTransactions();
-    logger.info(
+    logger.debug(
       '[TransactionController] All transactions retrieved successfully'
     );
     makeResponse(
@@ -101,12 +101,12 @@ const updateTransactionHandler = async (req, res) => {
   try {
     const updated = await updateTransaction(txID, req.body);
     if (!updated) {
-      logger.info(
+      logger.debug(
         `[TransactionController] Transaction not found for update: ${txID}`
       );
       return makeResponse(res, 404, false, 'Transaction not found');
     }
-    logger.info('[TransactionController] Transaction updated successfully');
+    logger.debug('[TransactionController] Transaction updated successfully');
     makeResponse(res, 200, true, 'Transaction updated successfully');
   } catch (error) {
     logger.error(
@@ -124,12 +124,12 @@ const deleteTransactionHandler = async (req, res) => {
   try {
     const deleted = await deleteTransaction(txID);
     if (!deleted) {
-      logger.info(
+      logger.debug(
         `[TransactionController] Transaction not found for deletion: ${txID}`
       );
       return makeResponse(res, 404, false, 'Transaction not found');
     }
-    logger.info('[TransactionController] Transaction deleted successfully');
+    logger.debug('[TransactionController] Transaction deleted successfully');
     makeResponse(res, 200, true, 'Transaction deleted successfully');
   } catch (error) {
     logger.error(

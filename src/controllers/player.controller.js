@@ -12,7 +12,7 @@ const createPlayerHandler = async (req, res) => {
   logger.debug('[PlayerController] Attempting to create a player');
   try {
     const player = await createPlayer(req.body);
-    logger.info('[PlayerController] Player created successfully');
+    logger.debug('[PlayerController] Player created successfully');
     makeResponse(res, 201, true, 'Player created successfully', player);
   } catch (error) {
     logger.error(`[PlayerController] Error creating player: ${error.message}`);
@@ -28,10 +28,10 @@ const getPlayerHandler = async (req, res) => {
   try {
     const player = await getPlayer(playerId);
     if (!player) {
-      logger.info(`[PlayerController] Player not found with ID: ${playerId}`);
+      logger.debug(`[PlayerController] Player not found with ID: ${playerId}`);
       return makeResponse(res, 404, false, 'Player not found');
     }
-    logger.info(
+    logger.debug(
       `[PlayerController] Player retrieved successfully with ID: ${playerId}`
     );
     makeResponse(res, 200, true, 'Player retrieved successfully', player);
@@ -51,12 +51,12 @@ const updatePlayerHandler = async (req, res) => {
   try {
     const updated = await updatePlayer(playerId, req.body);
     if (!updated) {
-      logger.info(
+      logger.debug(
         `[PlayerController] Player not found for update with ID: ${playerId}`
       );
       return makeResponse(res, 404, false, 'Player not found');
     }
-    logger.info(
+    logger.debug(
       `[PlayerController] Player updated successfully with ID: ${playerId}`
     );
     makeResponse(res, 200, true, 'Player updated successfully');
@@ -76,12 +76,12 @@ const deletePlayerHandler = async (req, res) => {
   try {
     const deleted = await deletePlayer(playerId);
     if (!deleted) {
-      logger.info(
+      logger.debug(
         `[PlayerController] Player not found for deletion with ID: ${playerId}`
       );
       return makeResponse(res, 404, false, 'Player not found');
     }
-    logger.info(
+    logger.debug(
       `[PlayerController] Player deleted successfully with ID: ${playerId}`
     );
     makeResponse(res, 200, true, 'Player deleted successfully');
@@ -100,7 +100,7 @@ const getAllPlayersOfChallengeHandler = async (req, res) => {
   );
   try {
     const players = await getAllPlayersOfChallenge(challengeId);
-    logger.info(
+    logger.debug(
       `[PlayerController] Successfully retrieved all players for challenge with ID: ${challengeId}`
     );
     makeResponse(res, 200, true, 'Players fetched successfully', players);

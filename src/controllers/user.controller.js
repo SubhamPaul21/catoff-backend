@@ -4,7 +4,7 @@ const logger = require('../utils/logger');
 
 exports.addUserDetails = async (req, res, next) => {
   const { Email, UserName } = req.body;
-  logger.info(
+  logger.debug(
     `[UserController] Attempting to add user details for Email: ${Email}`
   );
   try {
@@ -13,7 +13,7 @@ exports.addUserDetails = async (req, res, next) => {
       Email,
       UserName
     );
-    logger.info('[UserController] User registration successful');
+    logger.debug('[UserController] User registration successful');
     return makeResponse(
       res,
       200,
@@ -31,14 +31,14 @@ exports.addUserDetails = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   const { signature, message, publicKey } = req.body;
-  logger.info('[UserController] Attempting login');
+  logger.debug('[UserController] Attempting login');
   try {
     const token = await userService.siwsVerification(
       signature,
       message,
       publicKey
     );
-    logger.info('[UserController] Login successful');
+    logger.debug('[UserController] Login successful');
     return makeResponse(res, 200, true, 'login successful', { token });
   } catch (e) {
     logger.error(`[UserController] Login failed, Error: ${e.message}`);
@@ -47,10 +47,10 @@ exports.login = async (req, res, next) => {
 };
 
 exports.createUser = async (req, res) => {
-  logger.info('[UserController] Creating a new user');
+  logger.debug('[UserController] Creating a new user');
   try {
     const user = await userService.createUser(req.body);
-    logger.info('[UserController] User creation successful');
+    logger.debug('[UserController] User creation successful');
     res.status(201).json(user);
   } catch (error) {
     logger.error(
@@ -61,10 +61,10 @@ exports.createUser = async (req, res) => {
 };
 
 exports.getAllUsers = async (req, res) => {
-  logger.info('[UserController] Fetching all users');
+  logger.debug('[UserController] Fetching all users');
   try {
     const users = await userService.getAllUsers();
-    logger.info('[UserController] Successfully retrieved all users');
+    logger.debug('[UserController] Successfully retrieved all users');
     res.status(200).json(users);
   } catch (error) {
     logger.error(
@@ -76,14 +76,14 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
   const userId = req.params.id;
-  logger.info(`[UserController] Fetching user by ID: ${userId}`);
+  logger.debug(`[UserController] Fetching user by ID: ${userId}`);
   try {
     const user = await userService.getUserById(userId);
     if (!user) {
       logger.error(`[UserController] User not found, ID: ${userId}`);
       return res.status(404).json({ message: 'User not found' });
     }
-    logger.info(`[UserController] Successfully fetched user by ID: ${userId}`);
+    logger.debug(`[UserController] Successfully fetched user by ID: ${userId}`);
     res.status(200).json(user);
   } catch (error) {
     logger.error(
@@ -95,14 +95,14 @@ exports.getUserById = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   const userId = req.params.id;
-  logger.info(`[UserController] Updating user, ID: ${userId}`);
+  logger.debug(`[UserController] Updating user, ID: ${userId}`);
   try {
     const updatedUser = await userService.updateUser(userId, req.body);
     if (!updatedUser) {
       logger.error(`[UserController] User not found for update, ID: ${userId}`);
       return res.status(404).json({ message: 'User not found' });
     }
-    logger.info(`[UserController] User updated successfully, ID: ${userId}`);
+    logger.debug(`[UserController] User updated successfully, ID: ${userId}`);
     res.status(200).json(updatedUser);
   } catch (error) {
     logger.error(
@@ -114,10 +114,10 @@ exports.updateUser = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
   const userId = req.params.id;
-  logger.info(`[UserController] Deleting user, ID: ${userId}`);
+  logger.debug(`[UserController] Deleting user, ID: ${userId}`);
   try {
     await userService.deleteUser(userId);
-    logger.info(`[UserController] User deleted successfully, ID: ${userId}`);
+    logger.debug(`[UserController] User deleted successfully, ID: ${userId}`);
     res.status(204).send();
   } catch (error) {
     logger.error(
