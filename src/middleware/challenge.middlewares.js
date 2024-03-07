@@ -1,5 +1,15 @@
-// challengeValidation.js
 const { body, param } = require('express-validator');
+const logger = require('../utils/logger');
+
+// Function to log and return validation errors
+const logValidationErrors = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    logger.error(`Validation errors: ${JSON.stringify(errors.array())}`);
+    return res.status(400).json({ errors: errors.array() });
+  }
+  next();
+};
 
 const validateChallengeCreation = [
   body('ChallengeName')
@@ -15,6 +25,7 @@ const validateChallengeCreation = [
   body('EndDate').isISO8601().withMessage('Valid end date is required'),
   body('ChallengeType').isInt().withMessage('Valid challenge type is required'),
   body('IsActive').isBoolean().withMessage('isActive must be a boolean'),
+  logValidationErrors,
   // Winners array validation could be more complex depending on requirements
 ];
 
@@ -40,6 +51,7 @@ const validateChallengeUpdate = [
     .isBoolean()
     .withMessage('isActive must be a boolean'),
   param('id').isInt().withMessage('ID must be a valid integer'),
+  logValidationErrors,
 ];
 
 module.exports = {
