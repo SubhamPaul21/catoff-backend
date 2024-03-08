@@ -12,11 +12,9 @@ let { makeResponse } = require('../utils/responseMaker');
 const createChallengeHandler = async (req, res) => {
   try {
     const challenge = await createChallenge(req.body);
-    res.status(201).json(challenge);
+    return makeResponse(res, 201, true,"challenge created successful", challenge)
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Error creating challenge', error: error.message });
+    return makeResponse(res, 500, false,"error retrieving challenge", null)
   }
 };
 
@@ -24,12 +22,10 @@ const getChallengeHandler = async (req, res) => {
   try {
     const challenge = await getChallenge(req.params.ID);
     if (!challenge)
-      return res.status(404).json({ message: 'Challenge not found' });
-    res.json(challenge);
+      return makeResponse(res, 404, false,"challenge not found", null)
+    return makeResponse(res, 200, true,"queryy successful", challenge)
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Error retrieving challenge', error: error.message });
+      return makeResponse(res, 500, false,"error retrieving challenge", null)
   }
 };
 
@@ -37,12 +33,10 @@ const updateChallengeHandler = async (req, res) => {
   try {
     const [updated] = await updateChallenge(req.params.ID, req.body);
     if (!updated)
-      return res.status(404).json({ message: 'Challenge not found' });
-    res.json({ message: 'Challenge updated successfully' });
+      return makeResponse(res, 404, false,"challenge not found", null)
+    return makeResponse(res, 200, true,"challenge updated succesffully", updated)
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Error updating challenge', error: error.message });
+      return makeResponse(res, 500, false,"error retrieving challenge", null)
   }
 };
 
@@ -50,12 +44,10 @@ const deleteChallengeHandler = async (req, res) => {
   try {
     const deleted = await deleteChallenge(req.params.ID);
     if (!deleted)
-      return res.status(404).json({ message: 'Challenge not found' });
-    res.json({ message: 'Challenge deleted successfully' });
+      return makeResponse(res, 404, false, "challenge not found", null)
+      makeResponse(res, 200, true, "challenge deleted successfully", deleted)
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Error deleting challenge', error: error.message });
+    return makeResponse(res, 500, false,"error retrieving challenge", null)
   }
 };
 
