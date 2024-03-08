@@ -2,33 +2,11 @@ openapi: 3.0.0
 info:
   title: User API
   description: API for user management
-  version: "1.0.0"
+  version: '1.0.0'
 servers:
   - url: http://localhost:3005
   - url: https://api.catoff.xyz
 paths:
-  /user/addUserDetails:
-    post:
-      summary: Add user details
-      tags:
-        - User
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                Email:
-                  type: string
-                UserName:
-                  type: string
-              required:
-                - Email
-                - UserName
-      responses:
-        '200':
-          description: User details added successfully
   /user/login:
     post:
       summary: User login
@@ -56,3 +34,128 @@ paths:
           description: Login successful
         '500':
           description: Login failed
+
+  /user/addUserDetails:
+    post:
+      summary: Add user details
+      tags:
+        - User
+      security:
+        - bearerAuth: [] # Indicates that this endpoint is secured with bearer token authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Email:
+                  type: string
+                UserName:
+                  type: string
+              required:
+                - Email
+                - UserName
+      responses:
+        '200':
+          description: User details added successfully
+        '401':
+          description: Unauthorized due to missing or invalid token
+        '500':
+          description: Internal server error
+
+  /userBoard/dashboard/userCurrentTable:
+    get:
+      summary: Retrieves the current user's standings in challenges
+      tags:
+        - UserBoard
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  challengeId:
+                    type: integer
+                  challengeType:
+                    type: string
+                  currentValue:
+                    type: number
+                  rank:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+
+  /userBoard/dashboard/userProgressGraph/{period}:
+    get:
+      summary: Retrieves the user's progress graph for a given period
+      tags:
+        - UserBoard
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [30days, 24hours, all]
+          description: The period for which to retrieve progress data
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    time:
+                      type: string
+                    creditsEarned:
+                      type: number
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+
+  /userBoard/dashboard/userDetails:
+    get:
+      summary: Retrieves the user's detailed information including participation and rewards
+      tags:
+        - UserBoard
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  UserID:
+                    type: integer
+                  TotalRewardsWon:
+                    type: number
+                  PastChallenges:
+                    type: integer
+                  CurrentActiveChallenges:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
