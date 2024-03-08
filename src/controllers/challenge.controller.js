@@ -14,12 +14,13 @@ const createChallengeHandler = async (req, res) => {
   try {
     const challenge = await createChallenge(req.body);
     logger.debug('[ChallengeController] Challenge created successfully');
-    makeResponse(res, 201, true,"created challenge", challenge)
+    makeResponse(res, 201, true, 'created challenge', challenge);
   } catch (error) {
     logger.error(
       `[ChallengeController] Error creating challenge: ${error.message}`
     );
-    return makeResponse(res, 500, false,"error retrieving challenge", null)
+    return makeResponse(res, 500, false, 'error retrieving challenge', null);
+  }
 };
 
 const getChallengeHandler = async (req, res) => {
@@ -33,17 +34,18 @@ const getChallengeHandler = async (req, res) => {
       logger.debug(
         `[ChallengeController] Challenge not found with ID: ${challengeId}`
       );
-      return makeResponse(res, 404, false,"challenge not found ", null)
+      return makeResponse(res, 404, false, 'challenge not found ', null);
     }
     logger.debug(
       `[ChallengeController] Challenge retrieved successfully with ID: ${challengeId}`
     );
-    makeResponse(res, 200, true,"successful query", challenge)
+    makeResponse(res, 200, true, 'successful query', challenge);
   } catch (error) {
     logger.error(
       `[ChallengeController] Error retrieving challenge with ID: ${challengeId}, Error: ${error.message}`
     );
-    return makeResponse(res, 500, false,"error retrieving challenge", null)
+    return makeResponse(res, 500, false, 'error retrieving challenge', null);
+  }
 };
 
 const updateChallengeHandler = async (req, res) => {
@@ -57,17 +59,17 @@ const updateChallengeHandler = async (req, res) => {
       logger.debug(
         `[ChallengeController] Challenge not found for update with ID: ${challengeId}`
       );
-      return makeResponse(res, 404, false,"challenge not found", null);
+      return makeResponse(res, 404, false, 'challenge not found', null);
     }
     logger.debug(
       `[ChallengeController] Challenge updated successfully with ID: ${challengeId}`
     );
-    return makeResponse(res, 200, true,"updated successfully", updated)
+    return makeResponse(res, 200, true, 'updated successfully', updated);
   } catch (error) {
     logger.error(
       `[ChallengeController] Error updating challenge with ID: ${challengeId}, Error: ${error.message}`
     );
-    return makeResponse(res, 500, false,"error retrieving challenge", null)
+    return makeResponse(res, 500, false, 'error retrieving challenge', null);
   }
 };
 
@@ -82,17 +84,17 @@ const deleteChallengeHandler = async (req, res) => {
       logger.debug(
         `[ChallengeController] Challenge not found for deletion with ID: ${challengeId}`
       );
-      return makeResponse(res, 404, false,"challenge not found", null)
+      return makeResponse(res, 404, false, 'challenge not found', null);
     }
     logger.debug(
       `[ChallengeController] Challenge deleted successfully with ID: ${challengeId}`
     );
-    return makeResponse(res, 200, true,"deleted successfully", deleted)
+    return makeResponse(res, 200, true, 'deleted successfully', deleted);
   } catch (error) {
     logger.error(
       `[ChallengeController] Error deleting challenge with ID: ${challengeId}, Error: ${error.message}`
     );
-    return makeResponse(res, 500, false,"error retrieving challenge", null)
+    return makeResponse(res, 500, false, 'error retrieving challenge', null);
   }
 };
 
