@@ -3,6 +3,8 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
 const userRoutes = require('./src/routes/user.routes');
 const challengeRoutes = require('./src/routes/challenge.routes');
 const playerRoutes = require('./src/routes/player.routes');
@@ -32,10 +34,10 @@ app.use(cors());
 logger.info('Setting up middleware...');
 
 // Setup routes
-app.use('/challenge', challengeRoutes);
-logger.info('Challenge routes configured.');
 app.use('/user', userRoutes);
 logger.info('User routes configured.');
+app.use('/challenge', challengeRoutes);
+logger.info('Challenge routes configured.');
 app.use('/player', playerRoutes);
 logger.info('Player routes configured.');
 app.use('/game', gameRoutes);
@@ -44,6 +46,9 @@ app.use('/transactions', transactionRoutes);
 logger.info('Transaction routes configured.');
 app.use('/userBoard', userBoardRoutes);
 logger.info('UserBoard routes configured.');
+
+const swaggerDocument = YAML.load(path.join(__dirname, './src/swagger.yaml'));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

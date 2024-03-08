@@ -1,43 +1,85 @@
-// src/services/player.service.js
 const Players = require('../models/player.model');
+const logger = require('../utils/logger');
 
 const createPlayer = async (playerData) => {
+  logger.debug('[PlayerService] Creating player');
   try {
-    return await Players.create(playerData);
+    const player = await Players.create(playerData);
+    logger.info('[PlayerService] Player created successfully');
+    return player;
   } catch (error) {
+    logger.error(`[PlayerService] Error creating player: ${error.message}`);
     throw error;
   }
 };
 
 const getPlayer = async (id) => {
+  logger.debug(`[PlayerService] Fetching player with ID: ${id}`);
   try {
-    return await Players.findByPk(id);
+    const player = await Players.findByPk(id);
+    if (!player) {
+      logger.info(`[PlayerService] Player with ID: ${id} not found`);
+      return null;
+    }
+    logger.info('[PlayerService] Player fetched successfully');
+    return player;
   } catch (error) {
+    logger.error(`[PlayerService] Error fetching player: ${error.message}`);
     throw error;
   }
 };
 
 const updatePlayer = async (id, playerData) => {
+  logger.debug(`[PlayerService] Updating player with ID: ${id}`);
   try {
-    return await Players.update(playerData, { where: { PlayerID: id } });
+    const [updated] = await Players.update(playerData, {
+      where: { PlayerID: id },
+    });
+    if (updated) {
+      logger.info('[PlayerService] Player updated successfully');
+      return updated;
+    } else {
+      logger.info('[PlayerService] Player not found for update');
+      return null;
+    }
   } catch (error) {
+    logger.error(`[PlayerService] Error updating player: ${error.message}`);
     throw error;
   }
 };
 
 const deletePlayer = async (id) => {
+  logger.debug(`[PlayerService] Deleting player with ID: ${id}`);
   try {
-    return await Players.destroy({ where: { PlayerID: id } });
+    const deleted = await Players.destroy({ where: { PlayerID: id } });
+    if (deleted) {
+      logger.info('[PlayerService] Player deleted successfully');
+      return deleted;
+    } else {
+      logger.info('[PlayerService] Player not found for deletion');
+      return null;
+    }
   } catch (error) {
+    logger.error(`[PlayerService] Error deleting player: ${error.message}`);
     throw error;
   }
 };
 
 const getAllPlayersOfChallenge = async (challengeId) => {
+  logger.debug(
+    `[PlayerService] Fetching all players for challenge ID: ${challengeId}`
+  );
   try {
-    return await Players.findAll({ where: { ChallengeID: challengeId } });
+    const players = await Players.findAll({
+      where: { ChallengeID: challengeId },
+    });
+    logger.info('[PlayerService] Players for challenge fetched successfully');
+    return players;
   } catch (e) {
-    return e;
+    logger.error(
+      `[PlayerService] Error fetching players for challenge: ${e.message}`
+    );
+    throw e;
   }
 };
 
