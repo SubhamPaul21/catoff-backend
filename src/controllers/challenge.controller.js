@@ -14,15 +14,12 @@ const createChallengeHandler = async (req, res) => {
   try {
     const challenge = await createChallenge(req.body);
     logger.debug('[ChallengeController] Challenge created successfully');
-    res.status(201).json(challenge);
+    makeResponse(res, 201, true,"created challenge", challenge)
   } catch (error) {
     logger.error(
       `[ChallengeController] Error creating challenge: ${error.message}`
     );
-    res
-      .status(500)
-      .json({ message: 'Error creating challenge', error: error.message });
-  }
+    return makeResponse(res, 500, false,"error retrieving challenge", null)
 };
 
 const getChallengeHandler = async (req, res) => {
@@ -36,20 +33,17 @@ const getChallengeHandler = async (req, res) => {
       logger.debug(
         `[ChallengeController] Challenge not found with ID: ${challengeId}`
       );
-      return res.status(404).json({ message: 'Challenge not found' });
+      return makeResponse(res, 404, false,"challenge not found ", null)
     }
     logger.debug(
       `[ChallengeController] Challenge retrieved successfully with ID: ${challengeId}`
     );
-    res.json(challenge);
+    makeResponse(res, 200, true,"successful query", challenge)
   } catch (error) {
     logger.error(
       `[ChallengeController] Error retrieving challenge with ID: ${challengeId}, Error: ${error.message}`
     );
-    res
-      .status(500)
-      .json({ message: 'Error retrieving challenge', error: error.message });
-  }
+    return makeResponse(res, 500, false,"error retrieving challenge", null)
 };
 
 const updateChallengeHandler = async (req, res) => {
@@ -63,19 +57,17 @@ const updateChallengeHandler = async (req, res) => {
       logger.debug(
         `[ChallengeController] Challenge not found for update with ID: ${challengeId}`
       );
-      return res.status(404).json({ message: 'Challenge not found' });
+      return makeResponse(res, 404, false,"challenge not found", null);
     }
     logger.debug(
       `[ChallengeController] Challenge updated successfully with ID: ${challengeId}`
     );
-    res.json({ message: 'Challenge updated successfully' });
+    return makeResponse(res, 200, true,"updated successfully", updated)
   } catch (error) {
     logger.error(
       `[ChallengeController] Error updating challenge with ID: ${challengeId}, Error: ${error.message}`
     );
-    res
-      .status(500)
-      .json({ message: 'Error updating challenge', error: error.message });
+    return makeResponse(res, 500, false,"error retrieving challenge", null)
   }
 };
 
@@ -90,19 +82,17 @@ const deleteChallengeHandler = async (req, res) => {
       logger.debug(
         `[ChallengeController] Challenge not found for deletion with ID: ${challengeId}`
       );
-      return res.status(404).json({ message: 'Challenge not found' });
+      return makeResponse(res, 404, false,"challenge not found", null)
     }
     logger.debug(
       `[ChallengeController] Challenge deleted successfully with ID: ${challengeId}`
     );
-    res.json({ message: 'Challenge deleted successfully' });
+    return makeResponse(res, 200, true,"deleted successfully", deleted)
   } catch (error) {
     logger.error(
       `[ChallengeController] Error deleting challenge with ID: ${challengeId}, Error: ${error.message}`
     );
-    res
-      .status(500)
-      .json({ message: 'Error deleting challenge', error: error.message });
+    return makeResponse(res, 500, false,"error retrieving challenge", null)
   }
 };
 
