@@ -18,7 +18,7 @@ const Transaction = sequelize.define(
       },
     },
     Amount: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: false,
     },
     Description: {
