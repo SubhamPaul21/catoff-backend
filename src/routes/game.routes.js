@@ -10,7 +10,7 @@ const {
   deleteGameHandler,
 } = require('../controllers/game.controller');
 const { validationResult } = require('express-validator');
-const logger = require('../utils/logger'); // Adjust the path as necessary
+const logger = require('../utils/logger');
 
 const router = express.Router();
 
