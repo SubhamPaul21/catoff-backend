@@ -1,10 +1,12 @@
 const UserConfig = require('../models/userConfig.model');
 const logger = require('../utils/logger');
 
-const createUSerConfig = async (UserConfigData) => {
+const createUserConfig = async (userId) => {
     logger.debug('[UserConfigService] Attempting to create UserConfig record');
     try {
-      const userConfig = await UserConfig.create(UserConfigData);
+      const userConfig = await UserConfig.create({
+        UserID: userId
+      });
       logger.info('[UserConfigService] Record created successfully');
       return userConfig;
     } catch (error) {
@@ -56,7 +58,7 @@ const updateUserConfig = async(id, userConfigData)=>{
 }
 
 module.exports = {
-    createUSerConfig,
+    createUserConfig,
     getUserConfig,
     updateUserConfig
   };

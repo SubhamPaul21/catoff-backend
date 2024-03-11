@@ -30,7 +30,7 @@ const UserConfig = sequelize.define('UserConfig', {
   },
   DefaultDevice: {
     type: DataTypes.STRING(255),
-    allowNull: false
+    allowNull: true
   }
 },
 {
