@@ -4,6 +4,7 @@ const Challenge = require('./challenge.model');
 const Transaction = require('./transaction.model');
 const Game = require('./game.model');
 const WalletAddress = require('./walletAddress.model');
+const UserConfig = require('./userConfig.model')
 // Import other models as needed
 
 // Define associations
@@ -22,10 +23,14 @@ Game.hasMany(Challenge, { foreignKey: 'GameID' });
 Transaction.belongsTo(User, { foreignKey: 'UserID' });
 User.hasMany(Transaction, { foreignKey: 'UserID' });
 
+User.hasOne(UserConfig, { foreignKey: 'UserID' });
+UserConfig.belongsTo(User, { foreignKey: 'UserID' });
+
 module.exports = {
   User,
   Player,
   Challenge,
   Transaction,
   Game,
+  UserConfig
 };

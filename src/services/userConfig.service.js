@@ -1,4 +1,4 @@
-const UserConfig = require('../models/userConfig');
+const UserConfig = require('../models/userConfig.model');
 const logger = require('../utils/logger');
 
 const createUSerConfig = async (UserConfigData) => {

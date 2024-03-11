@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../db/db.js');
+const { sequelize } = require('../db/db.js');
 const User = require('./user.model');
 
 const UserConfig = sequelize.define('UserConfig', {
@@ -12,7 +12,7 @@ const UserConfig = sequelize.define('UserConfig', {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
-      model: 'Users',
+      model: User,
       key: 'UserID'
     }
   },
@@ -32,6 +32,10 @@ const UserConfig = sequelize.define('UserConfig', {
     type: DataTypes.STRING(255),
     allowNull: false
   }
+},
+{
+  tableName: 'UserConfig',
+  timestamps: false,
 });
 
 module.exports = UserConfig;
