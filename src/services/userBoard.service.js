@@ -156,54 +156,73 @@ const getUserProgressData = async (userId, period) => {
 const getUserDetailsData = async (userId) => {
   logger.debug(`[UserService] Fetching user details data for ID: ${userId}`);
   try {
+    // Fetch user basic details
+    const user = await User.findOne({
+      where: { UserID: userId },
+      include: [{ 
+        model: WalletAddress,
+        attributes: ['WalletAddress'] // Assuming WalletAddress model has a WalletAddress field
+      }],
+      attributes: ['UserID', 'Email', 'UserName', 'WalletID', 'Credits']
+    });
+
+    if (!user) {
+      logger.info(`[UserService] User not found for ID: ${userId}`);
+      throw new Error('User not found');
+    }
+
+    // Continue with fetching participated challenge IDs
     const participatedChallengeIds = (
       await Player.findAll({
         where: { UserID: userId },
         attributes: ['ChallengeID'],
       })
-    ).map((participation) => participation.ChallengeID);
+    ).map(participation => participation.ChallengeID);
 
-    if (!participatedChallengeIds.length) {
-      logger.info(
-        `[UserService] No participation found for user ID: ${userId}`
-      );
-      return {
-        UserID: userId,
-        TotalRewardsWon: 0,
-        PastChallenges: 0,
-        CurrentActiveChallenges: 0,
-      };
+    // Define variables for past and active challenges count initialization
+    let pastChallengesCount = 0;
+    let currentActiveChallengesCount = 0;
+    let currentStaked = 0;
+
+    if (participatedChallengeIds.length) {
+      // Past Challenges Count
+      pastChallengesCount = await Challenge.count({
+        where: {
+          ChallengeID: { [Op.in]: participatedChallengeIds },
+          EndDate: { [Op.lt]: new Date() },
+        },
+      });
+
+      // Fetch Current Active Challenges and calculate total staked
+      const currentActiveChallenges = await Challenge.findAll({
+        where: {
+          ChallengeID: { [Op.in]: participatedChallengeIds },
+          StartDate: { [Op.lte]: new Date() },
+          EndDate: { [Op.gt]: new Date() },
+        },
+        attributes: ['Wager'],
+      });
+
+      currentActiveChallengesCount = currentActiveChallenges.length;
+      currentStaked = currentActiveChallenges.reduce((sum, challenge) => sum + challenge.Wager, 0);
     }
 
-    const totalRewardsWon =
-      (await Transaction.sum('Amount', { where: { UserID: userId } })) || 0;
-    const pastChallengesCount = await Challenge.count({
-      where: {
-        ChallengeID: { [Op.in]: participatedChallengeIds },
-        EndDate: { [Op.lt]: new Date() },
-      },
-    });
-    const currentActiveChallengesCount = await Challenge.count({
-      where: {
-        ChallengeID: { [Op.in]: participatedChallengeIds },
-        StartDate: { [Op.lte]: new Date() },
-        EndDate: { [Op.gt]: new Date() },
-      },
-    });
+    const totalRewardsWon = (await Transaction.sum('Amount', { where: { UserID: userId } })) || 0;
 
-    logger.info(
-      `[UserService] User details data fetched successfully for ID: ${userId}`
-    );
+    logger.info(`[UserService] User details data fetched successfully for ID: ${userId}`);
     return {
       UserID: userId,
+      UserName: user.UserName,
+      UserEmail: user.Email,
+      WalletAddress: user.WalletAddress?.WalletAddress || 'N/A', // Handle case where WalletAddress might be null
       TotalRewardsWon: totalRewardsWon,
+      Credits: user.Credits,
       PastChallenges: pastChallengesCount,
       CurrentActiveChallenges: currentActiveChallengesCount,
+      CurrentStaked: currentStaked,
     };
   } catch (error) {
-    logger.error(
-      `[UserService] Error fetching user details data for ID: ${userId}: ${error}`
-    );
+    logger.error(`[UserService] Error fetching user details data for ID: ${userId}: ${error}`);
     throw error;
   }
 };
