@@ -35,6 +35,10 @@ const Player = sequelize.define(
       allowNull: false,
       defaultValue: 0,
     },
+    Target: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
     Device: {
       type: DataTypes.STRING(255),
       allowNull: true,
