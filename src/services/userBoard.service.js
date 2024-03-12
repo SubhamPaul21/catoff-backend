@@ -1,77 +1,169 @@
-const { Player, Challenge, Transaction, Users } = require('../models/index');
+const {
+  Player,
+  Challenge,
+  Transaction,
+  User,
+  WalletAddress,
+} = require('../models/index');
 const { Op } = require('sequelize');
 const logger = require('../utils/logger'); // Ensure this path is correct for your logger setup
+
+// const getUserCurrentStandings = async (userId) => {
+//   logger.debug(
+//     `[UserService] Fetching current standings for user ID: ${userId}`
+//   );
+//   try {
+//     // Step 1: Fetch all player records for the given userId
+//     const userChallenges = await Player.findAll({
+//       where: { UserID: userId },
+//       include: [
+//         {
+//           model: Challenge,
+//           attributes: ['ChallengeID', 'ChallengeType'],
+//         },
+//       ],
+//       attributes: ['ChallengeID'],
+//     });
+
+//     // Step 2: Extract ChallengeIDs
+//     const challengeIds = userChallenges.map((uc) => uc.ChallengeID);
+
+//     // Prepare the final results array
+//     const results = [];
+
+//     // Step 3: Fetch all player records for each ChallengeID and calculate ranks
+//     for (const challengeId of challengeIds) {
+//       const playersInChallenge = await Player.findAll({
+//         where: { ChallengeID: challengeId },
+//         include: [
+//           {
+//             model: Challenge,
+//             attributes: ['ChallengeID', 'ChallengeType'],
+//           },
+//         ],
+//         attributes: ['UserID', 'Value', 'ChallengeID'],
+//         order: [['Value', 'DESC']],
+//       });
+
+//       // Calculate rank
+//       const rankedPlayers = playersInChallenge.map((player, index) => ({
+//         userId: player.UserID,
+//         value: player.Value,
+//         rank: index + 1, // Rank based on ordering by Value
+//       }));
+
+//       // Find the rank of the current user
+//       const currentUserRank = rankedPlayers.find((rp) => rp.userId === userId);
+
+//       if (currentUserRank) {
+//         results.push({
+//           challengeId: challengeId,
+//           challengeType: playersInChallenge[0].Challenge.ChallengeType,
+//           currentValue: currentUserRank.value,
+//           rank: currentUserRank.rank,
+//         });
+//       }
+//     }
+
+//     // Convert results to the specified format
+//     const formattedResults = results.reduce(
+//       (acc, result, index) => ({
+//         ...acc,
+//         [index]: result,
+//       }),
+//       {}
+//     );
+
+//     logger.info(
+//       `[UserService] Current standings fetched successfully for user ID: ${userId}`
+//     );
+//     return formattedResults;
+//   } catch (error) {
+//     logger.error(
+//       `[UserService] Error fetching user standings for user ID: ${userId}: ${error}`
+//     );
+//     throw error;
+//   }
+// };
 
 const getUserCurrentStandings = async (userId) => {
   logger.debug(
     `[UserService] Fetching current standings for user ID: ${userId}`
   );
   try {
-    // Step 1: Fetch all player records for the given userId
     const userChallenges = await Player.findAll({
       where: { UserID: userId },
       include: [
         {
           model: Challenge,
-          attributes: ['ChallengeID', 'ChallengeType'],
+          attributes: [
+            'ChallengeID',
+            'ChallengeName',
+            'ChallengeType',
+            'StartDate',
+            'EndDate',
+            'IsActive',
+            'Wager',
+            'Winners',
+          ],
         },
       ],
       attributes: ['ChallengeID'],
     });
 
-    // Step 2: Extract ChallengeIDs
-    const challengeIds = userChallenges.map((uc) => uc.ChallengeID);
+    const results = await Promise.all(
+      userChallenges.map(async ({ Challenge }) => {
+        const now = new Date();
+        const challengeStatus =
+          Challenge.IsActive &&
+          now >= Challenge.StartDate &&
+          now <= Challenge.EndDate
+            ? 'Active'
+            : now > Challenge.EndDate
+              ? 'Completed'
+              : 'Upcoming';
 
-    // Prepare the final results array
-    const results = [];
-
-    // Step 3: Fetch all player records for each ChallengeID and calculate ranks
-    for (const challengeId of challengeIds) {
-      const playersInChallenge = await Player.findAll({
-        where: { ChallengeID: challengeId },
-        include: [
-          {
-            model: Challenge,
-            attributes: ['ChallengeID', 'ChallengeType'],
-          },
-        ],
-        attributes: ['UserID', 'Value', 'ChallengeID'],
-        order: [['Value', 'DESC']],
-      });
-
-      // Calculate rank
-      const rankedPlayers = playersInChallenge.map((player, index) => ({
-        userId: player.UserID,
-        value: player.Value,
-        rank: index + 1, // Rank based on ordering by Value
-      }));
-
-      // Find the rank of the current user
-      const currentUserRank = rankedPlayers.find((rp) => rp.userId === userId);
-
-      if (currentUserRank) {
-        results.push({
-          challengeId: challengeId,
-          challengeType: playersInChallenge[0].Challenge.ChallengeType,
-          currentValue: currentUserRank.value,
-          rank: currentUserRank.rank,
+        const allParticipants = await Player.findAll({
+          where: { ChallengeID: Challenge.ChallengeID },
+          order: [['Value', 'DESC']],
+          attributes: ['UserID', 'Value'],
         });
-      }
-    }
 
-    // Convert results to the specified format
-    const formattedResults = results.reduce(
-      (acc, result, index) => ({
-        ...acc,
-        [index]: result,
-      }),
-      {}
+        // Calculate rank
+        const rank =
+          allParticipants.findIndex(
+            (participant) => participant.UserID === userId
+          ) + 1;
+        const currentUserParticipation = allParticipants.find(
+          (participant) => participant.UserID === userId
+        );
+        // Ensure Winners is an array and contains the userId
+        const isWinner =
+          Array.isArray(Challenge.Winners) &&
+          Challenge.Winners.includes(userId);
+        const adjustedWager = isWinner ? Challenge.Wager : -Challenge.Wager;
+
+        return {
+          challengeId: Challenge.ChallengeID,
+          challengeName: Challenge.ChallengeName,
+          challengeType: Challenge.ChallengeType,
+          challengeStatus,
+          startDate: Challenge.StartDate,
+          endDate: Challenge.EndDate,
+          wagerAmount:
+            challengeStatus === 'Completed' ? adjustedWager : Challenge.Wager,
+          currentValue: currentUserParticipation
+            ? currentUserParticipation.Value
+            : 0, // Assumes Value is stored in Player model
+          rank,
+        };
+      })
     );
 
     logger.info(
       `[UserService] Current standings fetched successfully for user ID: ${userId}`
     );
-    return formattedResults;
+    return results;
   } catch (error) {
     logger.error(
       `[UserService] Error fetching user standings for user ID: ${userId}: ${error}`
@@ -100,10 +192,9 @@ const getUserProgressData = async (userId, period) => {
       dateFrom = new Date(new Date().setDate(new Date().getDate() - 30));
       break;
     case '24hours':
-      dateFrom = new Date(
-        new Date().setTime(new Date().getTime() - 24 * 60 * 60 * 1000)
-      );
-      aggregateByInterval = true; // We'll aggregate by the nearest 15-minute interval
+      // Ensure dateFrom is exactly 24 hours before now
+      dateFrom = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+      aggregateByInterval = true;
       break;
     case 'all':
       dateFrom = new Date(0); // Start from the Unix Epoch (1970-01-01)
@@ -159,11 +250,13 @@ const getUserDetailsData = async (userId) => {
     // Fetch user basic details
     const user = await User.findOne({
       where: { UserID: userId },
-      include: [{ 
-        model: WalletAddress,
-        attributes: ['WalletAddress'] // Assuming WalletAddress model has a WalletAddress field
-      }],
-      attributes: ['UserID', 'Email', 'UserName', 'WalletID', 'Credits']
+      include: [
+        {
+          model: WalletAddress,
+          attributes: ['WalletAddress'], // Assuming WalletAddress model has a WalletAddress field
+        },
+      ],
+      attributes: ['UserID', 'Email', 'UserName', 'WalletID', 'Credits'],
     });
 
     if (!user) {
@@ -177,7 +270,7 @@ const getUserDetailsData = async (userId) => {
         where: { UserID: userId },
         attributes: ['ChallengeID'],
       })
-    ).map(participation => participation.ChallengeID);
+    ).map((participation) => participation.ChallengeID);
 
     // Define variables for past and active challenges count initialization
     let pastChallengesCount = 0;
@@ -204,12 +297,18 @@ const getUserDetailsData = async (userId) => {
       });
 
       currentActiveChallengesCount = currentActiveChallenges.length;
-      currentStaked = currentActiveChallenges.reduce((sum, challenge) => sum + challenge.Wager, 0);
+      currentStaked = currentActiveChallenges.reduce(
+        (sum, challenge) => sum + challenge.Wager,
+        0
+      );
     }
 
-    const totalRewardsWon = (await Transaction.sum('Amount', { where: { UserID: userId } })) || 0;
+    const totalRewardsWon =
+      (await Transaction.sum('Amount', { where: { UserID: userId } })) || 0;
 
-    logger.info(`[UserService] User details data fetched successfully for ID: ${userId}`);
+    logger.info(
+      `[UserService] User details data fetched successfully for ID: ${userId}`
+    );
     return {
       UserID: userId,
       UserName: user.UserName,
@@ -222,7 +321,9 @@ const getUserDetailsData = async (userId) => {
       CurrentStaked: currentStaked,
     };
   } catch (error) {
-    logger.error(`[UserService] Error fetching user details data for ID: ${userId}: ${error}`);
+    logger.error(
+      `[UserService] Error fetching user details data for ID: ${userId}: ${error}`
+    );
     throw error;
   }
 };

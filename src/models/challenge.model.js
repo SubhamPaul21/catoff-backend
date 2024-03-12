@@ -80,8 +80,8 @@ const Challenge = sequelize.define(
     Wager: {
       type: DataTypes.FLOAT,
       allowNull: false,
-      defaultValue: 0.0
-    }
+      defaultValue: 0.0,
+    },
   },
   {
     sequelize,
