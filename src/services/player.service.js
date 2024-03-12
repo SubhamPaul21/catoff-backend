@@ -1,12 +1,21 @@
 const Players = require('../models/player.model');
 const logger = require('../utils/logger');
+const {incrementChallengeParticipant} = require('./challenge.service')
 
 const createPlayer = async (playerData) => {
   logger.debug('[PlayerService] Creating player');
   try {
-    const player = await Players.create(playerData);
-    logger.info('[PlayerService] Player created successfully');
-    return player;
+    const isPlayerExist = await Players.findOne({where: {UserID: playerData.UserID, ChallengeID: playerData.ChallengeID}})
+    if(!isPlayerExist){
+      const player = await Players.create(playerData);
+      await incrementChallengeParticipant(playerData.ChallengeID)
+      logger.info('[PlayerService] Player created successfully');
+      return player;
+    }
+    else{
+      throw new Error('User already joined the challenge')
+    }
+    
   } catch (error) {
     logger.error(`[PlayerService] Error creating player: ${error.message}`);
     throw error;
