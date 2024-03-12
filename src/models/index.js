@@ -13,8 +13,16 @@ Player.belongsTo(Challenge, { foreignKey: 'ChallengeID' });
 User.hasMany(Player, { foreignKey: 'UserID' });
 Challenge.hasMany(Player, { foreignKey: 'ChallengeID' });
 
-WalletAddress.belongsTo(User, { foreignKey: 'WalletID' });
+// WalletAddress.belongsTo(User, { foreignKey: 'WalletID' });
+// User.hasOne(WalletAddress, { foreignKey: 'WalletID' });
+// In User model definition
+User.hasOne(WalletAddress, { foreignKey: 'UserID' });
+
+// In WalletAddress model definition
+WalletAddress.belongsTo(User, { foreignKey: 'UserID' });
+
 User.hasOne(WalletAddress, { foreignKey: 'WalletID' });
+WalletAddress.belongsTo(User, { foreignKey: 'WalletID' });
 
 Challenge.belongsTo(Game, { foreignKey: 'GameID' });
 Game.hasMany(Challenge, { foreignKey: 'GameID' });
@@ -28,4 +36,5 @@ module.exports = {
   Challenge,
   Transaction,
   Game,
+  WalletAddress,
 };
