@@ -81,10 +81,11 @@ const deleteChallenge = async (id) => {
   }
 };
 
-const searchChallenge = async (searchTerm) => {
+const searchChallenge = async (searchTerm, limit, page) => {
   logger.debug(
     `[ChallengeService] Searching challenges with term: ${searchTerm}`
   );
+  const offset = (page - 1) * limit;
   try {
     let userIds = await getUserIds(searchTerm);
     let gameIDs = await getGameIds(searchTerm);
@@ -98,6 +99,8 @@ const searchChallenge = async (searchTerm) => {
           { ChallengeType: { [Op.in]: gameIDs } },
         ],
       },
+      offset,
+      limit,
     });
     logger.info('[ChallengeService] Challenges search completed');
     return challenges;
@@ -109,12 +112,11 @@ const searchChallenge = async (searchTerm) => {
   }
 };
 
-const getOngoingChallenges = async (type, page) => {
+const getOngoingChallenges = async (type, page, limit) => {
   logger.debug(
     `[ChallengeService] Getting ongoing challenges of type: ${type}, page: ${page}`
   );
   try {
-    const limit = 10;
     const offset = (page - 1) * limit;
     let challenges;
     if (type === 'all') {
@@ -146,6 +148,24 @@ const getOngoingChallenges = async (type, page) => {
   }
 };
 
+const incrementChallengeParticipant = async(id)=>{
+  try{
+    const challenge = await Challenge.findByPk(id);
+    if (!challenge) {
+      throw new Error('Challenge not found');
+    }
+    await challenge.increment('CurrentParticipants');
+    logger.info('[ChallengeService] current participant incremented succesfully');
+    return true;
+  }
+  catch(error){
+    logger.error(
+      `[ChallengeService] Error updating the challenge: ${error.message}`
+    );
+    throw error
+  }
+}
+
 module.exports = {
   createChallenge,
   getChallenge,
@@ -153,4 +173,5 @@ module.exports = {
   deleteChallenge,
   searchChallenge,
   getOngoingChallenges,
+  incrementChallengeParticipant,
 };

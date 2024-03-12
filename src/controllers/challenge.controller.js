@@ -99,12 +99,14 @@ const deleteChallengeHandler = async (req, res) => {
 };
 
 const searchChallengeHandler = async (req, res) => {
+  const page = req.query.page || 1;
+  const limit = req.query.limit || 10;
   const searchTerm = req.params.searchTerm;
   logger.debug(
     `[ChallengeController] Searching for challenges with term: ${searchTerm}`
   );
   try {
-    const challenges = await searchChallenge(searchTerm);
+    const challenges = await searchChallenge(searchTerm,limit, page);
     logger.debug('[ChallengeController] Search successful');
     makeResponse(res, 200, true, 'Search successful', challenges);
   } catch (error) {
@@ -118,11 +120,12 @@ const searchChallengeHandler = async (req, res) => {
 const getOnGoingChallengesHandler = async (req, res) => {
   const type = req.params.type;
   const page = req.query.page || 1; // Default to page 1 if not specified
+  const limit = req.query.limit || 10;
   logger.debug(
     `[ChallengeController] Getting ongoing challenges of type: ${type}, page: ${page}`
   );
   try {
-    const challenges = await getOngoingChallenges(type, page);
+    const challenges = await getOngoingChallenges(type, page, limit);
     logger.debug('[ChallengeController] Ongoing challenges query successful');
     makeResponse(res, 200, true, 'Query successful', challenges);
   } catch (error) {

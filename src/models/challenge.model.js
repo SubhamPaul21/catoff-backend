@@ -55,6 +55,15 @@ const Challenge = sequelize.define(
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },
+    MaxParticipants:{
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    CurrentParticipants: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    },
     Winners: {
       type: DataTypes.INTEGER,
       allowNull: true,
