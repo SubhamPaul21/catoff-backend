@@ -153,6 +153,124 @@ paths:
           description: Unauthorized
         '500':
           description: Internal Server Error
+
+  /player:
+    post:
+      summary: Create a new player
+      tags:
+        - Player
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                UserID:
+                  type: integer
+                ChallengeID:
+                  type: integer
+              required:
+                - UserID
+                - ChallengeID
+      responses:
+        '201':
+          description: Player created successfully
+        '400':
+          description: Validation error
+        '500':
+          description: Internal server error
+
+  /player/{ID}:
+    get:
+      summary: Retrieve a player by ID
+      tags:
+        - Player
+      parameters:
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: integer
+          description: Player ID
+      responses:
+        '200':
+          description: Player retrieved successfully
+        '404':
+          description: Player not found
+        '500':
+          description: Internal server error
+    put:
+      summary: Update a player by ID
+      tags:
+        - Player
+      parameters:
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: integer
+          description: Player ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Value:
+                  type: integer
+              required:
+                - Value
+      responses:
+        '200':
+          description: Player updated successfully
+        '400':
+          description: Validation error
+        '404':
+          description: Player not found
+        '500':
+          description: Internal server error
+    delete:
+      summary: Delete a player by ID
+      tags:
+        - Player
+      parameters:
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: integer
+          description: Player ID
+      responses:
+        '200':
+          description: Player deleted successfully
+        '404':
+          description: Player not found
+        '500':
+          description: Internal server error
+
+  /player/challenge/{ID}:
+    get:
+      summary: Retrieve all players of a challenge
+      tags:
+        - Player
+      parameters:
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: integer
+          description: Challenge ID
+      responses:
+        '200':
+          description: Players retrieved successfully
+        '404':
+          description: Challenge not found
+        '500':
+          description: Internal server error
+
+
 components:
   securitySchemes:
     bearerAuth:
