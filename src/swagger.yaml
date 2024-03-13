@@ -255,6 +255,8 @@ paths:
       summary: Retrieve all players of a challenge
       tags:
         - Player
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: ID
