@@ -13,7 +13,7 @@ const {
   transactionRoutes,
   userBoardRoutes,
   googleAuthRoutes,
-  oktoProxyRoutes
+  oktoProxyRoutes,
 } = require('./src/routes/index');
 const logger = require('./src/utils/logger'); // Assuming this is your custom logger utility
 

@@ -15,12 +15,10 @@ const oktoProxyController = {
         '[OktoProxyController] Error forwarding authentication request to Okto.tech',
         error
       );
-      res
-        .status(500)
-        .json({
-          message: 'Failed to authenticate with Okto.tech',
-          error: error.message,
-        });
+      res.status(500).json({
+        message: 'Failed to authenticate with Okto.tech',
+        error: error.message,
+      });
     }
   },
 };

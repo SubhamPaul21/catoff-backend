@@ -4,13 +4,13 @@ const logger = require('../utils/logger');
 const createUserConfig = async (userId, tokens) => {
   logger.debug('[UserConfigService] Attempting to create UserConfig record');
   try {
-    let userConfig = await UserConfig.findOne({where: {UserID: userId}})
-    if(!userConfig)
-    userConfig = await UserConfig.create({
-      UserID: userId,
-      GoogleRefreshToken: tokens.refresh_token,
-      IdToken: tokens.id_token
-    });
+    let userConfig = await UserConfig.findOne({ where: { UserID: userId } });
+    if (!userConfig)
+      userConfig = await UserConfig.create({
+        UserID: userId,
+        GoogleRefreshToken: tokens.refresh_token,
+        IdToken: tokens.id_token,
+      });
     logger.info('[UserConfigService] Record created successfully');
     return userConfig;
   } catch (error) {
@@ -21,20 +21,18 @@ const createUserConfig = async (userId, tokens) => {
   }
 };
 
-
-
 const getUserConfig = async (userId) => {
   try {
     logger.debug(
       `[UserConfigService] Attempting to get UserConfig with ID: ${userId}`
     );
-    const userConfig = await UserConfig.findOne({where: {UserID: userId}});
+    const userConfig = await UserConfig.findOne({ where: { UserID: userId } });
     if (!userConfig) {
       logger.warn('[UserConfigService] UserConfig not found');
       return null;
     } else {
       logger.info('[UserConfigService] UserConfig retrieved successfully');
-      return userConfig["dataValues"];
+      return userConfig['dataValues'];
     }
   } catch (error) {
     logger.error(

@@ -70,33 +70,27 @@ const AddUserDetails = async (userId, email, userName) => {
 //     }
 // }
 
-const signin = async(data)=>{
-  logger.debug(
-    `[UserService] Attempting signup `
-  );
-  try{
-    console.log(data)
-    let user = await User.findOne({where:{Email: data.email}})
-    if(!user){
-      console.log(data)
+const signin = async (data) => {
+  logger.debug(`[UserService] Attempting signup `);
+  try {
+    let user = await User.findOne({ where: { Email: data.email } });
+    if (!user) {
       user = await User.create({
         Email: data.email,
-        ProfilePicture: data.picture
-      })
-      user.update({UserName: `User #${user.UserID}`})
+        ProfilePicture: data.picture,
+      });
+      user.update({ UserName: `User #${user.UserID}` });
       logger.info('[UserService] signUp successful');
     }
     const JwtToken = jwt.sign({ userId: user.UserID }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
-    return {JwtToken, user}
-  }
-  catch(e){
+    return { JwtToken, user };
+  } catch (e) {
     logger.error(`[UserService] signUp failed failed: ${e.message}`);
-    throw e
+    throw e;
   }
-  
-}
+};
 
 const siwsVerification = async (signature, message, publicKey) => {
   logger.debug(
@@ -260,5 +254,5 @@ module.exports = {
   getUserById,
   updateUser,
   deleteUser,
-  signin
+  signin,
 };

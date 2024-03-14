@@ -29,7 +29,9 @@ const authController = {
 
       // Implement your logic for registering/logging in the user with the retrieved information
 
-      res.redirect(`${process.env.SUCCESS_REDIRECT_URL}?success=true&jwt=${googleUserConfigs.JwtToken}`);
+      res.redirect(
+        `${process.env.SUCCESS_REDIRECT_URL}?success=true&jwt=${googleUserConfigs.JwtToken}`
+      );
     } catch (error) {
       logger.error(
         '[GoogleLoginController] Error handling Google OAuth callback.',

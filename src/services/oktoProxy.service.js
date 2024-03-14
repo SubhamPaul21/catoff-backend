@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { getUserConfig } = require('../services/userConfig.service')
+const { getUserConfig } = require('../services/userConfig.service');
 const logger = require('../utils/logger');
 
 const OKTO_TECH_API_BASE_URL = 'https://sandbox-api.okto.tech/';
@@ -12,11 +12,10 @@ const oktoProxyService = {
       '[OktoProxyService] Sending authentication request to Okto.tech'
     );
     try {
-
       const response = await axios.post(
         `${OKTO_TECH_API_BASE_URL}api/v1/authenticate`,
         {
-            "id_token": userConfig.IdToken
+          id_token: userConfig.IdToken,
         },
         {
           headers: {
