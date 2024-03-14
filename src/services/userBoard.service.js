@@ -3,7 +3,7 @@ const {
   Challenge,
   Transaction,
   User,
-  WalletAddress,
+  // WalletAddress,
 } = require('../models/index');
 const { Op } = require('sequelize');
 const logger = require('../utils/logger'); // Ensure this path is correct for your logger setup
