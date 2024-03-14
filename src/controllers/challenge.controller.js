@@ -106,7 +106,7 @@ const searchChallengeHandler = async (req, res) => {
     `[ChallengeController] Searching for challenges with term: ${searchTerm}`
   );
   try {
-    const challenges = await searchChallenge(searchTerm,limit, page);
+    const challenges = await searchChallenge(searchTerm, limit, page);
     logger.debug('[ChallengeController] Search successful');
     makeResponse(res, 200, true, 'Search successful', challenges);
   } catch (error) {

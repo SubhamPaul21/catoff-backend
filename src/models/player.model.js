@@ -63,41 +63,41 @@ const Player = sequelize.define('Player', {
   PlayerID: {
     type: DataTypes.INTEGER.UNSIGNED,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
   UserID: {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
       model: 'Users',
-      key: 'UserID'
-    }
+      key: 'UserID',
+    },
   },
   ChallengeID: {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
       model: 'Challenges',
-      key: 'ChallengeID'
-    }
+      key: 'ChallengeID',
+    },
   },
   Value: {
     type: DataTypes.FLOAT.UNSIGNED,
     allowNull: false,
-    defaultValue: 0
+    defaultValue: 0,
   },
   Device: {
     type: DataTypes.STRING(255),
-    allowNull: true
+    allowNull: true,
   },
   DeviceDataSource: {
     type: DataTypes.STRING(255),
-    allowNull: true
+    allowNull: true,
   },
   PlayerPublicKey: {
     type: DataTypes.STRING(255),
-    allowNull: true
-  }
+    allowNull: true,
+  },
 });
 
 module.exports = Player;

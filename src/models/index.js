@@ -61,11 +61,14 @@ Challenge.belongsTo(Game, {
   as: 'game',
 });
 
-sequelize.sync({ force: true }).then(() => {
-  console.log('All tables have been synchronized');
-}).catch((error) => {
-  console.error('Error synchronizing tables:', error);
-});
+sequelize
+  .sync({ force: true })
+  .then(() => {
+    console.log('All tables have been synchronized');
+  })
+  .catch((error) => {
+    console.error('Error synchronizing tables:', error);
+  });
 // // Define associations
 // Player.belongsTo(User, { foreignKey: 'UserID' });
 // Player.belongsTo(Challenge, { foreignKey: 'ChallengeID' });
@@ -87,7 +90,6 @@ sequelize.sync({ force: true }).then(() => {
 // Challenge.belongsTo(Game, { foreignKey: 'GameID' });
 // Game.hasMany(Challenge, { foreignKey: 'GameID' });
 
-
 // User.hasMany(Transaction, { foreignKey: 'UserID' });
 // Transaction.belongsTo(User, { foreignKey: 'UserID' });
 
@@ -100,5 +102,5 @@ module.exports = {
   Challenge,
   Transaction,
   Game,
-  UserConfig
+  UserConfig,
 };

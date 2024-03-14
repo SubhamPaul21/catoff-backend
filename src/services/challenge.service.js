@@ -148,23 +148,24 @@ const getOngoingChallenges = async (type, page, limit) => {
   }
 };
 
-const incrementChallengeParticipant = async(id)=>{
-  try{
+const incrementChallengeParticipant = async (id) => {
+  try {
     const challenge = await Challenge.findByPk(id);
     if (!challenge) {
       throw new Error('Challenge not found');
     }
     await challenge.increment('CurrentParticipants');
-    logger.info('[ChallengeService] current participant incremented succesfully');
+    logger.info(
+      '[ChallengeService] current participant incremented succesfully'
+    );
     return true;
-  }
-  catch(error){
+  } catch (error) {
     logger.error(
       `[ChallengeService] Error updating the challenge: ${error.message}`
     );
-    throw error
+    throw error;
   }
-}
+};
 
 module.exports = {
   createChallenge,

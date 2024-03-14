@@ -6,44 +6,44 @@ const UserConfig = sequelize.define('UserConfig', {
   ID: {
     type: DataTypes.INTEGER.UNSIGNED,
     autoIncrement: true,
-    primaryKey: true
+    primaryKey: true,
   },
   UserID: {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
       model: User,
-      key: 'UserID'
-    }
+      key: 'UserID',
+    },
   },
   GoogleRefreshToken: {
     type: DataTypes.STRING(255),
-    allowNull: true
+    allowNull: true,
   },
   OktoRefreshToken: {
     type: DataTypes.STRING(255),
-    allowNull: true
+    allowNull: true,
   },
   OktoDeviceToken: {
     type: DataTypes.STRING(255),
-    allowNull: true
+    allowNull: true,
   },
   IdToken: {
     type: DataTypes.STRING(255),
-    allowNull: true
+    allowNull: true,
   },
   Devices: {
     type: DataTypes.ARRAY(DataTypes.STRING(255)),
-    defaultValue: []
+    defaultValue: [],
   },
   DataStreams: {
     type: DataTypes.ARRAY(DataTypes.STRING(255)),
-    defaultValue: []
+    defaultValue: [],
   },
   DefaultDevice: {
     type: DataTypes.STRING(255),
-    allowNull: true
-  }
+    allowNull: true,
+  },
 });
 
 module.exports = UserConfig;

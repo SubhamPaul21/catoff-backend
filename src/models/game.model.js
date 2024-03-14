@@ -34,7 +34,6 @@
 // });
 // module.exports = Game;
 
-
 const { sequelize } = require('../db/db.js');
 const { DataTypes } = require('sequelize');
 
@@ -42,22 +41,21 @@ const Game = sequelize.define('Game', {
   GameID: {
     type: DataTypes.INTEGER.UNSIGNED,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
   GameName: {
-    type: DataTypes.STRING(255)
+    type: DataTypes.STRING(255),
   },
   ParticipationType: {
-    type: DataTypes.ENUM('0v1','1v1','nvn'),
-    allowNull: true
+    type: DataTypes.ENUM('0v1', '1v1', 'nvn'),
+    allowNull: true,
   },
   GameType: {
-    type: DataTypes.INTEGER.UNSIGNED
+    type: DataTypes.INTEGER.UNSIGNED,
   },
   GameDescription: {
-    type: DataTypes.STRING(255)
-  }
+    type: DataTypes.STRING(255),
+  },
 });
-
 
 module.exports = Game;

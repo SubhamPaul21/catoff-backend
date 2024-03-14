@@ -5,55 +5,55 @@ const Challenge = sequelize.define('Challenge', {
   ChallengeID: {
     type: DataTypes.INTEGER.UNSIGNED,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
   ChallengeName: {
-    type: DataTypes.STRING(255)
+    type: DataTypes.STRING(255),
   },
   ChallengeDescription: {
-    type: DataTypes.STRING(255)
+    type: DataTypes.STRING(255),
   },
   ChallengeCreator: {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
       model: 'Users',
-      key: 'UserID'
-    }
+      key: 'UserID',
+    },
   },
   ChallengePublicKey: {
     type: DataTypes.STRING(255),
-    allowNull: true
+    allowNull: true,
   },
   StartDate: {
     type: DataTypes.DATE,
-    allowNull: false
+    allowNull: false,
   },
   EndDate: {
     type: DataTypes.DATE,
-    allowNull: false
+    allowNull: false,
   },
   GameID: {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
       model: 'Games',
-      key: 'GameID'
-    }
+      key: 'GameID',
+    },
   },
   IsActive: {
-    type: DataTypes.BOOLEAN
+    type: DataTypes.BOOLEAN,
   },
   Winner: {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: true,
     references: {
       model: 'Players',
-      key: 'PlayerID'
-    }
+      key: 'PlayerID',
+    },
   },
   MaxParticipants: {
-    type: DataTypes.INTEGER.UNSIGNED
+    type: DataTypes.INTEGER.UNSIGNED,
   },
   Players: {
     type: DataTypes.ARRAY(DataTypes.INTEGER.UNSIGNED),
@@ -61,16 +61,16 @@ const Challenge = sequelize.define('Challenge', {
   },
   Media: {
     type: DataTypes.STRING(255),
-    allowNull: true
+    allowNull: true,
   },
   Wager: {
     type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: false
+    allowNull: false,
   },
   Target: {
     type: DataTypes.FLOAT.UNSIGNED,
-    allowNull: false
-  }
+    allowNull: false,
+  },
 });
 
 module.exports = Challenge;

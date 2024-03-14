@@ -7,7 +7,7 @@ const bs58 = require('bs58');
 const WalletAddress = require('../models/walletAddress.model');
 require('dotenv').config();
 const logger = require('../utils/logger');
-const {createUserConfig} = require('./userConfig.service');
+const { createUserConfig } = require('./userConfig.service');
 const { UserConfig } = require('../models');
 
 const AddUserDetails = async (userId, email, userName) => {
@@ -83,7 +83,7 @@ const siwsVerification = async (signature, message, publicKey) => {
       signatureBuffer,
       publicKeyUint8Array
     );
-    
+
     if (!verified) {
       logger.error('[UserService] Invalid signature');
       throw new ExpressError('Invalid Signature', 401);
@@ -99,22 +99,21 @@ const siwsVerification = async (signature, message, publicKey) => {
         WalletAddress: publicKey,
         Signature: signature,
       });
-    
 
-    user =
-      (await User.findOne({ where: { WalletID: wallet.WalletID } })) ||
-      (await User.create({
-        RegistrationDate: new Date(),
-        LastLoginDate: null,
-        IsEmailVerified: false,
-        IsActive: true,
-        WalletID: wallet.WalletID,
-        Credits: 0.0,
-      }));
-      await createUserConfig(user.UserID)
+      user =
+        (await User.findOne({ where: { WalletID: wallet.WalletID } })) ||
+        (await User.create({
+          RegistrationDate: new Date(),
+          LastLoginDate: null,
+          IsEmailVerified: false,
+          IsActive: true,
+          WalletID: wallet.WalletID,
+          Credits: 0.0,
+        }));
+      await createUserConfig(user.UserID);
     }
 
-    user = await User.findOne({where: {WalletID: wallet.WalletID}});
+    user = await User.findOne({ where: { WalletID: wallet.WalletID } });
     const token = jwt.sign({ userId: user.UserID }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
