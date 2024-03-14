@@ -70,54 +70,40 @@
 
 const { sequelize } = require('../db/db.js');
 const { DataTypes } = require('sequelize');
-const WalletAddress = require('./walletAddress.model');
 
-const User = sequelize.define(
-  'User',
-  {
-    UserID: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-      allowNull: false,
-    },
-    Email: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-      unique: true,
-    },
-    UserName: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-      unique: true,
-    },
-    
-    WalletIAddress: {
-      type: DataTypes.INTEGER,
-      allowNull: false, // or false depending on your requirements
-      references: {
-        model: WalletAddress,
-        key: 'WalletID',
-      },
-    },
-    Credits: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
-    ProfilePicture: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
-    // Profile: 
+
+const User = sequelize.define('User', {
+  UserID: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    primaryKey: true,
+    autoIncrement: true
   },
-  {
-    tableName: 'Users',
-    timestamps: false,
+  Email: {
+    type: DataTypes.STRING(255),
+    unique: true,
+    allowNull: true
+  },
+  UserName: {
+    type: DataTypes.STRING(50),
+    unique: true,
+    defaultValue: function () {
+      return 'USER #' + this.UserID;
+    }
+  },
+  WalletAddress: {
+    type: DataTypes.STRING(255),
+    unique: true
+  },
+  Credits: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    defaultValue: 0
+  },
+  ProfilePicture: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    unique: true
   }
-);
-
-User.sync().then(() => {
-  console.log('User Model synced');
 });
+
+
 module.exports = User;

@@ -5,8 +5,8 @@ const User = require('./user.model');
 const UserConfig = sequelize.define('UserConfig', {
   ID: {
     type: DataTypes.INTEGER.UNSIGNED,
-    primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    primaryKey: true
   },
   UserID: {
     type: DataTypes.INTEGER.UNSIGNED,
@@ -16,7 +16,19 @@ const UserConfig = sequelize.define('UserConfig', {
       key: 'UserID'
     }
   },
-  RefreshToken: {
+  GoogleRefreshToken: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+  OktoRefreshToken: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+  OktoDeviceToken: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+  IdToken: {
     type: DataTypes.STRING(255),
     allowNull: true
   },
@@ -32,10 +44,6 @@ const UserConfig = sequelize.define('UserConfig', {
     type: DataTypes.STRING(255),
     allowNull: true
   }
-},
-{
-  tableName: 'UserConfig',
-  timestamps: false,
 });
 
 module.exports = UserConfig;
