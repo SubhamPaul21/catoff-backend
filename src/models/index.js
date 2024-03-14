@@ -62,7 +62,7 @@ Challenge.belongsTo(Game, {
 });
 
 sequelize
-  .sync({ force: true })
+  .sync()
   .then(() => {
     console.log('All tables have been synchronized');
   })

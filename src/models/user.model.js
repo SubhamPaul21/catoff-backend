@@ -84,14 +84,13 @@ const User = sequelize.define('User', {
   },
   UserName: {
     type: DataTypes.STRING(50),
+    allowNull:true,
     unique: true,
-    defaultValue: function () {
-      return 'USER #' + this.UserID;
-    },
   },
   WalletAddress: {
     type: DataTypes.STRING(255),
     unique: true,
+    allowNull: true
   },
   Credits: {
     type: DataTypes.INTEGER.UNSIGNED,
@@ -102,6 +101,7 @@ const User = sequelize.define('User', {
     allowNull: true,
     unique: true,
   },
-});
+}
+);
 
 module.exports = User;

@@ -29,7 +29,7 @@ const UserConfig = sequelize.define('UserConfig', {
     allowNull: true,
   },
   IdToken: {
-    type: DataTypes.STRING(255),
+    type: DataTypes.STRING(2000),
     allowNull: true,
   },
   Devices: {

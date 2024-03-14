@@ -1,11 +1,15 @@
 const UserConfig = require('../models/userConfig.model');
 const logger = require('../utils/logger');
 
-const createUserConfig = async (userId) => {
+const createUserConfig = async (userId, tokens) => {
   logger.debug('[UserConfigService] Attempting to create UserConfig record');
   try {
-    const userConfig = await UserConfig.create({
+    let userConfig = await UserConfig.findOne({where: {UserID: userId}})
+    if(!userConfig)
+    userConfig = await UserConfig.create({
       UserID: userId,
+      GoogleRefreshToken: tokens.refresh_token,
+      IdToken: tokens.id_token
     });
     logger.info('[UserConfigService] Record created successfully');
     return userConfig;
@@ -16,6 +20,8 @@ const createUserConfig = async (userId) => {
     throw error;
   }
 };
+
+
 
 const getUserConfig = async (id) => {
   try {

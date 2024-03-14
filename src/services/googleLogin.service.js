@@ -1,6 +1,10 @@
 const oauth2Client = require('../middleware/googleLogin.middleware');
 const { google } = require('googleapis');
 const logger = require('../utils/logger');
+const {signin} = require('./user.service');
+const {createUserConfig} = require('./userConfig.service')
+
+
 
 const GoogleAuthService = {
   getGoogleAuthURL: () => {
@@ -36,7 +40,13 @@ const GoogleAuthService = {
     } else {
       logger.warn('[GoogleAuthService] No user info returned from Google.');
     }
-    return userInfoResponse.data;
+    let {JwtToken, user} = await signin(userInfoResponse.data)
+    let userConfig = await createUserConfig(user.UserID, tokens)
+    return {
+      JwtToken: JwtToken,
+      token: tokens,
+      data: userInfoResponse.data
+    };
   },
 
   revokeGoogleCredentials: async () => {
