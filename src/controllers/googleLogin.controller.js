@@ -21,16 +21,15 @@ const authController = {
   handleGoogleCallback: async (req, res) => {
     try {
       const { code } = req.query;
-      const user = await authService.getGoogleUser(code);
+      const googleUserConfigs = await authService.getGoogleUser(code);
       logger.debug(
         '[GoogleLoginController] Google user info retrieved successfully.',
-        { email: user.email }
+        { email: googleUserConfigs.data.email }
       );
 
       // Implement your logic for registering/logging in the user with the retrieved information
 
-      console.log(process.env.SUCCESS_REDIRECT_URL);
-      res.redirect(`${process.env.SUCCESS_REDIRECT_URL}?success=true`);
+      res.redirect(`${process.env.SUCCESS_REDIRECT_URL}?success=true&jwt=${googleUserConfigs.JwtToken}`);
     } catch (error) {
       logger.error(
         '[GoogleLoginController] Error handling Google OAuth callback.',
