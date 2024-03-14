@@ -11,7 +11,7 @@ const GoogleAuthService = {
     logger.debug('[GoogleAuthService] Generating Google Auth URL.');
     const url = oauth2Client.generateAuthUrl({
       access_type: 'offline',
-      scope: ['email', 'profile', 'activity.read'],
+      scope: ['email', 'profile'],
     });
     return url;
   },
