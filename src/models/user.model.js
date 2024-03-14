@@ -71,39 +71,37 @@
 const { sequelize } = require('../db/db.js');
 const { DataTypes } = require('sequelize');
 
-
 const User = sequelize.define('User', {
   UserID: {
     type: DataTypes.INTEGER.UNSIGNED,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
   Email: {
     type: DataTypes.STRING(255),
     unique: true,
-    allowNull: true
+    allowNull: true,
   },
   UserName: {
     type: DataTypes.STRING(50),
     unique: true,
     defaultValue: function () {
       return 'USER #' + this.UserID;
-    }
+    },
   },
   WalletAddress: {
     type: DataTypes.STRING(255),
-    unique: true
+    unique: true,
   },
   Credits: {
     type: DataTypes.INTEGER.UNSIGNED,
-    defaultValue: 0
+    defaultValue: 0,
   },
   ProfilePicture: {
     type: DataTypes.STRING(255),
     allowNull: true,
-    unique: true
-  }
+    unique: true,
+  },
 });
-
 
 module.exports = User;
