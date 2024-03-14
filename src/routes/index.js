@@ -6,6 +6,7 @@ const transactionRoutes = require('./transaction.routes');
 const userRoutes = require('./user.routes');
 const userBoardRoutes = require('./userBoard.routes');
 const googleAuthRoutes = require('./googleLogin.routes');
+const oktoProxyRoutes = require('./oktoProxy.routes');
 
 module.exports = {
   challengeRoutes,
@@ -16,4 +17,5 @@ module.exports = {
   userRoutes,
   userBoardRoutes,
   googleAuthRoutes,
+  oktoProxyRoutes,
 };

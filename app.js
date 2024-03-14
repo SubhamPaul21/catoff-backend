@@ -13,6 +13,7 @@ const {
   transactionRoutes,
   userBoardRoutes,
   googleAuthRoutes,
+  oktoProxyRoutes
 } = require('./src/routes/index');
 const logger = require('./src/utils/logger'); // Assuming this is your custom logger utility
 
@@ -41,6 +42,8 @@ app.use('/user', userRoutes);
 logger.info('User routes configured.');
 app.use('/googleAuth', googleAuthRoutes);
 logger.info('Google auth routes configured.');
+app.use('/oktoProxy', oktoProxyRoutes);
+logger.info('Okto Proxy routes configured.');
 app.use('/challenge', challengeRoutes);
 logger.info('Challenge routes configured.');
 app.use('/player', playerRoutes);
