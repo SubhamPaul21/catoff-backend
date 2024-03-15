@@ -94,9 +94,9 @@ const searchChallenge = async (searchTerm, limit, page) => {
       where: {
         [Op.or]: [
           { ChallengeID: searchNum },
-          { ChallengeName: { [Op.like]: `%${searchTerm}%` } },
+          { ChallengeName: { [Op.iLike]: `%${searchTerm}%` } },
           { ChallengeCreator: { [Op.in]: userIds } },
-          { ChallengeType: { [Op.in]: gameIDs } },
+          { GameID: { [Op.in]: gameIDs } },
         ],
       },
       offset,
@@ -122,7 +122,7 @@ const getOngoingChallenges = async (type, page, limit) => {
     if (type === 'all') {
       challenges = await Challenge.findAll({
         where: { IsActive: true },
-        order: [['CreationDate', 'DESC']],
+        order: [['createdAt', 'DESC']],
         offset,
         limit,
       });
@@ -131,9 +131,9 @@ const getOngoingChallenges = async (type, page, limit) => {
       challenges = await Challenge.findAll({
         where: {
           IsActive: true,
-          ChallengeType: { [Op.in]: gameIDs },
+          GameID: { [Op.in]: gameIDs },
         },
-        order: [['CreationDate', 'DESC']],
+        order: [['createdAt', 'DESC']],
         offset,
         limit,
       });
