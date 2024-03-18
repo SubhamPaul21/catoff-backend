@@ -1,6 +1,6 @@
 const Players = require('../models/player.model');
 const logger = require('../utils/logger');
-const { incrementChallengeParticipant } = require('./challenge.service');
+const { checkIfChallengeAvailableForEntry, updateIsStarted, addPlayersToChallenge } = require('./challenge.service');
 
 const createPlayer = async (playerData) => {
   logger.debug('[PlayerService] Creating player');
@@ -8,10 +8,18 @@ const createPlayer = async (playerData) => {
     const isPlayerExist = await Players.findOne({
       where: { UserID: playerData.UserID, ChallengeID: playerData.ChallengeID },
     });
+    console.log(1)
     if (!isPlayerExist) {
-      const player = await Players.create(playerData);
-      logger.info('[PlayerService] Player created successfully');
-      return player;
+      console.log(2)
+      if(await checkIfChallengeAvailableForEntry(playerData.ChallengeID)){
+        const player = await Players.create(playerData);
+
+        await addPlayersToChallenge(playerData.ChallengeID, player.PlayerID)
+        await checkAndUpdateIsStartedChallenge(playerData.ChallengeID)
+        logger.info('[PlayerService] Player created successfully');
+        return player;
+      }
+      
     } else {
       throw new Error('User already joined the challenge');
     }
@@ -90,6 +98,17 @@ const getAllPlayersOfChallenge = async (challengeId) => {
     throw e;
   }
 };
+
+const checkAndUpdateIsStartedChallenge = async(challengeId)=>{
+  try{
+    await updateIsStarted(challengeId);
+    logger.info('[PlayerService] Players for challenge fetched successfully');
+  }catch(err){
+    logger.error(`[playerService]  checkAndUpdateIsStartedChallenge error`)
+    throw err
+  }
+  
+}
 
 module.exports = {
   createPlayer,

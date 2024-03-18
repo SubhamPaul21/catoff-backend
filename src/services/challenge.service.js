@@ -148,24 +148,50 @@ const getOngoingChallenges = async (type, page, limit) => {
   }
 };
 
-const incrementChallengeParticipant = async (id) => {
-  try {
-    const challenge = await Challenge.findByPk(id);
-    if (!challenge) {
-      throw new Error('Challenge not found');
-    }
-    await challenge.increment('CurrentParticipants');
-    logger.info(
-      '[ChallengeService] current participant incremented succesfully'
-    );
-    return true;
-  } catch (error) {
+const checkIfChallengeAvailableForEntry = async(challengeId)=>{
+  try{
+    const challenge = await Challenge.findOne({where: {ChallengeID: challengeId}});
+    logger.info('[ChallengeService] data retrieved successfully');
+    return !challenge.IsStarted && challenge.IsActive;
+  }catch(err){
     logger.error(
-      `[ChallengeService] Error updating the challenge: ${error.message}`
-    );
-    throw error;
+      `[ChallengeService] Error in retrieving challenge checkIfChallengeAvailableForEntry: ${error.message}`
+    )
+    throw err
   }
-};
+}
+
+const addPlayersToChallenge = async(challengeId,playerId)=>{
+  try{
+    const challenge = await Challenge.findByPk(challengeId);
+    await challenge.update({
+      Players: [...challenge.Players, playerId],
+    });
+    logger.info('[ChallengeService] players updated successfully')
+
+  }catch(e){
+    logger.error(
+      `[ChallengeService] Error in updating players in challenge: ${error.message}`
+    )
+    throw e
+  }
+}
+
+const updateIsStarted = async(challengeId)=>{
+  try{
+    let challenge = await Challenge.findOne({where: {ChallengeID: challengeId}});
+    if(challenge.IsActive && !challenge.IsStarted && (challenge.Players.length>=challenge.MaxParticipants)){
+      await Challenge.update({IsStarted: true},{where:{ChallengeID: challengeId}})
+      logger.info('[ChallengeService] isStarted updated successfully')
+      return true;
+    }
+  }catch(err){
+    logger.error(
+      `[ChallengeService] Error in retrieving challenge updateIsStarted: ${error.message}`
+    )
+    throw err;
+  }
+}
 
 module.exports = {
   createChallenge,
@@ -174,5 +200,7 @@ module.exports = {
   deleteChallenge,
   searchChallenge,
   getOngoingChallenges,
-  incrementChallengeParticipant,
+  checkIfChallengeAvailableForEntry,
+  updateIsStarted,
+  addPlayersToChallenge
 };
