@@ -66,7 +66,7 @@ router.delete(
 
 router.get(
   '/challenge/:ID',
-  verifyToken,
+  // verifyToken,
   (req, res, next) => {
     logger.info(
       `GET /players/challenge/${req.params.ID} - Retrieving all players of a challenge`

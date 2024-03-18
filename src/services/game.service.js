@@ -72,7 +72,7 @@ const getGameIds = async (searchTerm) => {
   try {
     const games = await Game.findAll({
       attributes: ['GameID'],
-      where: { GameName: { [Op.like]: `%${searchTerm}%` } },
+      where: { GameName: { [Op.iLike]: `%${searchTerm}%` } },
     });
     const gameIDs = games.map((game) => game.GameID);
     logger.info('[GameService] Game IDs retrieved successfully');

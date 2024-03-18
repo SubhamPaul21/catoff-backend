@@ -10,7 +10,6 @@ const createPlayer = async (playerData) => {
     });
     if (!isPlayerExist) {
       const player = await Players.create(playerData);
-      await incrementChallengeParticipant(playerData.ChallengeID);
       logger.info('[PlayerService] Player created successfully');
       return player;
     } else {

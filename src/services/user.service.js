@@ -153,7 +153,7 @@ const getUserIds = async (searchTerm) => {
   try {
     const users = await User.findAll({
       attributes: ['UserID'],
-      where: { UserName: { [Op.like]: `%${searchTerm}%` } },
+      where: { UserName: { [Op.iLike]: `%${searchTerm}%` } },
     });
     const userIds = users.map((ele) => ele['UserID']);
     logger.info('[UserService] User IDs fetched successfully');

@@ -33,6 +33,7 @@ router.post(
   '/challenges',
   validateChallengeCreation,
   validationHandler,
+  verifyToken,
   (req, res, next) => {
     logger.info('POST /challenges - Creating a new challenge');
     next();
@@ -68,7 +69,7 @@ router.delete(
 
 router.get(
   '/challenges/search/:searchTerm',
-  verifyToken,
+  // verifyToken,
   (req, res, next) => {
     logger.info(
       `GET /challenges/search/${req.params.searchTerm} - Searching challenges`
@@ -80,7 +81,7 @@ router.get(
 
 router.get(
   '/challenges/onGoing/category/:type',
-  verifyToken,
+  // verifyToken,
   (req, res, next) => {
     logger.info(
       `GET /challenges/onGoing/category/${req.params.type} - Getting ongoing challenges by category`
