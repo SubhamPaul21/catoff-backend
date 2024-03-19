@@ -221,5 +221,33 @@ const oktoProxyService = {
       throw error;
     }
   }, 
+
+  getUserFromToken: async (userId) => {
+    const userConfig = await getUserConfig(userId);
+    if (!userConfig || !userConfig.OktoRefreshToken || !userConfig.OktoAuthToken) {
+      logger.error(`[OktoProxyService] Required tokens not found for userID: ${userId}`);
+      throw new Error('Required tokens not found');
+    }
+    try {
+      const response = await axios.get(`${OKTO_TECH_API_BASE_URL}api/v1/user_from_token`, {
+        headers: {
+          'Accept': 'application/json',
+          'x-api-key': OKTO_TECH_API_CLIENT_KEY,
+          'Authorization': `Bearer ${userConfig.OktoAuthToken}`,
+        },
+      });
+  
+      logger.debug(`[OktoProxyService] User information retrieval successful`, response.data);
+  
+      return {
+        status: 'success',
+        message: 'User information retrieved successfully.',
+        data: response.data,
+      };
+    } catch (error) {
+      logger.error(`[OktoProxyService] Failed to retrieve user information: `, error);
+      throw error;
+    }
+  },
 };
 module.exports = oktoProxyService;

@@ -44,4 +44,14 @@ router.post(
   oktoProxyController.refreshTokenForUser
 );
 
+router.get(
+  '/user_from_token',
+  verifyToken,
+  (req, res, next) => {
+    logger.info('GET /user_from_token - Retrieving user information from Okto');
+    next();
+  },
+  oktoProxyController.getUserFromToken
+);
+
 module.exports = router;
