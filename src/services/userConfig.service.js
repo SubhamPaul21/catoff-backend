@@ -2,20 +2,37 @@ const UserConfig = require('../models/userConfig.model');
 const logger = require('../utils/logger');
 
 const createUserConfig = async (userId, tokens) => {
-  logger.debug('[UserConfigService] Attempting to create UserConfig record');
+  logger.debug(
+    `[UserConfigService] Attempting to create or update UserConfig record for userID: ${userId}, tokens: ${JSON.stringify(tokens)}`
+  );
+
   try {
     let userConfig = await UserConfig.findOne({ where: { UserID: userId } });
-    if (!userConfig)
+    if (!userConfig) {
+      // If no record exists, create a new one
       userConfig = await UserConfig.create({
         UserID: userId,
         GoogleRefreshToken: tokens.refresh_token,
         IdToken: tokens.id_token,
       });
-    logger.info('[UserConfigService] Record created successfully');
+      logger.info(
+        '[UserConfigService] Record created successfully for userID:',
+        userId
+      );
+    } else {
+      // If record exists, update the tokens
+      userConfig.GoogleRefreshToken = tokens.refresh_token;
+      userConfig.IdToken = tokens.id_token;
+      await userConfig.save();
+      logger.info(
+        '[UserConfigService] Tokens updated successfully for userID:',
+        userId
+      );
+    }
     return userConfig;
   } catch (error) {
     logger.error(
-      `[UserConfigService] Error creating UserConfig: ${error.message}`
+      `[UserConfigService] Error creating or updating UserConfig for userID: ${userId}, Error: ${error.message}`
     );
     throw error;
   }
