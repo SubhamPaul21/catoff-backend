@@ -14,4 +14,14 @@ router.post(
   oktoProxyController.authenticateOktoUser
 );
 
+router.post(
+  '/set_pin',
+  verifyToken,
+  (req, res, next) => {
+    logger.info('POST /set_pin - Setting new PIN for Okto user');
+    next();
+  },
+  oktoProxyController.setNewPinOktoUser
+);
+
 module.exports = router;
