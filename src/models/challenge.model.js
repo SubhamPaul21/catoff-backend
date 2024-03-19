@@ -44,6 +44,11 @@ const Challenge = sequelize.define('Challenge', {
   IsActive: {
     type: DataTypes.BOOLEAN,
   },
+  IsStarted: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+    defaultValue: false
+  },
   Winner: {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: true,
