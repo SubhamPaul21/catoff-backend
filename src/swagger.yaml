@@ -64,6 +64,50 @@ paths:
         '500':
           description: Internal server error
 
+  /googleAuth:
+    get:
+      summary: Redirect to Google OAuth
+      tags:
+        - GoogleAuth
+      responses:
+        '302':
+          description: Redirect to Google for authentication
+        '500':
+          description: Internal server error
+
+  /googleAuth/callback:
+    get:
+      summary: Handle Google OAuth callback
+      tags:
+        - GoogleAuth
+      parameters:
+        - in: query
+          name: code
+          required: true
+          schema:
+            type: string
+          description: Authorization code returned by Google
+      responses:
+        '302':
+          description: Redirect to a specified URL upon successful authentication
+        '500':
+          description: Internal server error
+
+  /googleAuth/signout:
+    post:
+      summary: Sign out user
+      tags:
+        - GoogleAuth
+      security:
+        - bearerAuth: [] # Assuming that sign out requires a valid JWT
+      responses:
+        '200':
+          description: Logged out successfully
+        '401':
+          description: Unauthorized due to missing or invalid token
+        '500':
+          description: Internal server error
+
   /userBoard/dashboard/userCurrentTable:
     get:
       summary: Retrieves the current user's standings in challenges
