@@ -177,5 +177,49 @@ const oktoProxyService = {
       throw error;
     }
   },
+
+  refreshTokenForUser: async (userId) => {
+    const userConfig = await getUserConfig(userId);
+    if (!userConfig || !userConfig.OktoRefreshToken || !userConfig.OktoDeviceToken) {
+      logger.error(`[OktoProxyService] Required tokens not found for userID: ${userId}`);
+      throw new Error('Required tokens not found');
+    }
+  
+    try {
+      const response = await axios.post(
+        `${OKTO_TECH_API_BASE_URL}api/v1/refresh_token`,
+        {}, // No body content needed for this request
+        {
+          headers: {
+            'Accept': 'application/json',
+            'x-api-key': OKTO_TECH_API_CLIENT_KEY,
+            'Authorization': `Bearer ${userConfig.OktoAuthToken}`,
+            'x-refresh-authorization': `Bearer ${userConfig.OktoRefreshToken}`,
+            'x-device-token': userConfig.OktoDeviceToken,
+          },
+        }
+      );
+  
+      logger.debug(`[OktoProxyService] Token refresh successful for userID: ${userId}`, response.data);
+  
+      // Update the UserConfig with the new tokens
+      await UserConfig.update({
+        OktoAuthToken: response.data.data.auth_token,
+        OktoRefreshToken: response.data.data.refresh_auth_token,
+        OktoDeviceToken: response.data.data.device_token,
+      }, {
+        where: { UserID: userId },
+      });
+  
+      return {
+        status: 'success',
+        message: 'Token refreshed successfully.',
+        data: response.data.data,
+      };
+    } catch (error) {
+      logger.error(`[OktoProxyService] Failed to refresh token for userID: ${userId}: `, error);
+      throw error;
+    }
+  }, 
 };
 module.exports = oktoProxyService;

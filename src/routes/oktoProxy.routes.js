@@ -34,4 +34,14 @@ router.post(
   oktoProxyController.createWalletForUser
 );
 
+router.post(
+  '/refresh_token',
+  verifyToken,
+  (req, res, next) => {
+    logger.info('POST /refresh_token - Refreshing tokens for Okto user');
+    next();
+  },
+  oktoProxyController.refreshTokenForUser
+);
+
 module.exports = router;
