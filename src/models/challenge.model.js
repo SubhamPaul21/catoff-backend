@@ -11,7 +11,7 @@ const Challenge = sequelize.define('Challenge', {
     type: DataTypes.STRING(255),
   },
   ChallengeDescription: {
-    type: DataTypes.STRING(255),
+    type: DataTypes.STRING(2048),
   },
   ChallengeCreator: {
     type: DataTypes.INTEGER.UNSIGNED,
