@@ -113,5 +113,69 @@ const oktoProxyService = {
       throw error;
     }
   },
+
+  createWalletForUser: async (userId) => {
+    const userConfig = await getUserConfig(userId);
+    if (!userConfig || !userConfig.OktoAuthToken) {
+      logger.error(
+        `[OktoProxyService] OktoAuthToken not found for userID: ${userId}`
+      );
+      throw new Error('OktoAuthToken not found');
+    }
+
+    const authToken = userConfig.OktoAuthToken;
+
+    try {
+      const response = await axios.post(
+        `${OKTO_TECH_API_BASE_URL}api/v1/wallet`,
+        {}, // No body is required for this request as per your description
+        {
+          headers: {
+            Accept: 'application/json',
+            'x-api-key': OKTO_TECH_API_CLIENT_KEY,
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+
+      logger.debug(
+        `[OktoProxyService] Wallet creation successful for userID: ${userId}`,
+        response.data
+      );
+
+      // Extract the wallet address for SOLANA_DEVNET
+      const solanaDevnetWallet = response.data.data.wallets.find(
+        (wallet) => wallet.network_name === 'SOLANA_DEVNET'
+      );
+      if (!solanaDevnetWallet) {
+        throw new Error(
+          'SOLANA_DEVNET wallet address not found in the response'
+        );
+      }
+
+      // Update the User model with the Solana Devnet wallet address
+      await User.update(
+        { WalletAddress: solanaDevnetWallet.address },
+        { where: { UserID: userId } }
+      );
+
+      logger.debug(
+        `[OktoProxyService] User model updated with SOLANA_DEVNET wallet address for userID: ${userId}`
+      );
+
+      // Return the response or process it as needed
+      return {
+        status: response.status,
+        message: 'Wallet created successfully.',
+        data: response.data.wallets,
+      };
+    } catch (error) {
+      logger.error(
+        `[OktoProxyService] Failed to create wallet for userID: ${userId}: `,
+        error
+      );
+      throw error;
+    }
+  },
 };
 module.exports = oktoProxyService;

@@ -48,6 +48,30 @@ const oktoProxyController = {
       });
     }
   },
+
+  createWalletForUser: async (req, res) => {
+    const userId = req.UserID;
+
+    logger.debug(
+      '[OktoProxyController] Attempting to Create New Wallet for Okto user'
+    );
+    try {
+      const result = await oktoProxyService.createWalletForUser(userId);
+      logger.debug(
+        '[OktoProxyController] Successfully Created New Wallet for Okto user'
+      );
+      res.json(result);
+    } catch (error) {
+      logger.error(
+        `[OktoProxyController] Error creating wallet for user: `,
+        error
+      );
+      res.status(500).json({
+        message: 'Failed to create wallet',
+        error: error.message,
+      });
+    }
+  },
 };
 
 module.exports = oktoProxyController;

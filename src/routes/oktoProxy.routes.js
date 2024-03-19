@@ -24,4 +24,14 @@ router.post(
   oktoProxyController.setNewPinOktoUser
 );
 
+router.post(
+  '/create_wallet',
+  verifyToken,
+  (req, res, next) => {
+    logger.info('POST /create_wallet - Creating wallet for Okto user');
+    next();
+  },
+  oktoProxyController.createWalletForUser
+);
+
 module.exports = router;
