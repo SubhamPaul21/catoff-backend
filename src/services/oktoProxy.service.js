@@ -1,15 +1,42 @@
 const axios = require('axios');
 const { getUserConfig } = require('../services/userConfig.service');
 const logger = require('../utils/logger');
+const { UserConfig, User } = require('../models/index');
 
 const OKTO_TECH_API_BASE_URL = 'https://sandbox-api.okto.tech/';
 const OKTO_TECH_API_CLIENT_KEY = process.env.OKTO_TECH_API_CLIENT_KEY; // Ensure you have this in your .env file
 
+const processAuthenticationResponse = async (userId, responseData) => {
+  const { data } = responseData;
+  let updateData = {};
+
+  if ('token' in data) {
+    // New user scenario
+    updateData.OktoAuthToken = data.token; // Assuming you store the new user's token here
+  } else if ('auth_token' in data) {
+    // Existing user scenario
+    updateData = {
+      OktoAuthToken: data.auth_token,
+      OktoRefreshToken: data.refresh_auth_token,
+      OktoDeviceToken: data.device_token,
+    };
+  }
+
+  try {
+    // Update or create user configuration
+    await UserConfig.update(updateData, {
+      where: { UserID: userId },
+    });
+  } catch (error) {
+    logger.error(`Error updating UserConfig for userID: ${userId}`, error);
+    throw error;
+  }
+};
 const oktoProxyService = {
   authenticateUserWithOkto: async (userId) => {
     const userConfig = await getUserConfig(userId);
     logger.debug(
-      '[OktoProxyService] Sending authentication request to Okto.tech'
+      `[OktoProxyService] Sending authentication request to Okto.tech`
     );
     try {
       const response = await axios.post(
@@ -25,9 +52,23 @@ const oktoProxyService = {
         }
       );
       logger.debug(
-        `[OktoProxyService] Authentication successful with Okto.tech with response: `
+        `[OktoProxyService] Authentication successful with Okto.tech with response`
       );
-      return response.data;
+      // Process the response from Okto's API
+      await processAuthenticationResponse(userId, response.data);
+      if ('token' in response.data.data) {
+        // New user case: return information needed to prompt setting a pin
+        return {
+          status: 'new_user',
+          message: 'Please set_pin API.',
+        };
+      } else {
+        // Existing user case: authentication successful
+        return {
+          status: 'success',
+          message: 'Authentication successful.',
+        };
+      }
     } catch (error) {
       logger.error(
         `[OktoProxyService] Failed to authenticate with Okto.tech: `,
