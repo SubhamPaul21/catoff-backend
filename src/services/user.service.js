@@ -8,7 +8,7 @@ const WalletAddress = require('../models/walletAddress.model');
 require('dotenv').config();
 const logger = require('../utils/logger');
 const { createUserConfig } = require('./userConfig.service');
-const { UserConfig } = require('../models');
+const UserConfig  = require('../models/userConfig.model');
 
 const AddUserDetails = async (userId, email, userName) => {
   logger.debug(
@@ -70,7 +70,7 @@ const AddUserDetails = async (userId, email, userName) => {
 //     }
 // }
 
-const signin = async (data) => {
+const signin = async (data, tokens) => {
   logger.debug(`[UserService] Attempting signup `);
   try {
     let user = await User.findOne({ where: { Email: data.email } });
@@ -80,6 +80,22 @@ const signin = async (data) => {
         ProfilePicture: data.picture,
       });
       user.update({ UserName: `User #${user.UserID}` });
+      let userConfig = await UserConfig.findOne({ where: { UserID: user.UserID } });
+      if (!userConfig){
+        userConfig = await UserConfig.create({
+          UserID: user.UserID,
+          GoogleRefreshToken: tokens.refresh_token,
+          IdToken: tokens.id_token,
+        });
+        await user.setUserConfig(userConfig);
+      }
+      await user.save();
+      await userConfig.save();
+      // console.log(await User.findOne({
+      //   where: { UserID: userId },
+      //   include: UserConfig,
+      // }), "OOoooooo")
+      
       logger.info('[UserService] signUp successful');
     }
     const JwtToken = jwt.sign({ userId: user.UserID }, process.env.JWT_SECRET, {
