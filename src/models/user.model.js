@@ -101,6 +101,8 @@ const User = sequelize.define('User', {
     allowNull: true,
     unique: true,
   },
+},{
+  timestamps: false, // Disable automatic createdAt and updatedAt columns
 });
 
 module.exports = User;

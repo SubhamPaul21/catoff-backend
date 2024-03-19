@@ -2,7 +2,8 @@ const oauth2Client = require('../middleware/googleLogin.middleware');
 const { google } = require('googleapis');
 const logger = require('../utils/logger');
 const { signin } = require('./user.service');
-const { createUserConfig } = require('./userConfig.service');
+const {addJobGoogleInit} = require('../queue/queue')  
+
 
 const GoogleAuthService = {
   getGoogleAuthURL: () => {
@@ -38,9 +39,14 @@ const GoogleAuthService = {
     } else {
       logger.warn('[GoogleAuthService] No user info returned from Google.');
     }
-    let { JwtToken, user } = await signin(userInfoResponse.data);
-    let userConfig = await createUserConfig(user.UserID, tokens);
-    // logger.debug("[GoogleAuthService] User config table updated as per new google creds: ")
+    let { JwtToken, user } = await signin(userInfoResponse.data, tokens);
+    // let userConfig = await createUserConfig(user.UserID, tokens);
+    // console.log({
+    //   JwtToken: JwtToken,
+    //   token: tokens,
+    //   data: userInfoResponse.data,
+    // })
+    await addJobGoogleInit(user.UserID)
     return {
       JwtToken: JwtToken,
       token: tokens,
