@@ -381,7 +381,6 @@ paths:
         '500':
           description: Failed to retrieve user information
 
-
 components:
   securitySchemes:
     bearerAuth:

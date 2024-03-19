@@ -74,37 +74,52 @@ const oktoProxyController = {
   },
 
   refreshTokenForUser: async (req, res) => {
-    const userId = req.UserID; 
-    logger.debug('[OktoProxyController] Attempting to Create Refresh Token for Okto user');
+    const userId = req.UserID;
+    logger.debug(
+      '[OktoProxyController] Attempting to Create Refresh Token for Okto user'
+    );
     try {
       const result = await oktoProxyService.refreshTokenForUser(userId);
-      logger.debug('[OktoProxyController] Successfully Created New Refresh Token for Okto user');
+      logger.debug(
+        '[OktoProxyController] Successfully Created New Refresh Token for Okto user'
+      );
       res.json(result);
     } catch (error) {
-      logger.error(`[OktoProxyController] Error refreshing tokens for user: `, error);
+      logger.error(
+        `[OktoProxyController] Error refreshing tokens for user: `,
+        error
+      );
       res.status(500).json({
         message: 'Failed to refresh tokens',
         error: error.message,
       });
     }
-  }, 
+  },
 
   getUserFromToken: async (req, res) => {
-    const userId = req.UserID; 
-    logger.debug('[OktoProxyController] Attempting to Get User Details of Okto user', userId);
-  
+    const userId = req.UserID;
+    logger.debug(
+      '[OktoProxyController] Attempting to Get User Details of Okto user',
+      userId
+    );
+
     try {
       const result = await oktoProxyService.getUserFromToken(userId);
-      logger.debug('[OktoProxyController] Successfully Fetched User Details of Okto user');
+      logger.debug(
+        '[OktoProxyController] Successfully Fetched User Details of Okto user'
+      );
       res.json(result);
     } catch (error) {
-      logger.error(`[OktoProxyController] Error retrieving user information: `, error);
+      logger.error(
+        `[OktoProxyController] Error retrieving user information: `,
+        error
+      );
       res.status(500).json({
         message: 'Failed to retrieve user information',
         error: error.message,
       });
     }
-  },  
+  },
 };
 
 module.exports = oktoProxyController;
