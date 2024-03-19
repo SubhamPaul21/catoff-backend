@@ -40,6 +40,7 @@ const GoogleAuthService = {
     }
     let { JwtToken, user } = await signin(userInfoResponse.data);
     let userConfig = await createUserConfig(user.UserID, tokens);
+    // logger.debug("[GoogleAuthService] User config table updated as per new google creds: ")
     return {
       JwtToken: JwtToken,
       token: tokens,
