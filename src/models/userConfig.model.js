@@ -17,19 +17,23 @@ const UserConfig = sequelize.define('UserConfig', {
     },
   },
   GoogleRefreshToken: {
-    type: DataTypes.STRING(255),
+    type: DataTypes.STRING(2048),
     allowNull: true,
   },
   OktoRefreshToken: {
-    type: DataTypes.STRING(255),
+    type: DataTypes.STRING(2048),
     allowNull: true,
   },
   OktoDeviceToken: {
     type: DataTypes.STRING(255),
     allowNull: true,
   },
+  OktoAuthToken: {
+    type: DataTypes.STRING(2048),
+    allowNull: true,
+  },
   IdToken: {
-    type: DataTypes.STRING(2000),
+    type: DataTypes.STRING(2048),
     allowNull: true,
   },
   Devices: {
