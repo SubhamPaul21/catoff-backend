@@ -19,7 +19,7 @@ const createChallengeHandler = async (req, res) => {
     logger.error(
       `[ChallengeController] Error creating challenge: ${error.message}`
     );
-    return makeResponse(res, 500, false, 'error retrieving challenge', null);
+    return makeResponse(res, 500, false, 'error creating challenge', null);
   }
 };
 
