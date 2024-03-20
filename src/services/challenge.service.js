@@ -193,6 +193,20 @@ const updateIsStarted = async(challengeId)=>{
   }
 }
 
+const getAllStartedChallenges = async()=>{
+  try{
+    let challenges = await Challenge.findAll({where:{IsStarted: true}});
+    logger.info('[ChallengeService] Started challenges fetched successfully');
+    return challenges;
+  }
+  catch(err){
+    logger.error(
+      `[ChallengeService] Error in retrieving challenge getAllStartedChallenge: ${err.message}`
+    )
+    throw err
+  }
+}
+
 module.exports = {
   createChallenge,
   getChallenge,
@@ -202,5 +216,6 @@ module.exports = {
   getOngoingChallenges,
   checkIfChallengeAvailableForEntry,
   updateIsStarted,
-  addPlayersToChallenge
+  addPlayersToChallenge,
+  getAllStartedChallenges,
 };
