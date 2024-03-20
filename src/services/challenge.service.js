@@ -148,64 +148,73 @@ const getOngoingChallenges = async (type, page, limit) => {
   }
 };
 
-const checkIfChallengeAvailableForEntry = async(challengeId)=>{
-  try{
-    const challenge = await Challenge.findOne({where: {ChallengeID: challengeId}});
+const checkIfChallengeAvailableForEntry = async (challengeId) => {
+  try {
+    const challenge = await Challenge.findOne({
+      where: { ChallengeID: challengeId },
+    });
     logger.info('[ChallengeService] data retrieved successfully');
     return !challenge.IsStarted && challenge.IsActive;
-  }catch(err){
+  } catch (err) {
     logger.error(
       `[ChallengeService] Error in retrieving challenge checkIfChallengeAvailableForEntry: ${error.message}`
-    )
-    throw err
+    );
+    throw err;
   }
-}
+};
 
-const addPlayersToChallenge = async(challengeId,playerId)=>{
-  try{
+const addPlayersToChallenge = async (challengeId, playerId) => {
+  try {
     const challenge = await Challenge.findByPk(challengeId);
     await challenge.update({
       Players: [...challenge.Players, playerId],
     });
-    logger.info('[ChallengeService] players updated successfully')
-
-  }catch(e){
+    logger.info('[ChallengeService] players updated successfully');
+  } catch (e) {
     logger.error(
       `[ChallengeService] Error in updating players in challenge: ${error.message}`
-    )
-    throw e
+    );
+    throw e;
   }
-}
+};
 
-const updateIsStarted = async(challengeId)=>{
-  try{
-    let challenge = await Challenge.findOne({where: {ChallengeID: challengeId}});
-    if(challenge.IsActive && !challenge.IsStarted && (challenge.Players.length>=challenge.MaxParticipants)){
-      await Challenge.update({IsStarted: true},{where:{ChallengeID: challengeId}})
-      logger.info('[ChallengeService] isStarted updated successfully')
+const updateIsStarted = async (challengeId) => {
+  try {
+    let challenge = await Challenge.findOne({
+      where: { ChallengeID: challengeId },
+    });
+    if (
+      challenge.IsActive &&
+      !challenge.IsStarted &&
+      challenge.Players.length >= challenge.MaxParticipants
+    ) {
+      await Challenge.update(
+        { IsStarted: true },
+        { where: { ChallengeID: challengeId } }
+      );
+      logger.info('[ChallengeService] isStarted updated successfully');
       return true;
     }
-  }catch(err){
+  } catch (err) {
     logger.error(
       `[ChallengeService] Error in retrieving challenge updateIsStarted: ${error.message}`
-    )
+    );
     throw err;
   }
-}
+};
 
-const getAllStartedChallenges = async()=>{
-  try{
-    let challenges = await Challenge.findAll({where:{IsStarted: true}});
+const getAllStartedChallenges = async () => {
+  try {
+    let challenges = await Challenge.findAll({ where: { IsStarted: true } });
     logger.info('[ChallengeService] Started challenges fetched successfully');
     return challenges;
-  }
-  catch(err){
+  } catch (err) {
     logger.error(
       `[ChallengeService] Error in retrieving challenge getAllStartedChallenge: ${err.message}`
-    )
-    throw err
+    );
+    throw err;
   }
-}
+};
 
 module.exports = {
   createChallenge,

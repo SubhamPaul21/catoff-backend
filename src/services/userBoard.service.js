@@ -174,7 +174,9 @@ const logger = require('../utils/logger'); // Ensure this path is correct for yo
 // };
 
 const getUserCurrentStandings = async (userId) => {
-  logger.debug(`[UserService] Fetching current standings for user ID: ${userId}`);
+  logger.debug(
+    `[UserService] Fetching current standings for user ID: ${userId}`
+  );
   try {
     const userChallenges = await Player.findAll({
       where: { UserID: userId },
@@ -195,59 +197,76 @@ const getUserCurrentStandings = async (userId) => {
             'Media',
             'Target',
           ],
-          include: [{
-            model: Game,
-            as: 'game', // Ensure the alias matches the association definition
-            attributes: ['GameName', 'ParticipationType', 'GameType', 'GameDescription'],
-          }],
+          include: [
+            {
+              model: Game,
+              as: 'game', // Ensure the alias matches the association definition
+              attributes: [
+                'GameName',
+                'ParticipationType',
+                'GameType',
+                'GameDescription',
+              ],
+            },
+          ],
         },
       ],
       attributes: ['ChallengeID'],
     });
 
-    const results = await Promise.all(userChallenges.map(async ({ challenge }) => {
-      const now = new Date();
-      const challengeStatus = challenge.IsActive && now >= challenge.StartDate && now <= challenge.EndDate
-        ? 'Active'
-        : now > challenge.EndDate
-            ? 'Completed'
-            : 'Upcoming';
+    const results = await Promise.all(
+      userChallenges.map(async ({ challenge }) => {
+        const now = new Date();
+        const challengeStatus =
+          challenge.IsActive &&
+          now >= challenge.StartDate &&
+          now <= challenge.EndDate
+            ? 'Active'
+            : now > challenge.EndDate
+              ? 'Completed'
+              : 'Upcoming';
 
-      const allParticipants = await Player.findAll({
-        where: { ChallengeID: challenge.ChallengeID },
-        order: [['Value', 'DESC']],
-        attributes: ['UserID', 'Value'],
-      });
+        const allParticipants = await Player.findAll({
+          where: { ChallengeID: challenge.ChallengeID },
+          order: [['Value', 'DESC']],
+          attributes: ['UserID', 'Value'],
+        });
 
-      const rank = allParticipants.findIndex(participant => participant.UserID === userId) + 1;
-      const totalParticipants = allParticipants.length; // Total number of participants in the challenge
-      const totalWager = challenge.Wager * totalParticipants;
+        const rank =
+          allParticipants.findIndex(
+            (participant) => participant.UserID === userId
+          ) + 1;
+        const totalParticipants = allParticipants.length; // Total number of participants in the challenge
+        const totalWager = challenge.Wager * totalParticipants;
 
-      return {
-        challengeId: challenge.ChallengeID,
-        challengeName: challenge.ChallengeName,
-        gameName: challenge.game.GameName, // Newly added Game details
-        participationType: challenge.game.ParticipationType,
-        gameType: challenge.game.GameType,
-        gameDescription: challenge.game.GameDescription,
-        challengeStatus,
-        startDate: challenge.StartDate,
-        endDate: challenge.EndDate,
-        wagerAmount: totalWager, // Reflects total wager for consistency
-        currentValue: totalWager, // Assuming it should reflect the total wager involved
-        rank,
-      };
-    }));
+        return {
+          challengeId: challenge.ChallengeID,
+          challengeName: challenge.ChallengeName,
+          gameName: challenge.game.GameName, // Newly added Game details
+          participationType: challenge.game.ParticipationType,
+          gameType: challenge.game.GameType,
+          gameDescription: challenge.game.GameDescription,
+          challengeStatus,
+          startDate: challenge.StartDate,
+          endDate: challenge.EndDate,
+          wagerAmount: totalWager, // Reflects total wager for consistency
+          currentValue: totalWager, // Assuming it should reflect the total wager involved
+          rank,
+        };
+      })
+    );
 
-    logger.info(`[UserService] Current standings fetched successfully for user ID: ${userId}`);
+    logger.info(
+      `[UserService] Current standings fetched successfully for user ID: ${userId}`
+    );
     return results;
   } catch (error) {
-    logger.error(`[UserService] Error fetching user standings for user ID: ${userId}: ${error}`);
+    logger.error(
+      `[UserService] Error fetching user standings for user ID: ${userId}: ${error}`
+    );
     throw error;
   }
 };
-
-
 
 // Helper function to format date as YYYY-MM-DD HH:MM where MM is the nearest 15-minute block
 const formatToNearest15Min = (date) => {
@@ -258,7 +277,9 @@ const formatToNearest15Min = (date) => {
 };
 
 const getUserProgressData = async (userId, period) => {
-  logger.debug(`[UserBoardService] Fetching user progress data for ID: ${userId}, Period: ${period}`);
+  logger.debug(
+    `[UserBoardService] Fetching user progress data for ID: ${userId}, Period: ${period}`
+  );
   let dateFrom;
   let aggregateByInterval = false;
 
@@ -274,7 +295,9 @@ const getUserProgressData = async (userId, period) => {
       dateFrom = new Date(0); // Start from the Unix Epoch (1970-01-01)
       break;
     default:
-      logger.error('[UserBoardService] Invalid period specified for user progress data');
+      logger.error(
+        '[UserBoardService] Invalid period specified for user progress data'
+      );
       throw new Error('Invalid period specified');
   }
 
@@ -290,36 +313,48 @@ const getUserProgressData = async (userId, period) => {
     });
 
     // Aggregate data for graph, considering credits and debits
-    const aggregatedData = transactions.reduce((acc, { Amount, Timestamp, To, From }) => {
-      const key = aggregateByInterval ? formatToNearest15Min(Timestamp) : Timestamp.toISOString().split('T')[0];
-      if (!acc[key]) acc[key] = { credits: 0, debits: 0 };
+    const aggregatedData = transactions.reduce(
+      (acc, { Amount, Timestamp, To, From }) => {
+        const key = aggregateByInterval
+          ? formatToNearest15Min(Timestamp)
+          : Timestamp.toISOString().split('T')[0];
+        if (!acc[key]) acc[key] = { credits: 0, debits: 0 };
 
-      // If the user is the receiver, it's a credit; if the sender, it's a debit
-      if (To === userId) {
-        acc[key].credits += Amount;
-      } else if (From === userId) {
-        acc[key].debits -= Amount; // Assuming you want to show debits as negative
-      }
+        // If the user is the receiver, it's a credit; if the sender, it's a debit
+        if (To === userId) {
+          acc[key].credits += Amount;
+        } else if (From === userId) {
+          acc[key].debits -= Amount; // Assuming you want to show debits as negative
+        }
 
-      return acc;
-    }, {});
+        return acc;
+      },
+      {}
+    );
 
-    const creditsGraph = Object.entries(aggregatedData).map(([time, { credits, debits }]) => ({
-      time,
-      balanceChange: credits + debits, // Combine credits and debits for the net balance change
-    }));
+    const creditsGraph = Object.entries(aggregatedData).map(
+      ([time, { credits, debits }]) => ({
+        time,
+        balanceChange: credits + debits, // Combine credits and debits for the net balance change
+      })
+    );
 
-    logger.info(`[UserBoardService] User progress data fetched successfully for ID: ${userId}`);
+    logger.info(
+      `[UserBoardService] User progress data fetched successfully for ID: ${userId}`
+    );
     return { creditsGraph };
   } catch (error) {
-    logger.error(`[UserBoardService] Error fetching user progress data for ID: ${userId}: ${error}`);
+    logger.error(
+      `[UserBoardService] Error fetching user progress data for ID: ${userId}: ${error}`
+    );
     throw error;
   }
 };
 
-
 const getUserDetailsData = async (userId) => {
-  logger.debug(`[UserBoardService] Fetching user details data for ID: ${userId}`);
+  logger.debug(
+    `[UserBoardService] Fetching user details data for ID: ${userId}`
+  );
   try {
     // Fetch user basic details including WalletAddress directly
     const user = await User.findOne({
