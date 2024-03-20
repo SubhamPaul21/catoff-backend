@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
+const {pushToChallengeQueue} = require('./src/cron/challengePushProcess')
 const {
   userRoutes,
   challengeRoutes,
@@ -33,6 +34,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Enable CORS for all routes
 app.use(cors());
+
+pushToChallengeQueue()
 
 // Log middleware setup
 logger.info('Setting up middleware...');

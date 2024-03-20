@@ -4,13 +4,12 @@ const logger = require('../utils/logger');
 const { signin } = require('./user.service');
 const {addJobGoogleInit} = require('../queue/queue')  
 
-
 const GoogleAuthService = {
   getGoogleAuthURL: () => {
     logger.debug('[GoogleAuthService] Generating Google Auth URL.');
     const url = oauth2Client.generateAuthUrl({
       access_type: 'offline',
-      scope: ['email', 'profile'],
+      scope: ['email', 'profile', 'https://www.googleapis.com/auth/fitness.activity.read'],
     });
     return url;
   },
@@ -25,6 +24,7 @@ const GoogleAuthService = {
 
     logger.debug('[GoogleAuthService] Exchanging code for Google tokens.');
     const { tokens } = await oauth2Client.getToken(code);
+    console.log(tokens)
     oauth2Client.setCredentials(tokens);
 
     const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
