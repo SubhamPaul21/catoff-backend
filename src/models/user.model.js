@@ -101,6 +101,11 @@ const User = sequelize.define('User', {
     allowNull: true,
     unique: true,
   },
+  InvestedCredits: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: true,
+    defaultValue: 0
+  }
 },{
   timestamps: false, // Disable automatic createdAt and updatedAt columns
 });

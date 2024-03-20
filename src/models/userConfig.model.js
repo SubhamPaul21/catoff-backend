@@ -48,6 +48,9 @@ const UserConfig = sequelize.define('UserConfig', {
     type: DataTypes.STRING(255),
     allowNull: true,
   },
+},
+{
+  timestamps: false, // Disable automatic createdAt and updatedAt columns
 });
 
 module.exports = UserConfig;
