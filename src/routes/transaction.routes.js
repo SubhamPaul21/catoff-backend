@@ -15,11 +15,11 @@ const logger = require('../utils/logger');
 
 router.post(
   '/',
-  validateTransactionCreation,
   (req, res, next) => {
     logger.info('POST /transactions - Creating a new transaction');
     next();
   },
+  validateTransactionCreation,
   createTransactionHandler
 );
 router.get(
@@ -42,13 +42,13 @@ router.get(
 );
 router.put(
   '/:TxID',
-  validateTransactionUpdate,
   (req, res, next) => {
     logger.info(
       `PUT /transactions/${req.params.TxID} - Updating a transaction`
     );
     next();
   },
+  validateTransactionUpdate,
   updateTransactionHandler
 );
 router.delete(

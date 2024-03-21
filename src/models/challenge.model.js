@@ -44,7 +44,7 @@ const Challenge = sequelize.define('Challenge', {
   IsActive: {
     type: DataTypes.BOOLEAN,
   },
-  IsSettled:{
+  IsSettled: {
     type: DataTypes.BOOLEAN,
     allowNull: true,
     defaultValue: false,
@@ -52,7 +52,7 @@ const Challenge = sequelize.define('Challenge', {
   IsStarted: {
     type: DataTypes.BOOLEAN,
     allowNull: true,
-    defaultValue: false
+    defaultValue: false,
   },
   Winner: {
     type: DataTypes.INTEGER.UNSIGNED,
@@ -65,10 +65,10 @@ const Challenge = sequelize.define('Challenge', {
   MaxParticipants: {
     type: DataTypes.INTEGER.UNSIGNED,
   },
-  Players: {
-    type: DataTypes.ARRAY(DataTypes.INTEGER.UNSIGNED),
-    defaultValue: [],
-  },
+  // Players: {
+  //   type: DataTypes.ARRAY(DataTypes.INTEGER.UNSIGNED),
+  //   defaultValue: [],
+  // },
   Media: {
     type: DataTypes.STRING(255),
     allowNull: true,

@@ -71,43 +71,47 @@
 const { sequelize } = require('../db/db.js');
 const { DataTypes } = require('sequelize');
 
-const User = sequelize.define('User', {
-  UserID: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    primaryKey: true,
-    autoIncrement: true,
+const User = sequelize.define(
+  'User',
+  {
+    UserID: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    Email: {
+      type: DataTypes.STRING(255),
+      unique: true,
+      allowNull: true,
+    },
+    UserName: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+      unique: true,
+    },
+    WalletAddress: {
+      type: DataTypes.STRING(255),
+      unique: true,
+      allowNull: true,
+    },
+    Credits: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      defaultValue: 0,
+    },
+    ProfilePicture: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      unique: true,
+    },
+    InvestedCredits: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true,
+      defaultValue: 0,
+    },
   },
-  Email: {
-    type: DataTypes.STRING(255),
-    unique: true,
-    allowNull: true,
-  },
-  UserName: {
-    type: DataTypes.STRING(50),
-    allowNull: true,
-    unique: true,
-  },
-  WalletAddress: {
-    type: DataTypes.STRING(255),
-    unique: true,
-    allowNull: true,
-  },
-  Credits: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    defaultValue: 0,
-  },
-  ProfilePicture: {
-    type: DataTypes.STRING(255),
-    allowNull: true,
-    unique: true,
-  },
-  InvestedCredits: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: true,
-    defaultValue: 0
+  {
+    timestamps: false, // Disable automatic createdAt and updatedAt columns
   }
-},{
-  timestamps: false, // Disable automatic createdAt and updatedAt columns
-});
+);
 
 module.exports = User;
