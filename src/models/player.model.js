@@ -83,7 +83,7 @@ const Player = sequelize.define('Player', {
   },
   Value: {
     type: DataTypes.FLOAT.UNSIGNED,
-    allowNull: false,
+    allowNull: true,
     defaultValue: 0,
   },
   Device: {
@@ -98,6 +98,9 @@ const Player = sequelize.define('Player', {
     type: DataTypes.STRING(255),
     allowNull: true,
   },
+},
+{
+  timestamps: false, // Disable automatic createdAt and updatedAt columns
 });
 
 module.exports = Player;

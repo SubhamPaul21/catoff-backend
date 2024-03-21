@@ -56,6 +56,9 @@ const Game = sequelize.define('Game', {
   GameDescription: {
     type: DataTypes.STRING(255),
   },
+},
+{
+  timestamps: false, // Disable automatic createdAt and updatedAt columns
 });
 
 module.exports = Game;

@@ -163,30 +163,15 @@ const checkIfChallengeAvailableForEntry = async (challengeId) => {
   }
 };
 
-const addPlayersToChallenge = async (challengeId, playerId) => {
-  try {
-    const challenge = await Challenge.findByPk(challengeId);
-    await challenge.update({
-      Players: [...challenge.Players, playerId],
-    });
-    logger.info('[ChallengeService] players updated successfully');
-  } catch (e) {
-    logger.error(
-      `[ChallengeService] Error in updating players in challenge: ${error.message}`
-    );
-    throw e;
-  }
-};
 
-const updateIsStarted = async (challengeId) => {
+const updateIsStarted = async (challengeId, totalNum) => {
   try {
     let challenge = await Challenge.findOne({
-      where: { ChallengeID: challengeId },
-    });
+      where: { ChallengeID: challengeId }});
     if (
       challenge.IsActive &&
       !challenge.IsStarted &&
-      challenge.Players.length >= challenge.MaxParticipants
+      totalNum >= challenge.MaxParticipants
     ) {
       await Challenge.update(
         { IsStarted: true },
@@ -225,6 +210,5 @@ module.exports = {
   getOngoingChallenges,
   checkIfChallengeAvailableForEntry,
   updateIsStarted,
-  addPlayersToChallenge,
   getAllStartedChallenges,
 };

@@ -12,13 +12,10 @@ const createPlayer = async (playerData) => {
     const isPlayerExist = await Players.findOne({
       where: { UserID: playerData.UserID, ChallengeID: playerData.ChallengeID },
     });
-    console.log(1);
     if (!isPlayerExist) {
-      console.log(2);
       if (await checkIfChallengeAvailableForEntry(playerData.ChallengeID)) {
         const player = await Players.create(playerData);
 
-        await addPlayersToChallenge(playerData.ChallengeID, player.PlayerID);
         await checkAndUpdateIsStartedChallenge(playerData.ChallengeID);
         logger.info('[PlayerService] Player created successfully');
         return player;
@@ -104,7 +101,9 @@ const getAllPlayersOfChallenge = async (challengeId) => {
 
 const checkAndUpdateIsStartedChallenge = async (challengeId) => {
   try {
-    await updateIsStarted(challengeId);
+
+    let players = await Players.findAll({where:{ChallengeID: challengeId}})
+    await updateIsStarted(challengeId, players.length);
     logger.info('[PlayerService] Players for challenge fetched successfully');
   } catch (err) {
     logger.error(`[playerService]  checkAndUpdateIsStartedChallenge error`);

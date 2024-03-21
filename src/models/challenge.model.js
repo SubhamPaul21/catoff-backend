@@ -81,6 +81,9 @@ const Challenge = sequelize.define('Challenge', {
     type: DataTypes.FLOAT.UNSIGNED,
     allowNull: false,
   },
+},
+{
+  timestamps: false, // Disable automatic createdAt and updatedAt columns
 });
 
 module.exports = Challenge;
