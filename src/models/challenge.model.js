@@ -65,10 +65,10 @@ const Challenge = sequelize.define('Challenge', {
   MaxParticipants: {
     type: DataTypes.INTEGER.UNSIGNED,
   },
-  Players: {
-    type: DataTypes.ARRAY(DataTypes.INTEGER.UNSIGNED),
-    defaultValue: [],
-  },
+  // Players: {
+  //   type: DataTypes.ARRAY(DataTypes.INTEGER.UNSIGNED),
+  //   defaultValue: [],
+  // },
   Media: {
     type: DataTypes.STRING(255),
     allowNull: true,

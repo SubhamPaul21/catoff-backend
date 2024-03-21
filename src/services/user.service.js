@@ -71,41 +71,55 @@ const AddUserDetails = async (userId, email, userName) => {
 // }
 
 const signin = async (data, tokens) => {
-  logger.debug(`[UserService] Attempting signup `);
+  logger.debug(`[UserService] Attempting to sign in or sign up.`);
   try {
     let user = await User.findOne({ where: { Email: data.email } });
+
     if (!user) {
+      // If user does not exist, create a new user entry.
       user = await User.create({
         Email: data.email,
         ProfilePicture: data.picture,
+        UserName: `User #${user.UserID}`, // This line needs to be updated after user creation
       });
-      user.update({ UserName: `User #${user.UserID}` });
-      let userConfig = await UserConfig.findOne({
-        where: { UserID: user.UserID },
-      });
-      if (!userConfig) {
-        userConfig = await UserConfig.create({
-          UserID: user.UserID,
-          GoogleRefreshToken: tokens.refresh_token,
-          IdToken: tokens.id_token,
-        });
-        await user.setUserConfig(userConfig);
-      }
-      await user.save();
-      await userConfig.save();
-      // console.log(await User.findOne({
-      //   where: { UserID: userId },
-      //   include: UserConfig,
-      // }), "OOoooooo")
-
-      logger.info('[UserService] signUp successful');
+    } else {
+      // If user exists, update their ProfilePicture in case it has changed.
+      await user.update({ ProfilePicture: data.picture });
     }
+
+    // Ensure UserName is set after user is created or fetched
+    if (!user.UserName) {
+      await user.update({ UserName: `User #${user.UserID}` });
+    }
+
+    // Fetch or create UserConfig and update tokens.
+    let userConfig = await UserConfig.findOne({
+      where: { UserID: user.UserID },
+    });
+
+    if (!userConfig) {
+      userConfig = await UserConfig.create({
+        UserID: user.UserID,
+        GoogleRefreshToken: tokens.refresh_token,
+        IdToken: tokens.id_token,
+      });
+    } else {
+      // Update tokens for existing users.
+      await userConfig.update({
+        GoogleRefreshToken: tokens.refresh_token,
+        IdToken: tokens.id_token,
+      });
+    }
+
+    // Generate JWT Token
     const JwtToken = jwt.sign({ userId: user.UserID }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
+
+    logger.info('[UserService] User sign in/up successful.');
     return { JwtToken, user };
   } catch (e) {
-    logger.error(`[UserService] signUp failed failed: ${e.message}`);
+    logger.error(`[UserService] Sign in/up failed: ${e.message}`);
     throw e;
   }
 };
