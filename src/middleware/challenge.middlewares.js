@@ -22,8 +22,8 @@ const validateChallengeCreation = [
   body('ChallengeCreator')
     .isInt()
     .withMessage('Valid challenge creator is required'),
-  body('StartDate').isISO8601().withMessage('Valid start date is required'),
-  body('EndDate').isISO8601().withMessage('Valid end date is required'),
+  body('StartDate').isInt().withMessage('Valid start date is required'),
+  body('EndDate').isInt().withMessage('Valid end date is required'),
   body('GameID').isInt().withMessage('Valid Game type is required'),
   body('IsActive').isBoolean().withMessage('isActive must be a boolean'),
   body('MaxParticipants').isInt().withMessage('MaxParticipant must be int'),

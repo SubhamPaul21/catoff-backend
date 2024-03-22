@@ -3,8 +3,9 @@ const logger = require('../utils/logger');
 const {
   checkIfChallengeAvailableForEntry,
   updateIsStarted,
-  addPlayersToChallenge,
+  getChallenge
 } = require('./challenge.service');
+const {updateCredit} = require('./user.service')
 
 const createPlayer = async (playerData) => {
   logger.debug('[PlayerService] Creating player');
@@ -13,9 +14,10 @@ const createPlayer = async (playerData) => {
       where: { UserID: playerData.UserID, ChallengeID: playerData.ChallengeID },
     });
     if (!isPlayerExist) {
-      if (await checkIfChallengeAvailableForEntry(playerData.ChallengeID)) {
+      if (await checkIfChallengeAvailableForEntry(playerData.ChallengeID, playerData.UserID)) {
         const player = await Players.create(playerData);
-
+        const challenge = await getChallenge(playerData.ChallengeID)
+        await updateCredit(playerData.UserID, challenge.Wager)
         await checkAndUpdateIsStartedChallenge(playerData.ChallengeID);
         logger.info('[PlayerService] Player created successfully');
         return player;
