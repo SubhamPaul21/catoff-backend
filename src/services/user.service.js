@@ -79,9 +79,10 @@ const signin = async (data, tokens) => {
       // If user does not exist, create a new user entry.
       user = await User.create({
         Email: data.email,
-        ProfilePicture: data.picture,
-        UserName: `User #${user.UserID}`, // This line needs to be updated after user creation
+        ProfilePicture: data.picture, // This line needs to be updated after user creation
       });
+      user.UserName = `User #${user.UserID}`
+      user.save()
     } else {
       // If user exists, update their ProfilePicture in case it has changed.
       await user.update({ ProfilePicture: data.picture });
@@ -119,7 +120,7 @@ const signin = async (data, tokens) => {
     logger.info('[UserService] User sign in/up successful.');
     return { JwtToken, user };
   } catch (e) {
-    logger.error(`[UserService] Sign in/up failed: ${e.message}`);
+    logger.error(`[UserService] Sign in/up failed: ${e.stack}`);
     throw e;
   }
 };
@@ -179,6 +180,37 @@ const siwsVerification = async (signature, message, publicKey) => {
     throw e;
   }
 };
+
+const updateCredit = async(userId,wager)=>{
+  logger.debug(
+    `[UserService] Attempting updating credit for user`
+  );
+  try{
+    let user = await User.findOne({where:{UserID: userId}});
+    if(user){
+      let curCred = user.Credits;
+      if(curCred>=wager){
+        let newCred  = curCred - wager;
+        let newInvestedCred = user.InvestedCredits + wager
+        await user.update({
+          Credits: newCred,
+          InvestedCredits: newInvestedCred
+        });
+      }
+      else{
+        throw new Error("Not enough Credit for the user to join the challenge")
+      }
+    }
+    else{
+      throw new Error("User not found");
+    }
+    logger.info('[UserService] Credits updated for a user when joined the challenge');
+    return;
+  }catch(err){
+    logger.error(`[UserService] Update credit failed: ${err.message}`);
+    throw err;
+  }
+}
 
 const getUserIds = async (searchTerm) => {
   logger.debug(`[UserService] Fetching user IDs by searchTerm: ${searchTerm}`);
@@ -287,4 +319,5 @@ module.exports = {
   updateUser,
   deleteUser,
   signin,
+  updateCredit,
 };

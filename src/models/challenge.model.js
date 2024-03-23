@@ -26,12 +26,12 @@ const Challenge = sequelize.define('Challenge', {
     allowNull: true,
   },
   StartDate: {
-    type: DataTypes.DATE,
-    allowNull: false,
+    type: DataTypes.INTEGER,
+    allowNull: true,
   },
   EndDate: {
-    type: DataTypes.DATE,
-    allowNull: false,
+    type: DataTypes.INTEGER,
+    allowNull: true,
   },
   GameID: {
     type: DataTypes.INTEGER.UNSIGNED,

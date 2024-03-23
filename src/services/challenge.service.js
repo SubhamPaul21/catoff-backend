@@ -1,7 +1,7 @@
 const Challenge = require('../models/challenge.model');
 const { Op } = require('sequelize');
 const { getGameIds } = require('./game.service');
-const { getUserIds } = require('./user.service');
+const { getUserIds, getUserById } = require('./user.service');
 const logger = require('../utils/logger');
 
 const createChallenge = async (challengeData) => {
@@ -148,13 +148,14 @@ const getOngoingChallenges = async (type, page, limit) => {
   }
 };
 
-const checkIfChallengeAvailableForEntry = async (challengeId) => {
+const checkIfChallengeAvailableForEntry = async (challengeId, userId) => {
   try {
     const challenge = await Challenge.findOne({
       where: { ChallengeID: challengeId },
     });
+    const user = await getUserById(userId)
     logger.info('[ChallengeService] data retrieved successfully');
-    return !challenge.IsStarted && challenge.IsActive;
+    return !challenge.IsStarted && challenge.IsActive && (user.Credits>=challenge.Wager);
   } catch (err) {
     logger.error(
       `[ChallengeService] Error in retrieving challenge checkIfChallengeAvailableForEntry: ${error.message}`
