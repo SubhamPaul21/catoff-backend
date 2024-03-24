@@ -5,12 +5,17 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
-const userRoutes = require('./src/routes/user.routes');
-const challengeRoutes = require('./src/routes/challenge.routes');
-const playerRoutes = require('./src/routes/player.routes');
-const gameRoutes = require('./src/routes/game.routes');
-const transactionRoutes = require('./src/routes/transaction.routes');
-const userBoardRoutes = require('./src/routes/userBoard.routes');
+const { pushToChallengeQueue } = require('./src/cron/challengePushProcess');
+const {
+  userRoutes,
+  challengeRoutes,
+  playerRoutes,
+  gameRoutes,
+  transactionRoutes,
+  userBoardRoutes,
+  googleAuthRoutes,
+  oktoProxyRoutes,
+} = require('./src/routes/index');
 const logger = require('./src/utils/logger'); // Assuming this is your custom logger utility
 
 const app = express();
@@ -30,12 +35,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Enable CORS for all routes
 app.use(cors());
 
+pushToChallengeQueue();
+
 // Log middleware setup
 logger.info('Setting up middleware...');
 
 // Setup routes
 app.use('/user', userRoutes);
 logger.info('User routes configured.');
+app.use('/googleAuth', googleAuthRoutes);
+logger.info('Google auth routes configured.');
+app.use('/oktoProxy', oktoProxyRoutes);
+logger.info('Okto Proxy routes configured.');
 app.use('/challenge', challengeRoutes);
 logger.info('Challenge routes configured.');
 app.use('/player', playerRoutes);

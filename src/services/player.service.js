@@ -1,21 +1,30 @@
 const Players = require('../models/player.model');
 const logger = require('../utils/logger');
-const {incrementChallengeParticipant} = require('./challenge.service')
+const {
+  checkIfChallengeAvailableForEntry,
+  updateIsStarted,
+  getChallenge
+} = require('./challenge.service');
+const {updateCredit} = require('./user.service')
 
 const createPlayer = async (playerData) => {
   logger.debug('[PlayerService] Creating player');
   try {
-    const isPlayerExist = await Players.findOne({where: {UserID: playerData.UserID, ChallengeID: playerData.ChallengeID}})
-    if(!isPlayerExist){
-      const player = await Players.create(playerData);
-      await incrementChallengeParticipant(playerData.ChallengeID)
-      logger.info('[PlayerService] Player created successfully');
-      return player;
+    const isPlayerExist = await Players.findOne({
+      where: { UserID: playerData.UserID, ChallengeID: playerData.ChallengeID },
+    });
+    if (!isPlayerExist) {
+      if (await checkIfChallengeAvailableForEntry(playerData.ChallengeID, playerData.UserID)) {
+        const player = await Players.create(playerData);
+        const challenge = await getChallenge(playerData.ChallengeID)
+        await updateCredit(playerData.UserID, challenge.Wager)
+        await checkAndUpdateIsStartedChallenge(playerData.ChallengeID);
+        logger.info('[PlayerService] Player created successfully');
+        return player;
+      }
+    } else {
+      throw new Error('User already joined the challenge');
     }
-    else{
-      throw new Error('User already joined the challenge')
-    }
-    
   } catch (error) {
     logger.error(`[PlayerService] Error creating player: ${error.message}`);
     throw error;
@@ -89,6 +98,18 @@ const getAllPlayersOfChallenge = async (challengeId) => {
       `[PlayerService] Error fetching players for challenge: ${e.message}`
     );
     throw e;
+  }
+};
+
+const checkAndUpdateIsStartedChallenge = async (challengeId) => {
+  try {
+
+    let players = await Players.findAll({where:{ChallengeID: challengeId}})
+    await updateIsStarted(challengeId, players.length);
+    logger.info('[PlayerService] Players for challenge fetched successfully');
+  } catch (err) {
+    logger.error(`[playerService]  checkAndUpdateIsStartedChallenge error`);
+    throw err;
   }
 };
 

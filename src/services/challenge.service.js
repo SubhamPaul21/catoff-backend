@@ -1,7 +1,7 @@
 const Challenge = require('../models/challenge.model');
 const { Op } = require('sequelize');
 const { getGameIds } = require('./game.service');
-const { getUserIds } = require('./user.service');
+const { getUserIds, getUserById } = require('./user.service');
 const logger = require('../utils/logger');
 
 const createChallenge = async (challengeData) => {
@@ -94,9 +94,9 @@ const searchChallenge = async (searchTerm, limit, page) => {
       where: {
         [Op.or]: [
           { ChallengeID: searchNum },
-          { ChallengeName: { [Op.like]: `%${searchTerm}%` } },
+          { ChallengeName: { [Op.iLike]: `%${searchTerm}%` } },
           { ChallengeCreator: { [Op.in]: userIds } },
-          { ChallengeType: { [Op.in]: gameIDs } },
+          { GameID: { [Op.in]: gameIDs } },
         ],
       },
       offset,
@@ -122,7 +122,7 @@ const getOngoingChallenges = async (type, page, limit) => {
     if (type === 'all') {
       challenges = await Challenge.findAll({
         where: { IsActive: true },
-        order: [['CreationDate', 'DESC']],
+        order: [['createdAt', 'DESC']],
         offset,
         limit,
       });
@@ -131,9 +131,9 @@ const getOngoingChallenges = async (type, page, limit) => {
       challenges = await Challenge.findAll({
         where: {
           IsActive: true,
-          ChallengeType: { [Op.in]: gameIDs },
+          GameID: { [Op.in]: gameIDs },
         },
-        order: [['CreationDate', 'DESC']],
+        order: [['createdAt', 'DESC']],
         offset,
         limit,
       });
@@ -148,23 +148,59 @@ const getOngoingChallenges = async (type, page, limit) => {
   }
 };
 
-const incrementChallengeParticipant = async(id)=>{
-  try{
-    const challenge = await Challenge.findByPk(id);
-    if (!challenge) {
-      throw new Error('Challenge not found');
-    }
-    await challenge.increment('CurrentParticipants');
-    logger.info('[ChallengeService] current participant incremented succesfully');
-    return true;
-  }
-  catch(error){
+const checkIfChallengeAvailableForEntry = async (challengeId, userId) => {
+  try {
+    const challenge = await Challenge.findOne({
+      where: { ChallengeID: challengeId },
+    });
+    const user = await getUserById(userId)
+    logger.info('[ChallengeService] data retrieved successfully');
+    return !challenge.IsStarted && challenge.IsActive && (user.Credits>=challenge.Wager);
+  } catch (err) {
     logger.error(
-      `[ChallengeService] Error updating the challenge: ${error.message}`
+      `[ChallengeService] Error in retrieving challenge checkIfChallengeAvailableForEntry: ${error.message}`
     );
-    throw error
+    throw err;
   }
-}
+};
+
+
+const updateIsStarted = async (challengeId, totalNum) => {
+  try {
+    let challenge = await Challenge.findOne({
+      where: { ChallengeID: challengeId }});
+    if (
+      challenge.IsActive &&
+      !challenge.IsStarted &&
+      totalNum >= challenge.MaxParticipants
+    ) {
+      await Challenge.update(
+        { IsStarted: true },
+        { where: { ChallengeID: challengeId } }
+      );
+      logger.info('[ChallengeService] isStarted updated successfully');
+      return true;
+    }
+  } catch (err) {
+    logger.error(
+      `[ChallengeService] Error in retrieving challenge updateIsStarted: ${error.message}`
+    );
+    throw err;
+  }
+};
+
+const getAllStartedChallenges = async () => {
+  try {
+    let challenges = await Challenge.findAll({ where: { IsStarted: true } });
+    logger.info('[ChallengeService] Started challenges fetched successfully');
+    return challenges;
+  } catch (err) {
+    logger.error(
+      `[ChallengeService] Error in retrieving challenge getAllStartedChallenge: ${err.message}`
+    );
+    throw err;
+  }
+};
 
 module.exports = {
   createChallenge,
@@ -173,5 +209,7 @@ module.exports = {
   deleteChallenge,
   searchChallenge,
   getOngoingChallenges,
-  incrementChallengeParticipant,
+  checkIfChallengeAvailableForEntry,
+  updateIsStarted,
+  getAllStartedChallenges,
 };

@@ -22,10 +22,14 @@ const validateChallengeCreation = [
   body('ChallengeCreator')
     .isInt()
     .withMessage('Valid challenge creator is required'),
-  body('StartDate').isISO8601().withMessage('Valid start date is required'),
-  body('EndDate').isISO8601().withMessage('Valid end date is required'),
-  body('ChallengeType').isInt().withMessage('Valid challenge type is required'),
+  body('StartDate').isInt().withMessage('Valid start date is required'),
+  body('EndDate').isInt().withMessage('Valid end date is required'),
+  body('GameID').isInt().withMessage('Valid Game type is required'),
   body('IsActive').isBoolean().withMessage('isActive must be a boolean'),
+  body('MaxParticipants').isInt().withMessage('MaxParticipant must be int'),
+  body('Wager').isInt().withMessage('Wager must be defined'),
+  body('Target').isInt().withMessage('Target must be int'),
+
   logValidationErrors,
   // Winners array validation could be more complex depending on requirements
 ];

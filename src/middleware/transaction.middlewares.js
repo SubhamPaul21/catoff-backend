@@ -13,22 +13,49 @@ const logValidationErrors = (req, res, next) => {
 };
 
 const validateTransactionCreation = [
-  body('UserID').isInt().withMessage('UserID must be an integer'),
-  body('Amount').isInt().withMessage('Amount must be an integer'),
-  body('Description')
+  body('TxHash')
+    .optional()
     .isLength({ min: 1 })
-    .withMessage('Description is required'),
+    .withMessage('TxHash must be a non-empty string if provided'),
+  body('To')
+    .isInt()
+    .withMessage('To must be an integer representing the UserID'),
+  body('From')
+    .isInt()
+    .withMessage('From must be an integer representing the UserID'),
+  body('SolAmount')
+    .optional()
+    .isNumeric()
+    .withMessage('SolAmount must be a number and can be positive or negative'),
+  body('Amount')
+    .optional()
+    .isNumeric()
+    .withMessage('Amount must be a number and can be positive or negative'),
+  body('Description')
+    .optional()
+    .isLength({ min: 1 })
+    .withMessage('Description should be provided if present'),
   logValidationErrors,
 ];
 
 const validateTransactionUpdate = [
-  // Include any fields you allow to be updated
-  body('Amount').optional().isInt().withMessage('Amount must be an integer'),
+  body('TxHash')
+    .optional()
+    .isLength({ min: 1 })
+    .withMessage('TxHash must be a non-empty string if provided'),
+  body('SolAmount')
+    .optional()
+    .isNumeric()
+    .withMessage('SolAmount must be a number and can be positive or negative'),
+  body('Amount')
+    .optional()
+    .isNumeric()
+    .withMessage('Amount must be a number and can be positive or negative'),
   body('Description')
     .optional()
     .isLength({ min: 1 })
-    .withMessage('Description is required'),
-  param('TxID').isInt().withMessage('Index must be a valid integer'),
+    .withMessage('Description should be provided if present'),
+  param('TxID').isInt().withMessage('TxID must be a valid integer'),
   logValidationErrors,
 ];
 

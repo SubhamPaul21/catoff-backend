@@ -1,96 +1,89 @@
 const { sequelize } = require('../db/db.js');
 const { DataTypes } = require('sequelize');
-var User = require('./user.model.js');
-const Game = require('./game.model.js');
 
-const Challenge = sequelize.define(
-  'Challenge',
-  {
-    ChallengeID: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false,
-    },
-    ChallengeName: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    ChallengeDescription: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    ChallengeCreator: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'UserID',
-      },
-      // Add references in associations
-    },
-    StartDate: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    EndDate: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    CreationDate: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
-    ChallengeType: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      // Add references in associations
-      references: {
-        model: Game,
-        key: 'GameID',
-      },
-    },
-    IsActive: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
-    MaxParticipants:{
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    CurrentParticipants: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0
-    },
-    Winners: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: User,
-        key: 'UserID',
-      },
-      // Add references in associations
-    },
-    Media: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
-    Wager: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-      defaultValue: 0.0,
+const Challenge = sequelize.define('Challenge', {
+  ChallengeID: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  ChallengeName: {
+    type: DataTypes.STRING(255),
+  },
+  ChallengeDescription: {
+    type: DataTypes.STRING(2048),
+  },
+  ChallengeCreator: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'UserID',
     },
   },
-  {
-    sequelize,
-    tableName: 'Challenges',
-    timestamps: false,
-  }
-);
-
-Challenge.sync().then(() => {
-  console.log('Challenge Model synced');
+  ChallengePublicKey: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
+  StartDate: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  EndDate: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  GameID: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: false,
+    references: {
+      model: 'Games',
+      key: 'GameID',
+    },
+  },
+  IsActive: {
+    type: DataTypes.BOOLEAN,
+  },
+  IsSettled: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+    defaultValue: false,
+  },
+  IsStarted: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+    defaultValue: false,
+  },
+  Winner: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: true,
+    references: {
+      model: 'Players',
+      key: 'PlayerID',
+    },
+  },
+  MaxParticipants: {
+    type: DataTypes.INTEGER.UNSIGNED,
+  },
+  // Players: {
+  //   type: DataTypes.ARRAY(DataTypes.INTEGER.UNSIGNED),
+  //   defaultValue: [],
+  // },
+  Media: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
+  Wager: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: false,
+  },
+  Target: {
+    type: DataTypes.FLOAT.UNSIGNED,
+    allowNull: false,
+  },
+},
+{
+  timestamps: false, // Disable automatic createdAt and updatedAt columns
 });
+
 module.exports = Challenge;

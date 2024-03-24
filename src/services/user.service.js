@@ -7,8 +7,8 @@ const bs58 = require('bs58');
 const WalletAddress = require('../models/walletAddress.model');
 require('dotenv').config();
 const logger = require('../utils/logger');
-const {createUserConfig} = require('./userConfig.service');
-const { UserConfig } = require('../models');
+const { createUserConfig } = require('./userConfig.service');
+const UserConfig = require('../models/userConfig.model');
 
 const AddUserDetails = async (userId, email, userName) => {
   logger.debug(
@@ -70,6 +70,61 @@ const AddUserDetails = async (userId, email, userName) => {
 //     }
 // }
 
+const signin = async (data, tokens) => {
+  logger.debug(`[UserService] Attempting to sign in or sign up.`);
+  try {
+    let user = await User.findOne({ where: { Email: data.email } });
+
+    if (!user) {
+      // If user does not exist, create a new user entry.
+      user = await User.create({
+        Email: data.email,
+        ProfilePicture: data.picture, // This line needs to be updated after user creation
+      });
+      user.UserName = `User #${user.UserID}`
+      user.save()
+    } else {
+      // If user exists, update their ProfilePicture in case it has changed.
+      await user.update({ ProfilePicture: data.picture });
+    }
+
+    // Ensure UserName is set after user is created or fetched
+    if (!user.UserName) {
+      await user.update({ UserName: `User #${user.UserID}` });
+    }
+
+    // Fetch or create UserConfig and update tokens.
+    let userConfig = await UserConfig.findOne({
+      where: { UserID: user.UserID },
+    });
+
+    if (!userConfig) {
+      userConfig = await UserConfig.create({
+        UserID: user.UserID,
+        GoogleRefreshToken: tokens.refresh_token,
+        IdToken: tokens.id_token,
+      });
+    } else {
+      // Update tokens for existing users.
+      await userConfig.update({
+        GoogleRefreshToken: tokens.refresh_token,
+        IdToken: tokens.id_token,
+      });
+    }
+
+    // Generate JWT Token
+    const JwtToken = jwt.sign({ userId: user.UserID }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+
+    logger.info('[UserService] User sign in/up successful.');
+    return { JwtToken, user };
+  } catch (e) {
+    logger.error(`[UserService] Sign in/up failed: ${e.stack}`);
+    throw e;
+  }
+};
+
 const siwsVerification = async (signature, message, publicKey) => {
   logger.debug(
     `[UserService] Attempting SIWS verification for publicKey: ${publicKey}`
@@ -83,7 +138,7 @@ const siwsVerification = async (signature, message, publicKey) => {
       signatureBuffer,
       publicKeyUint8Array
     );
-    
+
     if (!verified) {
       logger.error('[UserService] Invalid signature');
       throw new ExpressError('Invalid Signature', 401);
@@ -99,22 +154,21 @@ const siwsVerification = async (signature, message, publicKey) => {
         WalletAddress: publicKey,
         Signature: signature,
       });
-    
 
-    user =
-      (await User.findOne({ where: { WalletID: wallet.WalletID } })) ||
-      (await User.create({
-        RegistrationDate: new Date(),
-        LastLoginDate: null,
-        IsEmailVerified: false,
-        IsActive: true,
-        WalletID: wallet.WalletID,
-        Credits: 0.0,
-      }));
-      await createUserConfig(user.UserID)
+      user =
+        (await User.findOne({ where: { WalletID: wallet.WalletID } })) ||
+        (await User.create({
+          RegistrationDate: new Date(),
+          LastLoginDate: null,
+          IsEmailVerified: false,
+          IsActive: true,
+          WalletID: wallet.WalletID,
+          Credits: 0.0,
+        }));
+      await createUserConfig(user.UserID);
     }
 
-    user = await User.findOne({where: {WalletID: wallet.WalletID}});
+    user = await User.findOne({ where: { WalletID: wallet.WalletID } });
     const token = jwt.sign({ userId: user.UserID }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
@@ -127,12 +181,43 @@ const siwsVerification = async (signature, message, publicKey) => {
   }
 };
 
+const updateCredit = async(userId,wager)=>{
+  logger.debug(
+    `[UserService] Attempting updating credit for user`
+  );
+  try{
+    let user = await User.findOne({where:{UserID: userId}});
+    if(user){
+      let curCred = user.Credits;
+      if(curCred>=wager){
+        let newCred  = curCred - wager;
+        let newInvestedCred = user.InvestedCredits + wager
+        await user.update({
+          Credits: newCred,
+          InvestedCredits: newInvestedCred
+        });
+      }
+      else{
+        throw new Error("Not enough Credit for the user to join the challenge")
+      }
+    }
+    else{
+      throw new Error("User not found");
+    }
+    logger.info('[UserService] Credits updated for a user when joined the challenge');
+    return;
+  }catch(err){
+    logger.error(`[UserService] Update credit failed: ${err.message}`);
+    throw err;
+  }
+}
+
 const getUserIds = async (searchTerm) => {
   logger.debug(`[UserService] Fetching user IDs by searchTerm: ${searchTerm}`);
   try {
     const users = await User.findAll({
       attributes: ['UserID'],
-      where: { UserName: { [Op.like]: `%${searchTerm}%` } },
+      where: { UserName: { [Op.iLike]: `%${searchTerm}%` } },
     });
     const userIds = users.map((ele) => ele['UserID']);
     logger.info('[UserService] User IDs fetched successfully');
@@ -233,4 +318,6 @@ module.exports = {
   getUserById,
   updateUser,
   deleteUser,
+  signin,
+  updateCredit,
 };

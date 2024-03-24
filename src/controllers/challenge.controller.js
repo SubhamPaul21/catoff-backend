@@ -19,7 +19,7 @@ const createChallengeHandler = async (req, res) => {
     logger.error(
       `[ChallengeController] Error creating challenge: ${error.message}`
     );
-    return makeResponse(res, 500, false, 'error retrieving challenge', null);
+    return makeResponse(res, 500, false, 'error creating challenge', null);
   }
 };
 
@@ -106,7 +106,7 @@ const searchChallengeHandler = async (req, res) => {
     `[ChallengeController] Searching for challenges with term: ${searchTerm}`
   );
   try {
-    const challenges = await searchChallenge(searchTerm,limit, page);
+    const challenges = await searchChallenge(searchTerm, limit, page);
     logger.debug('[ChallengeController] Search successful');
     makeResponse(res, 200, true, 'Search successful', challenges);
   } catch (error) {
