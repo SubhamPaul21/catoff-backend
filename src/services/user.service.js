@@ -81,8 +81,8 @@ const signin = async (data, tokens) => {
         Email: data.email,
         ProfilePicture: data.picture, // This line needs to be updated after user creation
       });
-      user.UserName = `User #${user.UserID}`
-      user.save()
+      user.UserName = `User #${user.UserID}`;
+      user.save();
     } else {
       // If user exists, update their ProfilePicture in case it has changed.
       await user.update({ ProfilePicture: data.picture });
@@ -181,36 +181,34 @@ const siwsVerification = async (signature, message, publicKey) => {
   }
 };
 
-const updateCredit = async(userId,wager)=>{
-  logger.debug(
-    `[UserService] Attempting updating credit for user`
-  );
-  try{
-    let user = await User.findOne({where:{UserID: userId}});
-    if(user){
+const updateCredit = async (userId, wager) => {
+  logger.debug(`[UserService] Attempting updating credit for user`);
+  try {
+    let user = await User.findOne({ where: { UserID: userId } });
+    if (user) {
       let curCred = user.Credits;
-      if(curCred>=wager){
-        let newCred  = curCred - wager;
-        let newInvestedCred = user.InvestedCredits + wager
+      if (curCred >= wager) {
+        let newCred = curCred - wager;
+        let newInvestedCred = user.InvestedCredits + wager;
         await user.update({
           Credits: newCred,
-          InvestedCredits: newInvestedCred
+          InvestedCredits: newInvestedCred,
         });
+      } else {
+        throw new Error('Not enough Credit for the user to join the challenge');
       }
-      else{
-        throw new Error("Not enough Credit for the user to join the challenge")
-      }
+    } else {
+      throw new Error('User not found');
     }
-    else{
-      throw new Error("User not found");
-    }
-    logger.info('[UserService] Credits updated for a user when joined the challenge');
+    logger.info(
+      '[UserService] Credits updated for a user when joined the challenge'
+    );
     return;
-  }catch(err){
+  } catch (err) {
     logger.error(`[UserService] Update credit failed: ${err.message}`);
     throw err;
   }
-}
+};
 
 const getUserIds = async (searchTerm) => {
   logger.debug(`[UserService] Fetching user IDs by searchTerm: ${searchTerm}`);

@@ -10,6 +10,7 @@ const {
   deleteChallengeHandler,
   searchChallengeHandler,
   getOnGoingChallengesHandler,
+  getChallengeDashboardByIdHandler,
 } = require('../controllers/challenge.controller');
 const { validationResult } = require('express-validator');
 const verifyToken = require('../middleware/authMiddleware');
@@ -35,7 +36,7 @@ router.post(
   validationHandler,
   verifyToken,
   (req, res, next) => {
-    logger.info('POST /challenges - Creating a new challenge');
+    logger.info('POST /challenge/challenges - Creating a new challenge');
     next();
   },
   createChallengeHandler
@@ -43,7 +44,9 @@ router.post(
 router.get(
   '/challenges/:ID',
   (req, res, next) => {
-    logger.info(`GET /challenges/${req.params.ID} - Retrieving challenge`);
+    logger.info(
+      `GET /challenge/challenges/${req.params.ID} - Retrieving challenge`
+    );
     next();
   },
   getChallengeHandler
@@ -53,7 +56,9 @@ router.put(
   validateChallengeUpdate,
   validationHandler,
   (req, res, next) => {
-    logger.info(`PUT /challenges/${req.params.ID} - Updating challenge`);
+    logger.info(
+      `PUT /challenge/challenges/${req.params.ID} - Updating challenge`
+    );
     next();
   },
   updateChallengeHandler
@@ -61,7 +66,9 @@ router.put(
 router.delete(
   '/challenges/:ID',
   (req, res, next) => {
-    logger.info(`DELETE /challenges/${req.params.ID} - Deleting challenge`);
+    logger.info(
+      `DELETE /challenge/challenges/${req.params.ID} - Deleting challenge`
+    );
     next();
   },
   deleteChallengeHandler
@@ -72,7 +79,7 @@ router.get(
   // verifyToken,
   (req, res, next) => {
     logger.info(
-      `GET /challenges/search/${req.params.searchTerm} - Searching challenges`
+      `GET /challenge/challenges/search/${req.params.searchTerm} - Searching challenges`
     );
     next();
   },
@@ -84,11 +91,22 @@ router.get(
   // verifyToken,
   (req, res, next) => {
     logger.info(
-      `GET /challenges/onGoing/category/${req.params.type} - Getting ongoing challenges by category`
+      `GET /challenge/challenges/onGoing/category/${req.params.type} - Getting ongoing challenges by category`
     );
     next();
   },
   getOnGoingChallengesHandler
+);
+
+router.get(
+  '/challenges/dashboard/:ID',
+  (req, res, next) => {
+    logger.info(
+      `GET /challenges/dashboard/${req.params.ID} - Retrieving challenge dashboard`
+    );
+    next();
+  },
+  getChallengeDashboardByIdHandler
 );
 
 module.exports = router;
