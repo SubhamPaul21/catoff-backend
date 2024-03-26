@@ -167,6 +167,33 @@ const oktoProxyController = {
     }
   },
 
+  executeRawTransaction: async (req, res) => {
+    const userId = req.UserID;
+    const { network_name, transaction } = req.body;
+    logger.debug(
+      '[OktoProxyController] Attempting to execute raw transaction for the user'
+    );
+    try {
+      const result = await oktoProxyService.executeRawTransaction(
+        userId,
+        network_name,
+        transaction
+      );
+      logger.debug(
+        '[OktoProxyController] Successfully executed raw transaction for the user'
+      );
+      res.json(result);
+    } catch (error) {
+      logger.error(
+        `[OktoProxyController] Error executing raw transaction for the user: ${error.message}`,
+        error
+      );
+      res.status(500).json({
+        message: 'Failed to execute raw transaction for the user',
+        error: error.message,
+      });
+    }
+  },
 };
 
 module.exports = oktoProxyController;

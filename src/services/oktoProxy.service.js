@@ -391,5 +391,44 @@ const oktoProxyService = {
     }
   },
 
+  executeRawTransaction: async (userId, network_name, transaction) => {
+    const userConfig = await getUserConfig(userId);
+    if (!userConfig || !userConfig.OktoAuthToken) {
+      logger.error(
+        `[OktoProxyService] OktoAuthToken not found for userID: ${userId}`
+      );
+      throw new Error('OktoAuthToken not found');
+    }
+    try {
+      const response = await axios.post(
+        `${OKTO_TECH_API_BASE_URL}api/v1/rawtransaction/execute`,
+        {
+          network_name,
+          transaction,
+        },
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${userConfig.OktoAuthToken}`,
+          },
+        }
+      );
+      logger.debug(
+        `[OktoProxyService] Successfully executed raw transaction for userID: ${userId}`
+      );
+      return {
+        status: 'success',
+        message: 'Raw transaction executed successfully.',
+        data: response.data,
+      };
+    } catch (error) {
+      logger.error(
+        `[OktoProxyService] Failed to execute raw transaction for userID: ${userId}: ${error.message}`,
+        error
+      );
+      throw error;
+    }
+  },
+
 };
 module.exports = oktoProxyService;

@@ -74,4 +74,15 @@ router.get(
   oktoProxyController.getPortfolioDataForUser
 );
 
+router.post(
+  '/rawtransaction/execute',
+  verifyToken,
+  (req, res, next) => {
+    logger.info(
+      'POST /rawtransaction/execute - Executing raw transaction on a network'
+    );
+    next();
+  },
+  oktoProxyController.executeRawTransaction
+);
 module.exports = router;
