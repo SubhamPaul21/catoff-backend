@@ -11,6 +11,7 @@ const logger = require('../utils/logger');
 const createPlayerHandler = async (req, res) => {
   logger.debug('[PlayerController] Attempting to create a player');
   try {
+    req.body.UserID = req.UserID;
     const player = await createPlayer(req.body);
     logger.debug('[PlayerController] Player created successfully');
     makeResponse(res, 201, true, 'Player created successfully', player);

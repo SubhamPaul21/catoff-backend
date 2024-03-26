@@ -31,12 +31,14 @@ router.post(
   '/',
   validatePlayerCreation,
   validationHandler,
+  verifyToken,
   (req, res, next) => {
     logger.info('POST /players - Creating a new player');
     next();
   },
   createPlayerHandler
 );
+
 router.get(
   '/:ID',
   (req, res, next) => {
@@ -45,6 +47,7 @@ router.get(
   },
   getPlayerHandler
 );
+
 router.put(
   '/:ID',
   validatePlayerUpdate,
@@ -55,6 +58,7 @@ router.put(
   },
   updatePlayerHandler
 );
+
 router.delete(
   '/:ID',
   (req, res, next) => {

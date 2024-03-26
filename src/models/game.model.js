@@ -47,7 +47,7 @@ const Game = sequelize.define('Game', {
     type: DataTypes.STRING(255),
   },
   ParticipationType: {
-    type: DataTypes.ENUM('0v1', '1v1', 'nvn'),
+    type: DataTypes.INTEGER.UNSIGNED,
     allowNull: true,
   },
   GameType: {

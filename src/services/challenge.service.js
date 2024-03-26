@@ -88,8 +88,8 @@ const searchChallenge = async (searchTerm, limit, page) => {
   const offset = (page - 1) * limit;
   try {
     let userIds = await getUserIds(searchTerm);
-    let gameIDs = await getGameIds(searchTerm);
     let searchNum = isNaN(searchTerm) ? null : parseInt(searchTerm, 10);
+    let gameIDs = await getGameIds(searchTerm);
     const challenges = await Challenge.findAll({
       where: {
         [Op.or]: [
@@ -122,7 +122,7 @@ const getOngoingChallenges = async (type, page, limit) => {
     if (type === 'all') {
       challenges = await Challenge.findAll({
         where: { IsActive: true },
-        order: [['createdAt', 'DESC']],
+        order: [['StartDate', 'DESC']],
         offset,
         limit,
       });
@@ -133,7 +133,7 @@ const getOngoingChallenges = async (type, page, limit) => {
           IsActive: true,
           GameID: { [Op.in]: gameIDs },
         },
-        order: [['createdAt', 'DESC']],
+        order: [['StartDate', 'DESC']],
         offset,
         limit,
       });
@@ -191,7 +191,7 @@ const updateIsStarted = async (challengeId, totalNum) => {
 
 const getAllStartedChallenges = async () => {
   try {
-    let challenges = await Challenge.findAll({ where: { IsStarted: true } });
+    let challenges = await Challenge.findAll({ where: { IsStarted: true , IsActive: true } });
     logger.info('[ChallengeService] Started challenges fetched successfully');
     return challenges;
   } catch (err) {

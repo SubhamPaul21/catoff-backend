@@ -26,11 +26,11 @@ const Challenge = sequelize.define('Challenge', {
     allowNull: true,
   },
   StartDate: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     allowNull: true,
   },
   EndDate: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     allowNull: true,
   },
   GameID: {
@@ -43,6 +43,7 @@ const Challenge = sequelize.define('Challenge', {
   },
   IsActive: {
     type: DataTypes.BOOLEAN,
+    defaultValue: true,
   },
   IsSettled: {
     type: DataTypes.BOOLEAN,
@@ -78,8 +79,8 @@ const Challenge = sequelize.define('Challenge', {
     allowNull: false,
   },
   Target: {
-    type: DataTypes.FLOAT.UNSIGNED,
-    allowNull: false,
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: true,
   },
 },
 {
