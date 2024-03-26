@@ -49,8 +49,6 @@ paths:
             schema:
               type: object
               properties:
-                Email:
-                  type: string
                 UserName:
                   type: string
               required:
@@ -381,7 +379,321 @@ paths:
         '500':
           description: Failed to retrieve user information
 
+
+  /challenge/challenges:
+    post:
+      summary: Create a new challenge
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ChallengeName:
+                  type: string
+                ChallengeDescription:
+                  type: string
+                ChallengeCreator:
+                  type: integer
+                StartDate:
+                  type: string
+                  format: date-time
+                EndDate:
+                  type: string
+                  format: date-time
+                GameID:
+                  type: integer
+                Wager:
+                  type: integer
+                MaxParticipants:
+                  type: integer
+                Target:
+                  type: integer
+      responses:
+        '200':
+          description: Challenge created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: created challenge
+                  data:
+                    type: object
+                    properties:
+                      IsActive:
+                        type: boolean
+                      IsSettled:
+                        type: boolean
+                      IsStarted:
+                        type: boolean
+                      ChallengeID:
+                        type: integer
+                      ChallengeName:
+                        type: string
+                      ChallengeDescription:
+                        type: string
+                      ChallengeCreator:
+                        type: integer
+                      StartDate:
+                        type: string
+                        format: date-time
+                      EndDate:
+                        type: string
+                        format: date-time
+                      GameID:
+                        type: integer
+                      Wager:
+                        type: integer
+                      MaxParticipants:
+                        type: integer
+                      Target:
+                        type: integer
+                      ChallengePublicKey:
+                        type: string
+                      Winner:
+                        type: integer
+                      Media:
+                        type: string
+        '400':
+          description: Bad request, missing or invalid parameters
+          
+  /challenge/challenges/{ID}:
+    get:
+      summary: Get a challenge by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: ID
+          in: path
+          description: ID of the challenge to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A single challenge object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: successful query
+                  data:
+                    type: object
+                    properties:
+                      ChallengeID:
+                        type: integer
+                      ChallengeName:
+                        type: string
+                      ChallengeDescription:
+                        type: string
+                      ChallengeCreator:
+                        type: integer
+                      ChallengePublicKey:
+                        type: string
+                      StartDate:
+                        type: string
+                        format: date-time
+                      EndDate:
+                        type: string
+                        format: date-time
+                      GameID:
+                        type: integer
+                      IsActive:
+                        type: boolean
+                      IsSettled:
+                        type: boolean
+                      IsStarted:
+                        type: boolean
+                      Winner:
+                        type: integer
+                      MaxParticipants:
+                        type: integer
+                      Media:
+                        type: string
+                      Wager:
+                        type: integer
+                      Target:
+                        type: integer
+                      GameType:
+                        type: string
+        '404':
+          description: Challenge not found
+
+  /challenge/challenges/onGoing/category/{type}:
+    get:
+      summary: Get ongoing challenges by category
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: type
+          in: path
+          description: Category type ('all' for all categories)
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: A list of ongoing challenges
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        ChallengeID:
+                          type: integer
+                        ChallengeName:
+                          type: string
+                        ChallengeDescription:
+                          type: string
+                        ChallengeCreator:
+                          type: integer
+                        ChallengePublicKey:
+                          type: string
+                        StartDate:
+                          type: string
+                          format: date-time
+                        EndDate:
+                          type: string
+                          format: date-time
+                        GameID:
+                          type: integer
+                        IsActive:
+                          type: boolean
+                        IsSettled:
+                          type: boolean
+                        IsStarted:
+                          type: boolean
+                        Winner:
+                          type: integer
+                        MaxParticipants:
+                          type: integer
+                        Media:
+                          type: string
+                        Wager:
+                          type: integer
+                        Target:
+                          type: integer
+        '404':
+          description: No ongoing challenges found
+          
+  /challenge/challenges/search/{query}:
+    get:
+      summary: Search for challenges by name or description
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: query
+          in: path
+          description: Search query string
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: A list of challenges matching the search query
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Challenge'
+        '404':
+          description: No challenges found matching the search query
+
 components:
+  schemas:
+    Challenge:
+      type: object
+      properties:
+        ChallengeID:
+          type: integer
+        ChallengeName:
+          type: string
+        ChallengeDescription:
+          type: string
+        ChallengeCreator:
+          type: integer
+        ChallengePublicKey:
+          type: string
+        StartDate:
+          type: string
+          format: date-time
+        EndDate:
+          type: string
+          format: date-time
+        GameID:
+          type: integer
+        IsActive:
+          type: boolean
+        IsSettled:
+          type: boolean
+        IsStarted:
+          type: boolean
+        Winner:
+          type: integer
+        MaxParticipants:
+          type: integer
+        Media:
+          type: string
+        Wager:
+          type: integer
+        Target:
+          type: integer
   securitySchemes:
     bearerAuth:
       type: http

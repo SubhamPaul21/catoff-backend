@@ -1,7 +1,7 @@
 const Game = require('../models/game.model');
 const { Op } = require('sequelize');
 const logger = require('../utils/logger');
-const { ParticipationType } = require('../constants/constants')
+const { ParticipationType, GameType } = require('../constants/constants')
 
 const createGame = async (gameData) => {
   logger.debug('[GameService] Attempting to create a game');
@@ -91,10 +91,21 @@ const getGameIds = async (searchTerm) => {
   }
 };
 
+const getGameType = async(id)=>{
+  try{
+    let game = await Game.findByPk(id);
+    return GameType[game.GameType]
+  }catch(e){
+    logger.error(`[GameService] Error retrieving game Type: ${error.stack}`);
+    throw e
+  }
+}
+
 module.exports = {
   createGame,
   getGame,
   updateGame,
   deleteGame,
   getGameIds,
+  getGameType
 };
