@@ -64,4 +64,14 @@ router.get(
   oktoProxyController.fetchAllWalletsForUser
 );
 
+router.get(
+  '/portfolio',
+  verifyToken,
+  (req, res, next) => {
+    logger.info('GET /portfolio - Fetching portfolio data for the user');
+    next();
+  },
+  oktoProxyController.getPortfolioDataForUser
+);
+
 module.exports = router;

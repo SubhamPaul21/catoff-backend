@@ -356,5 +356,40 @@ const oktoProxyService = {
     }
   },
 
+  fetchPortfolioData: async (userId) => {
+    const userConfig = await getUserConfig(userId);
+    if (!userConfig || !userConfig.OktoAuthToken) {
+      logger.error(
+        `[OktoProxyService] OktoAuthToken not found for userID: ${userId}`
+      );
+      throw new Error('OktoAuthToken not found');
+    }
+    try {
+      const response = await axios.get(
+        `${OKTO_TECH_API_BASE_URL}api/v1/portfolio`,
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${userConfig.OktoAuthToken}`,
+          },
+        }
+      );
+      logger.debug(
+        `[OktoProxyService] Successfully fetched portfolio data for userID: ${userId}`
+      );
+      return {
+        status: 'success',
+        message: 'Portfolio data fetched successfully.',
+        data: response.data,
+      };
+    } catch (error) {
+      logger.error(
+        `[OktoProxyService] Failed to fetch portfolio data for userID: ${userId}: ${error.message}`,
+        error
+      );
+      throw error;
+    }
+  },
+
 };
 module.exports = oktoProxyService;

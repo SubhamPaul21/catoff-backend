@@ -144,6 +144,29 @@ const oktoProxyController = {
     }
   },
 
+  getPortfolioDataForUser: async (req, res) => {
+    const userId = req.UserID;
+    logger.debug(
+      '[OktoProxyController] Attempting to fetch portfolio data for the user'
+    );
+    try {
+      const result = await oktoProxyService.fetchPortfolioData(userId);
+      logger.debug(
+        '[OktoProxyController] Successfully fetched portfolio data for the user'
+      );
+      res.json(result);
+    } catch (error) {
+      logger.error(
+        `[OktoProxyController] Error fetching portfolio data for the user: ${error.message}`,
+        error
+      );
+      res.status(500).json({
+        message: 'Failed to fetch portfolio data for the user',
+        error: error.message,
+      });
+    }
+  },
+
 };
 
 module.exports = oktoProxyController;
