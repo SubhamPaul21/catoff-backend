@@ -85,4 +85,17 @@ router.post(
   },
   oktoProxyController.executeRawTransaction
 );
+
+router.get(
+  '/rawtransaction/status',
+  verifyToken,
+  (req, res, next) => {
+    logger.info(
+      'GET /rawtransaction/status - Fetching raw transaction status by order_id'
+    );
+    next();
+  },
+  oktoProxyController.getRawTransactionStatus
+);
+
 module.exports = router;

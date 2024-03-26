@@ -194,6 +194,35 @@ const oktoProxyController = {
       });
     }
   },
+
+  getRawTransactionStatus: async (req, res) => {
+    const userId = req.UserID;
+    const { order_id } = req.query;
+    logger.debug(
+      '[OktoProxyController] Attempting to fetch raw transaction status for order_id:',
+      order_id
+    );
+    try {
+      const result = await oktoProxyService.fetchRawTransactionStatus(
+        userId,
+        order_id
+      );
+      logger.debug(
+        '[OktoProxyController] Successfully fetched raw transaction status for order_id:',
+        order_id
+      );
+      res.json(result);
+    } catch (error) {
+      logger.error(
+        `[OktoProxyController] Error fetching raw transaction status for order_id: ${order_id}: ${error.message}`,
+        error
+      );
+      res.status(500).json({
+        message: 'Failed to fetch raw transaction status',
+        error: error.message,
+      });
+    }
+  },
 };
 
 module.exports = oktoProxyController;
