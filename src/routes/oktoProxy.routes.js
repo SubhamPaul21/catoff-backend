@@ -54,4 +54,48 @@ router.get(
   oktoProxyController.getUserFromToken
 );
 
+router.get(
+  '/wallets',
+  verifyToken,
+  (req, res, next) => {
+    logger.info('GET /wallets - Fetching all wallets created by the user');
+    next();
+  },
+  oktoProxyController.fetchAllWalletsForUser
+);
+
+router.get(
+  '/portfolio',
+  verifyToken,
+  (req, res, next) => {
+    logger.info('GET /portfolio - Fetching portfolio data for the user');
+    next();
+  },
+  oktoProxyController.getPortfolioDataForUser
+);
+
+router.post(
+  '/rawtransaction/execute',
+  verifyToken,
+  (req, res, next) => {
+    logger.info(
+      'POST /rawtransaction/execute - Executing raw transaction on a network'
+    );
+    next();
+  },
+  oktoProxyController.executeRawTransaction
+);
+
+router.get(
+  '/rawtransaction/status',
+  verifyToken,
+  (req, res, next) => {
+    logger.info(
+      'GET /rawtransaction/status - Fetching raw transaction status by order_id'
+    );
+    next();
+  },
+  oktoProxyController.getRawTransactionStatus
+);
+
 module.exports = router;

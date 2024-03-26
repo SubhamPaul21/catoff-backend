@@ -120,6 +120,109 @@ const oktoProxyController = {
       });
     }
   },
+
+  fetchAllWalletsForUser: async (req, res) => {
+    const userId = req.UserID;
+    logger.debug(
+      '[OktoProxyController] Attempting to fetch all wallets for the user'
+    );
+    try {
+      const result = await oktoProxyService.fetchAllWallets(userId);
+      logger.debug(
+        '[OktoProxyController] Successfully fetched all wallets for the user'
+      );
+      res.json(result);
+    } catch (error) {
+      logger.error(
+        `[OktoProxyController] Error fetching all wallets for the user: ${error.message}`,
+        error
+      );
+      res.status(500).json({
+        message: 'Failed to fetch all wallets for the user',
+        error: error.message,
+      });
+    }
+  },
+
+  getPortfolioDataForUser: async (req, res) => {
+    const userId = req.UserID;
+    logger.debug(
+      '[OktoProxyController] Attempting to fetch portfolio data for the user'
+    );
+    try {
+      const result = await oktoProxyService.fetchPortfolioData(userId);
+      logger.debug(
+        '[OktoProxyController] Successfully fetched portfolio data for the user'
+      );
+      res.json(result);
+    } catch (error) {
+      logger.error(
+        `[OktoProxyController] Error fetching portfolio data for the user: ${error.message}`,
+        error
+      );
+      res.status(500).json({
+        message: 'Failed to fetch portfolio data for the user',
+        error: error.message,
+      });
+    }
+  },
+
+  executeRawTransaction: async (req, res) => {
+    const userId = req.UserID;
+    const { network_name, transaction } = req.body;
+    logger.debug(
+      '[OktoProxyController] Attempting to execute raw transaction for the user'
+    );
+    try {
+      const result = await oktoProxyService.executeRawTransaction(
+        userId,
+        network_name,
+        transaction
+      );
+      logger.debug(
+        '[OktoProxyController] Successfully executed raw transaction for the user'
+      );
+      res.json(result);
+    } catch (error) {
+      logger.error(
+        `[OktoProxyController] Error executing raw transaction for the user: ${error.message}`,
+        error
+      );
+      res.status(500).json({
+        message: 'Failed to execute raw transaction for the user',
+        error: error.message,
+      });
+    }
+  },
+
+  getRawTransactionStatus: async (req, res) => {
+    const userId = req.UserID;
+    const { order_id } = req.query;
+    logger.debug(
+      '[OktoProxyController] Attempting to fetch raw transaction status for order_id:',
+      order_id
+    );
+    try {
+      const result = await oktoProxyService.fetchRawTransactionStatus(
+        userId,
+        order_id
+      );
+      logger.debug(
+        '[OktoProxyController] Successfully fetched raw transaction status for order_id:',
+        order_id
+      );
+      res.json(result);
+    } catch (error) {
+      logger.error(
+        `[OktoProxyController] Error fetching raw transaction status for order_id: ${order_id}: ${error.message}`,
+        error
+      );
+      res.status(500).json({
+        message: 'Failed to fetch raw transaction status',
+        error: error.message,
+      });
+    }
+  },
 };
 
 module.exports = oktoProxyController;

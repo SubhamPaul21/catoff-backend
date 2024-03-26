@@ -381,6 +381,84 @@ paths:
         '500':
           description: Failed to retrieve user information
 
+  /oktoProxy/wallets:
+    get:
+      summary: Fetch all wallets created by the user
+      tags:
+        - OktoProxy
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully fetched all wallets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletsResponse'
+        '500':
+          description: Failed to fetch wallets
+  /oktoProxy/portfolio:
+    get:
+      summary: Get portfolio data of the user
+      tags:
+        - OktoProxy
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully fetched portfolio data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioResponse'
+        '500':
+          description: Failed to fetch portfolio data
+  /oktoProxy/rawtransaction/execute:
+    post:
+      summary: Execute a raw transaction on a network
+      tags:
+        - OktoProxy
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RawTransactionRequest'
+      responses:
+        '200':
+          description: Successfully executed raw transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RawTransactionResponse'
+        '500':
+          description: Failed to execute raw transaction
+  /oktoProxy/rawtransaction/status:
+    get:
+      summary: Get the details of the raw transaction status
+      tags:
+        - OktoProxy
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: order_id
+          required: true
+          schema:
+            type: string
+          description: Order ID of the transaction to check
+      responses:
+        '200':
+          description: Successfully fetched transaction status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionStatusResponse'
+        '500':
+          description: Failed to fetch transaction status
+
 components:
   securitySchemes:
     bearerAuth:

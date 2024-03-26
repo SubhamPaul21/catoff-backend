@@ -3,9 +3,9 @@ const logger = require('../utils/logger');
 const {
   checkIfChallengeAvailableForEntry,
   updateIsStarted,
-  getChallenge
+  getChallenge,
 } = require('./challenge.service');
-const {updateCredit} = require('./user.service')
+const { updateCredit } = require('./user.service');
 
 const createPlayer = async (playerData) => {
   logger.debug('[PlayerService] Creating player');
@@ -14,10 +14,15 @@ const createPlayer = async (playerData) => {
       where: { UserID: playerData.UserID, ChallengeID: playerData.ChallengeID },
     });
     if (!isPlayerExist) {
-      if (await checkIfChallengeAvailableForEntry(playerData.ChallengeID, playerData.UserID)) {
+      if (
+        await checkIfChallengeAvailableForEntry(
+          playerData.ChallengeID,
+          playerData.UserID
+        )
+      ) {
         const player = await Players.create(playerData);
-        const challenge = await getChallenge(playerData.ChallengeID)
-        await updateCredit(playerData.UserID, challenge.Wager)
+        const challenge = await getChallenge(playerData.ChallengeID);
+        await updateCredit(playerData.UserID, challenge.Wager);
         await checkAndUpdateIsStartedChallenge(playerData.ChallengeID);
         logger.info('[PlayerService] Player created successfully');
         return player;
@@ -103,8 +108,9 @@ const getAllPlayersOfChallenge = async (challengeId) => {
 
 const checkAndUpdateIsStartedChallenge = async (challengeId) => {
   try {
-
-    let players = await Players.findAll({where:{ChallengeID: challengeId}})
+    let players = await Players.findAll({
+      where: { ChallengeID: challengeId },
+    });
     await updateIsStarted(challengeId, players.length);
     logger.info('[PlayerService] Players for challenge fetched successfully');
   } catch (err) {

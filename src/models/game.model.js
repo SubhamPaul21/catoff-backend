@@ -37,28 +37,31 @@
 const { sequelize } = require('../db/db.js');
 const { DataTypes } = require('sequelize');
 
-const Game = sequelize.define('Game', {
-  GameID: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    primaryKey: true,
-    autoIncrement: true,
+const Game = sequelize.define(
+  'Game',
+  {
+    GameID: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    GameName: {
+      type: DataTypes.STRING(255),
+    },
+    ParticipationType: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true,
+    },
+    GameType: {
+      type: DataTypes.INTEGER.UNSIGNED,
+    },
+    GameDescription: {
+      type: DataTypes.STRING(255),
+    },
   },
-  GameName: {
-    type: DataTypes.STRING(255),
-  },
-  ParticipationType: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: true,
-  },
-  GameType: {
-    type: DataTypes.INTEGER.UNSIGNED,
-  },
-  GameDescription: {
-    type: DataTypes.STRING(255),
-  },
-},
-{
-  timestamps: false, // Disable automatic createdAt and updatedAt columns
-});
+  {
+    timestamps: false, // Disable automatic createdAt and updatedAt columns
+  }
+);
 
 module.exports = Game;
