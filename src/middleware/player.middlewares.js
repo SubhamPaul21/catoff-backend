@@ -13,7 +13,7 @@ const logValidationErrors = (req, res, next) => {
 };
 
 const validatePlayerCreation = [
-  body('UserID').isInt().withMessage('User ID must be an integer'),
+  // body('UserID').isInt().withMessage('User ID must be an integer'),
   body('ChallengeID').isInt().withMessage('Challenge ID must be an integer'),
   logValidationErrors,
 ];
