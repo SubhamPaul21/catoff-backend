@@ -54,4 +54,14 @@ router.get(
   oktoProxyController.getUserFromToken
 );
 
+router.get(
+  '/wallets',
+  verifyToken,
+  (req, res, next) => {
+    logger.info('GET /wallets - Fetching all wallets created by the user');
+    next();
+  },
+  oktoProxyController.fetchAllWalletsForUser
+);
+
 module.exports = router;

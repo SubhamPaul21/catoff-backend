@@ -120,6 +120,30 @@ const oktoProxyController = {
       });
     }
   },
+
+  fetchAllWalletsForUser: async (req, res) => {
+    const userId = req.UserID;
+    logger.debug(
+      '[OktoProxyController] Attempting to fetch all wallets for the user'
+    );
+    try {
+      const result = await oktoProxyService.fetchAllWallets(userId);
+      logger.debug(
+        '[OktoProxyController] Successfully fetched all wallets for the user'
+      );
+      res.json(result);
+    } catch (error) {
+      logger.error(
+        `[OktoProxyController] Error fetching all wallets for the user: ${error.message}`,
+        error
+      );
+      res.status(500).json({
+        message: 'Failed to fetch all wallets for the user',
+        error: error.message,
+      });
+    }
+  },
+
 };
 
 module.exports = oktoProxyController;
