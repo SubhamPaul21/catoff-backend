@@ -43,6 +43,7 @@ router.post(
 );
 router.get(
   '/challenges/:ID',
+  verifyToken,
   (req, res, next) => {
     logger.info(
       `GET /challenge/challenges/${req.params.ID} - Retrieving challenge`
@@ -76,7 +77,7 @@ router.delete(
 
 router.get(
   '/challenges/search/:searchTerm',
-  // verifyToken,
+  verifyToken,
   (req, res, next) => {
     logger.info(
       `GET /challenge/challenges/search/${req.params.searchTerm} - Searching challenges`
@@ -88,7 +89,7 @@ router.get(
 
 router.get(
   '/challenges/onGoing/category/:type',
-  // verifyToken,
+  verifyToken,
   (req, res, next) => {
     logger.info(
       `GET /challenge/challenges/onGoing/category/${req.params.type} - Getting ongoing challenges by category`

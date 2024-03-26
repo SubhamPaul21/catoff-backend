@@ -1,6 +1,6 @@
 const { Challenge, Game, Player } = require('../models/index');
 const { Op } = require('sequelize');
-const { getGameIds } = require('./game.service');
+const { getGameIds, getGameType } = require('./game.service');
 const { getUserIds, getUserById } = require('./user.service');
 const logger = require('../utils/logger');
 
@@ -21,7 +21,8 @@ const createChallenge = async (challengeData) => {
 const getChallenge = async (id) => {
   logger.debug(`[ChallengeService] Attempting to get challenge with ID: ${id}`);
   try {
-    const challenge = await Challenge.findByPk(id);
+    let challenge = await Challenge.findByPk(id);
+    challenge.dataValues.GameType = await getGameType(challenge.GameID)
     if (challenge) {
       logger.info('[ChallengeService] Challenge retrieved successfully');
       return challenge;
