@@ -6,7 +6,8 @@ const { ParticipationType, GameType } = require('../constants/constants')
 const createGame = async (gameData) => {
   logger.debug('[GameService] Attempting to create a game');
   try {
-    gameData.ParticipationType = ParticipationType[gameData.ParticipationType]?? null;
+    gameData.ParticipationType =
+      ParticipationType[gameData.ParticipationType] ?? null;
     const game = await Game.create(gameData);
     logger.info('[GameService] Game created successfully');
     return game;
@@ -72,7 +73,7 @@ const getGameIds = async (searchTerm) => {
     `[GameService] Retrieving game IDs for searchTerm: ${searchTerm}`
   );
   try {
-    const participationType = ParticipationType[searchTerm]??null;
+    const participationType = ParticipationType[searchTerm] ?? null;
     const games = await Game.findAll({
       attributes: ['GameID'],
       where: {

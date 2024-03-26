@@ -59,48 +59,51 @@ var Challenge = require('./challenge.model.js');
 // });
 // module.exports = Player;
 
-const Player = sequelize.define('Player', {
-  PlayerID: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  UserID: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: false,
-    references: {
-      model: 'Users',
-      key: 'UserID',
+const Player = sequelize.define(
+  'Player',
+  {
+    PlayerID: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    UserID: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+      references: {
+        model: 'Users',
+        key: 'UserID',
+      },
+    },
+    ChallengeID: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+      references: {
+        model: 'Challenges',
+        key: 'ChallengeID',
+      },
+    },
+    Value: {
+      type: DataTypes.FLOAT.UNSIGNED,
+      allowNull: true,
+      defaultValue: 0,
+    },
+    Device: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    DeviceDataSource: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    PlayerPublicKey: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
     },
   },
-  ChallengeID: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: false,
-    references: {
-      model: 'Challenges',
-      key: 'ChallengeID',
-    },
-  },
-  Value: {
-    type: DataTypes.FLOAT.UNSIGNED,
-    allowNull: true,
-    defaultValue: 0,
-  },
-  Device: {
-    type: DataTypes.STRING(255),
-    allowNull: true,
-  },
-  DeviceDataSource: {
-    type: DataTypes.STRING(255),
-    allowNull: true,
-  },
-  PlayerPublicKey: {
-    type: DataTypes.STRING(255),
-    allowNull: true,
-  },
-},
-{
-  timestamps: false, // Disable automatic createdAt and updatedAt columns
-});
+  {
+    timestamps: false, // Disable automatic createdAt and updatedAt columns
+  }
+);
 
 module.exports = Player;

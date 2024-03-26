@@ -5,14 +5,15 @@ const {
   deleteChallenge,
   searchChallenge,
   getOngoingChallenges,
+  getChallengeDashboardById,
 } = require('../services/challenge.service');
 const { makeResponse } = require('../utils/responseMaker');
-const logger = require('../utils/logger'); // Ensure this path is correct
+const logger = require('../utils/logger');
 
 const createChallengeHandler = async (req, res) => {
   logger.debug('[ChallengeController] Attempting to create a challenge');
   try {
-    req.body.ChallengeCreator = req.body.ChallengeCreator||req.UserID;
+    req.body.ChallengeCreator = req.body.ChallengeCreator || req.UserID;
     const challenge = await createChallenge(req.body);
     logger.debug('[ChallengeController] Challenge created successfully');
     makeResponse(res, 201, true, 'created challenge', challenge);
@@ -137,6 +138,49 @@ const getOnGoingChallengesHandler = async (req, res) => {
   }
 };
 
+const getChallengeDashboardByIdHandler = async (req, res) => {
+  const challengeId = req.params.ID;
+  logger.debug(
+    `[ChallengeController] Attempting to retrieve dashboard for challenge with ID: ${challengeId}`
+  );
+  try {
+    const dashboardData = await getChallengeDashboardById(challengeId);
+    if (!dashboardData) {
+      logger.debug(
+        `[ChallengeController] Challenge dashboard not found for ID: ${challengeId}`
+      );
+      return makeResponse(
+        res,
+        404,
+        false,
+        'Challenge dashboard data not found',
+        null
+      );
+    }
+    logger.debug(
+      `[ChallengeController] Challenge dashboard data retrieved successfully for ID: ${challengeId}`
+    );
+    makeResponse(
+      res,
+      200,
+      true,
+      'Challenge dashboard data fetched successfully',
+      dashboardData
+    );
+  } catch (error) {
+    logger.error(
+      `[ChallengeController] Error fetching challenge dashboard data for ID: ${challengeId}: ${error.message}`
+    );
+    return makeResponse(
+      res,
+      500,
+      false,
+      'Error fetching challenge dashboard data',
+      null
+    );
+  }
+};
+
 module.exports = {
   createChallengeHandler,
   getChallengeHandler,
@@ -144,4 +188,5 @@ module.exports = {
   deleteChallengeHandler,
   searchChallengeHandler,
   getOnGoingChallengesHandler,
+  getChallengeDashboardByIdHandler,
 };

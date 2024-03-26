@@ -320,5 +320,152 @@ const oktoProxyService = {
       throw error;
     }
   },
+
+  fetchAllWallets: async (userId) => {
+    const userConfig = await getUserConfig(userId);
+    if (!userConfig || !userConfig.OktoAuthToken) {
+      logger.error(
+        `[OktoProxyService] OktoAuthToken not found for userID: ${userId}`
+      );
+      throw new Error('OktoAuthToken not found');
+    }
+    try {
+      const response = await axios.get(
+        `${OKTO_TECH_API_BASE_URL}api/v1/wallet`,
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${userConfig.OktoAuthToken}`,
+          },
+        }
+      );
+      logger.debug(
+        `[OktoProxyService] Successfully fetched all wallets for userID: ${userId}`
+      );
+      return {
+        status: 'success',
+        message: 'All wallets fetched successfully.',
+        data: response.data,
+      };
+    } catch (error) {
+      logger.error(
+        `[OktoProxyService] Failed to fetch all wallets for userID: ${userId}: ${error.message}`,
+        error
+      );
+      throw error;
+    }
+  },
+
+  fetchPortfolioData: async (userId) => {
+    const userConfig = await getUserConfig(userId);
+    if (!userConfig || !userConfig.OktoAuthToken) {
+      logger.error(
+        `[OktoProxyService] OktoAuthToken not found for userID: ${userId}`
+      );
+      throw new Error('OktoAuthToken not found');
+    }
+    try {
+      const response = await axios.get(
+        `${OKTO_TECH_API_BASE_URL}api/v1/portfolio`,
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${userConfig.OktoAuthToken}`,
+          },
+        }
+      );
+      logger.debug(
+        `[OktoProxyService] Successfully fetched portfolio data for userID: ${userId}`
+      );
+      return {
+        status: 'success',
+        message: 'Portfolio data fetched successfully.',
+        data: response.data,
+      };
+    } catch (error) {
+      logger.error(
+        `[OktoProxyService] Failed to fetch portfolio data for userID: ${userId}: ${error.message}`,
+        error
+      );
+      throw error;
+    }
+  },
+
+  executeRawTransaction: async (userId, network_name, transaction) => {
+    const userConfig = await getUserConfig(userId);
+    if (!userConfig || !userConfig.OktoAuthToken) {
+      logger.error(
+        `[OktoProxyService] OktoAuthToken not found for userID: ${userId}`
+      );
+      throw new Error('OktoAuthToken not found');
+    }
+    try {
+      const response = await axios.post(
+        `${OKTO_TECH_API_BASE_URL}api/v1/rawtransaction/execute`,
+        {
+          network_name,
+          transaction,
+        },
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${userConfig.OktoAuthToken}`,
+          },
+        }
+      );
+      logger.debug(
+        `[OktoProxyService] Successfully executed raw transaction for userID: ${userId}`
+      );
+      return {
+        status: 'success',
+        message: 'Raw transaction executed successfully.',
+        data: response.data,
+      };
+    } catch (error) {
+      logger.error(
+        `[OktoProxyService] Failed to execute raw transaction for userID: ${userId}: ${error.message}`,
+        error
+      );
+      throw error;
+    }
+  },
+
+  fetchRawTransactionStatus: async (userId, order_id) => {
+    const userConfig = await getUserConfig(userId);
+    if (!userConfig || !userConfig.OktoAuthToken) {
+      logger.error(
+        `[OktoProxyService] OktoAuthToken not found for userID: ${userId}`
+      );
+      throw new Error('OktoAuthToken not found');
+    }
+    try {
+      const response = await axios.get(
+        `${OKTO_TECH_API_BASE_URL}api/v1/rawtransaction/status`,
+        {
+          params: {
+            order_id,
+          },
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${userConfig.OktoAuthToken}`,
+          },
+        }
+      );
+      logger.debug(
+        `[OktoProxyService] Successfully fetched raw transaction status for order_id: ${order_id}`
+      );
+      return {
+        status: 'success',
+        message: 'Raw transaction status fetched successfully.',
+        data: response.data,
+      };
+    } catch (error) {
+      logger.error(
+        `[OktoProxyService] Failed to fetch raw transaction status for order_id: ${order_id}: ${error.message}`,
+        error
+      );
+      throw error;
+    }
+  },
 };
 module.exports = oktoProxyService;

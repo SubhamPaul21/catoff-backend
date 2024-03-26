@@ -1,4 +1,4 @@
-const Challenge = require('../models/challenge.model');
+const { Challenge, Game, Player } = require('../models/index');
 const { Op } = require('sequelize');
 const { getGameIds, getGameType } = require('./game.service');
 const { getUserIds, getUserById } = require('./user.service');
@@ -154,9 +154,13 @@ const checkIfChallengeAvailableForEntry = async (challengeId, userId) => {
     const challenge = await Challenge.findOne({
       where: { ChallengeID: challengeId },
     });
-    const user = await getUserById(userId)
+    const user = await getUserById(userId);
     logger.info('[ChallengeService] data retrieved successfully');
-    return !challenge.IsStarted && challenge.IsActive && (user.Credits>=challenge.Wager);
+    return (
+      !challenge.IsStarted &&
+      challenge.IsActive &&
+      user.Credits >= challenge.Wager
+    );
   } catch (err) {
     logger.error(
       `[ChallengeService] Error in retrieving challenge checkIfChallengeAvailableForEntry: ${error.message}`
@@ -165,11 +169,11 @@ const checkIfChallengeAvailableForEntry = async (challengeId, userId) => {
   }
 };
 
-
 const updateIsStarted = async (challengeId, totalNum) => {
   try {
     let challenge = await Challenge.findOne({
-      where: { ChallengeID: challengeId }});
+      where: { ChallengeID: challengeId },
+    });
     if (
       challenge.IsActive &&
       !challenge.IsStarted &&
@@ -192,7 +196,9 @@ const updateIsStarted = async (challengeId, totalNum) => {
 
 const getAllStartedChallenges = async () => {
   try {
-    let challenges = await Challenge.findAll({ where: { IsStarted: true , IsActive: true } });
+    let challenges = await Challenge.findAll({
+      where: { IsStarted: true, IsActive: true },
+    });
     logger.info('[ChallengeService] Started challenges fetched successfully');
     return challenges;
   } catch (err) {
@@ -200,6 +206,61 @@ const getAllStartedChallenges = async () => {
       `[ChallengeService] Error in retrieving challenge getAllStartedChallenge: ${err.message}`
     );
     throw err;
+  }
+};
+
+const getChallengeDashboardById = async (challengeId) => {
+  logger.debug(
+    `[ChallengeService] Fetching dashboard for challenge ID: ${challengeId}`
+  );
+  try {
+    const challenge = await Challenge.findByPk(challengeId, {
+      include: [
+        {
+          model: Player,
+          as: 'players',
+          attributes: ['Value'],
+        },
+        {
+          model: Game,
+          as: 'game',
+          attributes: ['GameType', 'GameName'],
+        },
+      ],
+    });
+
+    if (!challenge) {
+      logger.warn(
+        `[ChallengeService] Challenge not found for dashboard ID: ${challengeId}`
+      );
+      return null;
+    }
+
+    const totalWagerStaked =
+      challenge.Wager * (challenge.players ? challenge.players.length : 0);
+
+    const dashboardData = {
+      GameType: challenge.game?.GameType || 'Unknown', // Fallback if no game data
+      GameName: challenge.game?.GameName || 'Unknown',
+      StartDate: challenge.StartDate,
+      EndDate: challenge.EndDate,
+      StakedWager: challenge.Wager,
+      TotalWagerStaked: totalWagerStaked,
+      Target: challenge.Target,
+      Value: challenge.players
+        ? challenge.players.reduce((acc, player) => acc + player.Value, 0)
+        : 0, // Sum of all players' values
+    };
+
+    logger.info(
+      `[ChallengeService] Dashboard data for challenge ID: ${challengeId} fetched successfully`
+    );
+    return dashboardData;
+  } catch (error) {
+    logger.error(
+      `[ChallengeService] Error fetching challenge dashboard by ID: ${challengeId}: ${error.message}`
+    );
+    throw error;
   }
 };
 
@@ -213,4 +274,5 @@ module.exports = {
   checkIfChallengeAvailableForEntry,
   updateIsStarted,
   getAllStartedChallenges,
+  getChallengeDashboardById,
 };
