@@ -6,6 +6,7 @@ const {
   searchChallenge,
   getOngoingChallenges,
   getChallengeDashboardById,
+  shareChallenge
 } = require('../services/challenge.service');
 const { makeResponse } = require('../utils/responseMaker');
 const logger = require('../utils/logger');
@@ -181,6 +182,22 @@ const getChallengeDashboardByIdHandler = async (req, res) => {
   }
 };
 
+const shareableLinkHandler = async(req,res)=>{
+  try{
+    const challengeId = req.params.ID
+    const link = await shareChallenge(challengeId);
+    logger.debug(
+      `[ChallengeController] Challenge link got successfull with challenge ID: ${challengeId}`
+    );
+    return makeResponse(res, 200, true, "got the shareable link successfully", link);
+  }catch(err){
+    logger.error(
+      `[ChallengeController] Error in getting the shaerable link of challenge id : ${challengeId}: ${error.message}`
+    );
+    return makeResponse(res, 500, false, "error in fetching the link for challenge", null)
+  }
+}
+
 module.exports = {
   createChallengeHandler,
   getChallengeHandler,
@@ -189,4 +206,5 @@ module.exports = {
   searchChallengeHandler,
   getOnGoingChallengesHandler,
   getChallengeDashboardByIdHandler,
+  shareableLinkHandler
 };

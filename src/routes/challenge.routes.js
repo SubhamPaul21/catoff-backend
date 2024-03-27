@@ -11,6 +11,7 @@ const {
   searchChallengeHandler,
   getOnGoingChallengesHandler,
   getChallengeDashboardByIdHandler,
+  shareableLinkHandler
 } = require('../controllers/challenge.controller');
 const { validationResult } = require('express-validator');
 const verifyToken = require('../middleware/authMiddleware');
@@ -43,7 +44,6 @@ router.post(
 );
 router.get(
   '/challenges/:ID',
-  verifyToken,
   (req, res, next) => {
     logger.info(
       `GET /challenge/challenges/${req.params.ID} - Retrieving challenge`
@@ -109,5 +109,16 @@ router.get(
   },
   getChallengeDashboardByIdHandler
 );
+
+router.get(
+  '/challenges/:ID/share',
+  (req,res,next)=>{
+    logger.info(
+      `GET /challenges/${req.params.ID}/share - Retrieving challenge link`
+    );
+    next();
+  },
+  shareableLinkHandler
+)
 
 module.exports = router;

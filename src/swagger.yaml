@@ -522,8 +522,6 @@ paths:
   /challenge/challenges/{ID}:
     get:
       summary: Get a challenge by ID
-      security:
-        - bearerAuth: []
       parameters:
         - name: ID
           in: path
@@ -772,6 +770,53 @@ paths:
                   data:
                     type: string
                     example: "Unable to join the challenge"
+      
+  /challenge/challenges/{challengeId}/share:
+    get:
+      summary: Get a shareable link for a challenge
+      parameters:
+        - in: path
+          name: challengeId
+          required: true
+          schema:
+            type: integer
+          description: The ID of the challenge to get the shareable link for
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates if the request was successful
+                    example: true
+                  message:
+                    type: string
+                    description: A message describing the result
+                    example: "Got the shareable link successfully"
+                  data:
+                    type: string
+                    description: The shareable link for the challenge
+                    example: "http://app.catoff.xyz/challenge/1"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Error getting the shareable link"
+                  data:
+                    type: string
+                    example: "Unable to get the shareable link"
         
 components:
   schemas:
