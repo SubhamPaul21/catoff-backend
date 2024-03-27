@@ -1,8 +1,9 @@
-const { Challenge, Game, Player } = require('../models/index');
+const { Challenge, Game, Player, User } = require('../models/index');
 const { Op } = require('sequelize');
 const { getGameIds, getGameType } = require('./game.service');
 const { getUserIds, getUserById } = require('./user.service');
 const logger = require('../utils/logger');
+const { GameType, ParticipationTypeRev } = require('../constants/constants')
 
 const createChallenge = async (challengeData) => {
   logger.debug('[ChallengeService] Attempting to create challenge');
@@ -224,7 +225,7 @@ const getChallengeDashboardById = async (challengeId) => {
         {
           model: Game,
           as: 'game',
-          attributes: ['GameType', 'GameName'],
+          attributes: ['GameType', 'GameName', 'ParticipationType'],
         },
       ],
     });
@@ -240,10 +241,12 @@ const getChallengeDashboardById = async (challengeId) => {
       challenge.Wager * (challenge.players ? challenge.players.length : 0);
 
     const dashboardData = {
-      GameType: challenge.game?.GameType || 'Unknown', // Fallback if no game data
+      GameType: GameType[challenge.game?.GameType] || 'Unknown', // Fallback if no game data
       GameName: challenge.game?.GameName || 'Unknown',
+      ParticipationType: ParticipationTypeRev[challenge.game?.ParticipationType] || 'Unknown',
       StartDate: challenge.StartDate,
       EndDate: challenge.EndDate,
+      PlayersJoined: challenge.players.length,
       StakedWager: challenge.Wager,
       TotalWagerStaked: totalWagerStaked,
       Target: challenge.Target,
@@ -264,6 +267,32 @@ const getChallengeDashboardById = async (challengeId) => {
   }
 };
 
+const getLeaderboardData = async (challengeId) => {
+  try {
+    const playersData = await Player.findAll({
+      where: { ChallengeID: challengeId },
+      include: [{
+        model: User,
+        as: 'user',
+        attributes: ['UserName', 'ProfilePicture']
+      }],
+      attributes: ['Value'],
+      order: [['Value', 'DESC']]
+    });
+
+    const leaderboardData = playersData.map(player => ({
+      profilePicture: player.user.ProfilePicture,
+      username: player.user.UserName,
+      value: player.Value
+    }));
+
+    return leaderboardData;
+  } catch (error) {
+    logger.error(`[ChallengeService] Error fetching leaderboard data for challenge ID: ${challengeId}: ${error.message}`);
+    throw error;
+  }
+};
+
 module.exports = {
   createChallenge,
   getChallenge,
@@ -275,4 +304,5 @@ module.exports = {
   updateIsStarted,
   getAllStartedChallenges,
   getChallengeDashboardById,
+  getLeaderboardData,
 };
