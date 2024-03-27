@@ -114,7 +114,7 @@ const signin = async (data, tokens) => {
 
     // Generate JWT Token
     const JwtToken = jwt.sign({ userId: user.UserID }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
+      expiresIn: '5h',
     });
 
     logger.info('[UserService] User sign in/up successful.');

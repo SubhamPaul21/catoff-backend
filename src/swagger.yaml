@@ -198,32 +198,6 @@ paths:
         '500':
           description: Internal Server Error
 
-  /player:
-    post:
-      summary: Create a new player
-      tags:
-        - Player
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                UserID:
-                  type: integer
-                ChallengeID:
-                  type: integer
-              required:
-                - UserID
-                - ChallengeID
-      responses:
-        '201':
-          description: Player created successfully
-        '400':
-          description: Validation error
-        '500':
-          description: Internal server error
 
   /player/{ID}:
     get:
@@ -731,6 +705,73 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Challenge'
+  
+  /player:
+    post:
+      summary: Join a challenge
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ChallengeID:
+                  type: integer
+                  description: The ID of the challenge to join
+                  example: 1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates if the request was successful
+                    example: true
+                  message:
+                    type: string
+                    description: A message describing the result
+                    example: "Player joined the challenge"
+                  data:
+                    type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Invalid request"
+                  data:
+                    type: string
+                    example: "Invalid ChallengeID"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Error creating player"
+                  data:
+                    type: string
+                    example: "Unable to join the challenge"
         
 components:
   schemas:
