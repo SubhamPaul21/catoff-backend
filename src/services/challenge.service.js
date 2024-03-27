@@ -3,6 +3,7 @@ const { Op } = require('sequelize');
 const { getGameIds, getGameType } = require('./game.service');
 const { getUserIds, getUserById } = require('./user.service');
 const logger = require('../utils/logger');
+require('dotenv').config();
 const { GameType, ParticipationTypeRev } = require('../constants/constants')
 
 const createChallenge = async (challengeData) => {
@@ -265,19 +266,23 @@ const getChallengeDashboardById = async (challengeId) => {
     );
     throw error;
   }
-
-  const shareChallenge = async(challengeId)=>{
-    try{
-      const shareableLink = ``;
-    }catch(e){
-      logger.error(
-        `[ChallengeService] Error creating sharable link for challenge with challenge ID : ${challengeId}: ${error.stack}`
-      ); 
-      throw e;
-    }
-   
-  }
 };
+
+const shareChallenge = async(challengeId)=>{
+  try{
+    const shareableLink = `${process.env.FRONTEND_ENDPOINT}/challenge/${challengeId}`;
+    logger.info(
+      `[ChallengeService] successfully got shaerable link for challenge with challenge id : ${challengeId} `
+    );
+    return shareableLink;
+  }catch(e){
+    logger.error(
+      `[ChallengeService] Error creating sharable link for challenge with challenge ID : ${challengeId}: ${error.stack}`
+    ); 
+    throw e;
+  }
+ 
+}
 
 const getLeaderboardData = async (challengeId) => {
   try {
@@ -316,5 +321,6 @@ module.exports = {
   updateIsStarted,
   getAllStartedChallenges,
   getChallengeDashboardById,
+  shareChallenge,
   getLeaderboardData,
 };
