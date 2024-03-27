@@ -262,6 +262,18 @@ const getChallengeDashboardById = async (challengeId) => {
     );
     throw error;
   }
+
+  const shareChallenge = async(challengeId)=>{
+    try{
+      const shareableLink = ``;
+    }catch(e){
+      logger.error(
+        `[ChallengeService] Error creating sharable link for challenge with challenge ID : ${challengeId}: ${error.stack}`
+      ); 
+      throw e;
+    }
+   
+  }
 };
 
 module.exports = {

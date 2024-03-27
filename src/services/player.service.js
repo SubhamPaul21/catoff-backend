@@ -27,6 +27,9 @@ const createPlayer = async (playerData) => {
         logger.info('[PlayerService] Player created successfully');
         return player;
       }
+      else{
+        throw new Error("Unable to join the challenge")
+      }
     } else {
       throw new Error('User already joined the challenge');
     }
