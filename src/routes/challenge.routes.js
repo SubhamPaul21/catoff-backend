@@ -11,7 +11,8 @@ const {
   searchChallengeHandler,
   getOnGoingChallengesHandler,
   getChallengeDashboardByIdHandler,
-  shareableLinkHandler
+  shareableLinkHandler,
+  getLeaderboardDataHandler,
 } = require('../controllers/challenge.controller');
 const { validationResult } = require('express-validator');
 const verifyToken = require('../middleware/authMiddleware');
@@ -120,5 +121,15 @@ router.get(
   },
   shareableLinkHandler
 )
+
+router.get(
+  '/challenges/:ID/leaderboard',
+  verifyToken,
+  (req, res, next) => {
+    logger.info(`GET /challenges/${req.params.ID}/leaderboard - Retrieving leaderboard data`);
+    next();
+  },
+  getLeaderboardDataHandler
+);
 
 module.exports = router;

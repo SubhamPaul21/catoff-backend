@@ -6,7 +6,8 @@ const {
   searchChallenge,
   getOngoingChallenges,
   getChallengeDashboardById,
-  shareChallenge
+  shareChallenge,
+  getLeaderboardData,
 } = require('../services/challenge.service');
 const { makeResponse } = require('../utils/responseMaker');
 const logger = require('../utils/logger');
@@ -198,6 +199,23 @@ const shareableLinkHandler = async(req,res)=>{
   }
 }
 
+const getLeaderboardDataHandler = async (req, res) => {
+  const challengeId = req.params.ID;
+  logger.debug(`[ChallengeController] Fetching leaderboard data for challenge with ID: ${challengeId}`);
+  try {
+    const leaderboardData = await getLeaderboardData(challengeId);
+    if (!leaderboardData) {
+      logger.debug(`[ChallengeController] No leaderboard data found for challenge ID: ${challengeId}`);
+      return makeResponse(res, 404, false, 'Leaderboard data not found', null);
+    }
+    logger.debug(`[ChallengeController] Leaderboard data retrieved successfully for challenge ID: ${challengeId}`);
+    makeResponse(res, 200, true, 'Leaderboard data fetched successfully', leaderboardData);
+  } catch (error) {
+    logger.error(`[ChallengeController] Error fetching leaderboard data for challenge ID: ${challengeId}: ${error.message}`);
+    return makeResponse(res, 500, false, 'Error fetching leaderboard data', null);
+  }
+};
+
 module.exports = {
   createChallengeHandler,
   getChallengeHandler,
@@ -206,5 +224,6 @@ module.exports = {
   searchChallengeHandler,
   getOnGoingChallengesHandler,
   getChallengeDashboardByIdHandler,
-  shareableLinkHandler
+  shareableLinkHandler,
+  getLeaderboardDataHandler,
 };

@@ -6,6 +6,8 @@ info:
 servers:
   - url: http://localhost:3005
   - url: https://api.catoff.xyz
+  - url: https://stagingapi.catoff.xyz
+  - url: http://3.110.123.204:3005
 paths:
   /user/login:
     post:
@@ -699,11 +701,90 @@ paths:
                     type: boolean
                   message:
                     type: string
-                  data:
+
+  /challenge/challenges/dashboard/{ID}:
+    get:
+      summary: Retrieve challenge dashboard data by ID
+      tags:
+        - Challenge
+      parameters:
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: integer
+          description: The ID of the challenge to retrieve dashboard data for
+      responses:
+        '200':
+          description: Challenge dashboard data fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  GameType:
+                    type: string
+                    example: "Arcade"
+                  GameName:
+                    type: string
+                    example: "Space Invaders"
+                  StartDate:
+                    type: integer
+                    example: 1622540800
+                  EndDate:
+                    type: integer
+                    example: 1625132800
+                  StakedWager:
+                    type: integer
+                    example: 100
+                  TotalWagerStaked:
+                    type: integer
+                    example: 1000
+                  Target:
+                    type: integer
+                    example: 1500
+                  Value:
+                    type: integer
+                    example: 800
+        '404':
+          description: Challenge dashboard data not found
+
+  /challenge/challenges/{ID}/leaderboard:
+    get:
+      summary: Retrieve leaderboard data for a challenge
+      tags:
+        - Challenge
+      parameters:
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: integer
+          description: The ID of the challenge to retrieve leaderboard data for
+      responses:
+        '200':
+          description: Leaderboard data fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  leaderboardData:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Challenge'
-  
+                      type: object
+                      properties:
+                        profilePicture:
+                          type: string
+                          example: "https://example.com/profile.jpg"
+                        username:
+                          type: string
+                          example: "player1"
+                        value:
+                          type: integer
+                          example: 1200
+        '404':
+          description: Leaderboard data not found  
   /player:
     post:
       summary: Join a challenge
@@ -770,7 +851,7 @@ paths:
                   data:
                     type: string
                     example: "Unable to join the challenge"
-      
+
   /challenge/challenges/{challengeId}/share:
     get:
       summary: Get a shareable link for a challenge
@@ -817,6 +898,7 @@ paths:
                   data:
                     type: string
                     example: "Unable to get the shareable link"
+
         
 components:
   schemas:
@@ -862,21 +944,3 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
