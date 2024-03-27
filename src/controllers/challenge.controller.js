@@ -14,7 +14,7 @@ const logger = require('../utils/logger');
 const createChallengeHandler = async (req, res) => {
   logger.debug('[ChallengeController] Attempting to create a challenge');
   try {
-    req.body.ChallengeCreator = req.body.ChallengeCreator || req.UserID;
+    req.body.ChallengeCreator = req.UserID;
     const challenge = await createChallenge(req.body);
     logger.debug('[ChallengeController] Challenge created successfully');
     makeResponse(res, 201, true, 'created challenge', challenge);
