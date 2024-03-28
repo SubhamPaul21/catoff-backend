@@ -95,7 +95,7 @@ const User = sequelize.define(
       allowNull: true,
     },
     Credits: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.FLOAT.UNSIGNED,
       defaultValue: 0,
     },
     ProfilePicture: {
@@ -104,7 +104,7 @@ const User = sequelize.define(
       unique: true,
     },
     InvestedCredits: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.FLOAT.UNSIGNED,
       allowNull: true,
       defaultValue: 0,
     },

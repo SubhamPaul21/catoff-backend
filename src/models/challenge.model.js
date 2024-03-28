@@ -77,11 +77,11 @@ const Challenge = sequelize.define(
       allowNull: true,
     },
     Wager: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.FLOAT.UNSIGNED,
       allowNull: false,
     },
     Target: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.FLOAT.UNSIGNED,
       allowNull: true,
     },
   },

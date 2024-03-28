@@ -27,12 +27,16 @@ const Transaction = sequelize.define('Transaction', {
       key: 'UserID',
     },
   },
-  SolAmount: {
-    type: DataTypes.INTEGER,
+  TokenAmount: {
+    type: DataTypes.FLOAT,
     allowNull: true,
   },
-  Amount: {
-    type: DataTypes.INTEGER,
+  Token:{
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  CreditAmount: {
+    type: DataTypes.FLOAT,
     allowNull: true,
   },
   Description: {
