@@ -450,11 +450,7 @@ paths:
               properties:
                 network_name:
                   type: string
-                token_address:
-                  type: string
                 quantity:
-                  type: string
-                recipient_address:
                   type: string
       responses:
         '200':
