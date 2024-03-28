@@ -6,6 +6,7 @@ const {
   getChallenge,
 } = require('./challenge.service');
 const { updateCredit } = require('./user.service');
+const {createTransaction} = require('./transaction.service')
 
 const createPlayer = async (playerData) => {
   logger.debug('[PlayerService] Creating player');
@@ -24,6 +25,13 @@ const createPlayer = async (playerData) => {
         const challenge = await getChallenge(playerData.ChallengeID);
         await updateCredit(playerData.UserID, challenge.Wager);
         await checkAndUpdateIsStartedChallenge(playerData.ChallengeID);
+        const transactionData = {
+          From: playerData.UserID,
+          CreditAmount: challenge.Wager,
+          Description: "PARTICIPATION",
+          Timestamp: Date.now()
+        }
+        await createTransaction(transactionData)
         logger.info('[PlayerService] Player created successfully');
         return player;
       } else {

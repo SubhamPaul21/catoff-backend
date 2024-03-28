@@ -13,7 +13,7 @@ const Transaction = sequelize.define('Transaction', {
   },
   To: {
     type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: 'Users',
       key: 'UserID',
@@ -21,18 +21,22 @@ const Transaction = sequelize.define('Transaction', {
   },
   From: {
     type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: 'Users',
       key: 'UserID',
     },
   },
-  SolAmount: {
-    type: DataTypes.INTEGER,
+  TokenAmount: {
+    type: DataTypes.FLOAT,
     allowNull: true,
   },
-  Amount: {
-    type: DataTypes.INTEGER,
+  Token:{
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  CreditAmount: {
+    type: DataTypes.FLOAT,
     allowNull: true,
   },
   Description: {
@@ -40,7 +44,7 @@ const Transaction = sequelize.define('Transaction', {
     allowNull: true,
   },
   Timestamp: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     allowNull: true,
   },
 });
