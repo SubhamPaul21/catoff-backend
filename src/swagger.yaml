@@ -200,7 +200,6 @@ paths:
         '500':
           description: Internal Server Error
 
-
   /player/{ID}:
     get:
       summary: Retrieve a player by ID
@@ -662,7 +661,7 @@ paths:
                           type: integer
         '404':
           description: No ongoing challenges found
-          
+
   /challenge/challenges/search/{query}:
     get:
       summary: Search for challenges by name or description
@@ -724,10 +723,10 @@ paths:
                 properties:
                   GameType:
                     type: string
-                    example: "Arcade"
+                    example: 'Arcade'
                   GameName:
                     type: string
-                    example: "Space Invaders"
+                    example: 'Space Invaders'
                   StartDate:
                     type: integer
                     example: 1622540800
@@ -776,15 +775,15 @@ paths:
                       properties:
                         profilePicture:
                           type: string
-                          example: "https://example.com/profile.jpg"
+                          example: 'https://example.com/profile.jpg'
                         username:
                           type: string
-                          example: "player1"
+                          example: 'player1'
                         value:
                           type: integer
                           example: 1200
         '404':
-          description: Leaderboard data not found  
+          description: Leaderboard data not found
   /player:
     post:
       summary: Join a challenge
@@ -816,7 +815,7 @@ paths:
                   message:
                     type: string
                     description: A message describing the result
-                    example: "Player joined the challenge"
+                    example: 'Player joined the challenge'
                   data:
                     type: object
         '400':
@@ -831,10 +830,10 @@ paths:
                     example: false
                   message:
                     type: string
-                    example: "Invalid request"
+                    example: 'Invalid request'
                   data:
                     type: string
-                    example: "Invalid ChallengeID"
+                    example: 'Invalid ChallengeID'
         '500':
           description: Internal server error
           content:
@@ -847,10 +846,10 @@ paths:
                     example: false
                   message:
                     type: string
-                    example: "Error creating player"
+                    example: 'Error creating player'
                   data:
                     type: string
-                    example: "Unable to join the challenge"
+                    example: 'Unable to join the challenge'
 
   /challenge/challenges/{challengeId}/share:
     get:
@@ -877,11 +876,11 @@ paths:
                   message:
                     type: string
                     description: A message describing the result
-                    example: "Got the shareable link successfully"
+                    example: 'Got the shareable link successfully'
                   data:
                     type: string
                     description: The shareable link for the challenge
-                    example: "http://app.catoff.xyz/challenge/1"
+                    example: 'http://app.catoff.xyz/challenge/1'
         '500':
           description: Internal server error
           content:
@@ -894,12 +893,11 @@ paths:
                     example: false
                   message:
                     type: string
-                    example: "Error getting the shareable link"
+                    example: 'Error getting the shareable link'
                   data:
                     type: string
-                    example: "Unable to get the shareable link"
+                    example: 'Unable to get the shareable link'
 
-        
 components:
   schemas:
     Challenge:

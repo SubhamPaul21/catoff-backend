@@ -4,7 +4,7 @@ const { getGameIds, getGameType } = require('./game.service');
 const { getUserIds, getUserById } = require('./user.service');
 const logger = require('../utils/logger');
 require('dotenv').config();
-const { GameType, ParticipationTypeRev } = require('../constants/constants')
+const { GameType, ParticipationTypeRev } = require('../constants/constants');
 
 const createChallenge = async (challengeData) => {
   logger.debug('[ChallengeService] Attempting to create challenge');
@@ -24,7 +24,7 @@ const getChallenge = async (id) => {
   logger.debug(`[ChallengeService] Attempting to get challenge with ID: ${id}`);
   try {
     let challenge = await Challenge.findByPk(id);
-    challenge.dataValues.GameType = await getGameType(challenge.GameID)
+    challenge.dataValues.GameType = await getGameType(challenge.GameID);
     if (challenge) {
       logger.info('[ChallengeService] Challenge retrieved successfully');
       return challenge;
@@ -244,7 +244,8 @@ const getChallengeDashboardById = async (challengeId) => {
     const dashboardData = {
       GameType: GameType[challenge.game?.GameType] || 'Unknown', // Fallback if no game data
       GameName: challenge.game?.GameName || 'Unknown',
-      ParticipationType: ParticipationTypeRev[challenge.game?.ParticipationType] || 'Unknown',
+      ParticipationType:
+        ParticipationTypeRev[challenge.game?.ParticipationType] || 'Unknown',
       StartDate: challenge.StartDate,
       EndDate: challenge.EndDate,
       PlayersJoined: challenge.players.length,
@@ -268,44 +269,47 @@ const getChallengeDashboardById = async (challengeId) => {
   }
 };
 
-const shareChallenge = async(challengeId)=>{
-  try{
+const shareChallenge = async (challengeId) => {
+  try {
     const shareableLink = `${process.env.FRONTEND_ENDPOINT}/challenge/${challengeId}`;
     logger.info(
       `[ChallengeService] successfully got shaerable link for challenge with challenge id : ${challengeId} `
     );
     return shareableLink;
-  }catch(e){
+  } catch (e) {
     logger.error(
       `[ChallengeService] Error creating sharable link for challenge with challenge ID : ${challengeId}: ${error.stack}`
-    ); 
+    );
     throw e;
   }
- 
-}
+};
 
 const getLeaderboardData = async (challengeId) => {
   try {
     const playersData = await Player.findAll({
       where: { ChallengeID: challengeId },
-      include: [{
-        model: User,
-        as: 'user',
-        attributes: ['UserName', 'ProfilePicture']
-      }],
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['UserName', 'ProfilePicture'],
+        },
+      ],
       attributes: ['Value'],
-      order: [['Value', 'DESC']]
+      order: [['Value', 'DESC']],
     });
 
-    const leaderboardData = playersData.map(player => ({
+    const leaderboardData = playersData.map((player) => ({
       profilePicture: player.user.ProfilePicture,
       username: player.user.UserName,
-      value: player.Value
+      value: player.Value,
     }));
 
     return leaderboardData;
   } catch (error) {
-    logger.error(`[ChallengeService] Error fetching leaderboard data for challenge ID: ${challengeId}: ${error.message}`);
+    logger.error(
+      `[ChallengeService] Error fetching leaderboard data for challenge ID: ${challengeId}: ${error.message}`
+    );
     throw error;
   }
 };

@@ -183,36 +183,68 @@ const getChallengeDashboardByIdHandler = async (req, res) => {
   }
 };
 
-const shareableLinkHandler = async(req,res)=>{
-  try{
-    const challengeId = req.params.ID
+const shareableLinkHandler = async (req, res) => {
+  try {
+    const challengeId = req.params.ID;
     const link = await shareChallenge(challengeId);
     logger.debug(
       `[ChallengeController] Challenge link got successfull with challenge ID: ${challengeId}`
     );
-    return makeResponse(res, 200, true, "got the shareable link successfully", link);
-  }catch(err){
+    return makeResponse(
+      res,
+      200,
+      true,
+      'got the shareable link successfully',
+      link
+    );
+  } catch (err) {
     logger.error(
       `[ChallengeController] Error in getting the shaerable link of challenge id : ${challengeId}: ${error.message}`
     );
-    return makeResponse(res, 500, false, "error in fetching the link for challenge", null)
+    return makeResponse(
+      res,
+      500,
+      false,
+      'error in fetching the link for challenge',
+      null
+    );
   }
-}
+};
 
 const getLeaderboardDataHandler = async (req, res) => {
   const challengeId = req.params.ID;
-  logger.debug(`[ChallengeController] Fetching leaderboard data for challenge with ID: ${challengeId}`);
+  logger.debug(
+    `[ChallengeController] Fetching leaderboard data for challenge with ID: ${challengeId}`
+  );
   try {
     const leaderboardData = await getLeaderboardData(challengeId);
     if (!leaderboardData) {
-      logger.debug(`[ChallengeController] No leaderboard data found for challenge ID: ${challengeId}`);
+      logger.debug(
+        `[ChallengeController] No leaderboard data found for challenge ID: ${challengeId}`
+      );
       return makeResponse(res, 404, false, 'Leaderboard data not found', null);
     }
-    logger.debug(`[ChallengeController] Leaderboard data retrieved successfully for challenge ID: ${challengeId}`);
-    makeResponse(res, 200, true, 'Leaderboard data fetched successfully', leaderboardData);
+    logger.debug(
+      `[ChallengeController] Leaderboard data retrieved successfully for challenge ID: ${challengeId}`
+    );
+    makeResponse(
+      res,
+      200,
+      true,
+      'Leaderboard data fetched successfully',
+      leaderboardData
+    );
   } catch (error) {
-    logger.error(`[ChallengeController] Error fetching leaderboard data for challenge ID: ${challengeId}: ${error.message}`);
-    return makeResponse(res, 500, false, 'Error fetching leaderboard data', null);
+    logger.error(
+      `[ChallengeController] Error fetching leaderboard data for challenge ID: ${challengeId}: ${error.message}`
+    );
+    return makeResponse(
+      res,
+      500,
+      false,
+      'Error fetching leaderboard data',
+      null
+    );
   }
 };
 
