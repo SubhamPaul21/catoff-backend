@@ -448,7 +448,7 @@ paths:
             schema:
               type: object
               properties:
-                network_name:
+                token:
                   type: string
                 quantity:
                   type: string

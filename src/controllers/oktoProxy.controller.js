@@ -225,14 +225,12 @@ const oktoProxyController = {
   },
 
   executeTokenTransfer: async (req, res) => {
-    const { quantity } = req.body;
+    const { token, quantity } = req.body;
     logger.debug('[OktoProxyController] Attempting to execute token transfer');
     try {
       const result = await oktoProxyService.transferTokens(
-        network_name,
-        token_address,
+        token,
         quantity,
-        recipient_address
       );
       logger.debug(
         '[OktoProxyController] Token transfer executed successfully'
