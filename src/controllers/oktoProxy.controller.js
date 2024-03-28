@@ -223,6 +223,32 @@ const oktoProxyController = {
       });
     }
   },
+
+  executeTokenTransfer: async (req, res) => {
+    const { quantity } = req.body;
+    logger.debug('[OktoProxyController] Attempting to execute token transfer');
+    try {
+      const result = await oktoProxyService.transferTokens(
+        network_name,
+        token_address,
+        quantity,
+        recipient_address
+      );
+      logger.debug(
+        '[OktoProxyController] Token transfer executed successfully'
+      );
+      res.json(result);
+    } catch (error) {
+      logger.error(
+        `[OktoProxyController] Error executing token transfer: ${error.message}`,
+        error
+      );
+      res.status(500).json({
+        message: 'Failed to execute token transfer',
+        error: error.message,
+      });
+    }
+  },
 };
 
 module.exports = oktoProxyController;

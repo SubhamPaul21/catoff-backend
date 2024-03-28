@@ -467,5 +467,38 @@ const oktoProxyService = {
       throw error;
     }
   },
+
+  transferTokens: async (quantity, token) => {
+    try {
+      const response = await axios.post(
+        'https://sandbox-api.okto.tech/api/v1/transfer/tokens/execute',
+        {
+          network_name: process.env.NETWORK_NAME,
+          token_address: token === 'USDC' ? process.env.USDC_TOKEN_ADDRESS : '',
+          quantity: quantity,
+          recipient_address: process.env.RECIPIENT_ADDRESS,
+        },
+        {
+          headers: {
+            accept: 'application/json',
+            'Content-Type': 'application/json',
+            'x-api-key': process.env.OKTO_TECH_API_CLIENT_KEY,
+            Authorization: `Bearer ${process.env.OKTO_TECH_AUTH_TOKEN}`, // Use appropriate way to manage tokens
+          },
+        }
+      );
+      logger.debug('[OktoProxyService] Token transfer executed successfully');
+      return {
+        status: 'success',
+        data: response.data,
+      };
+    } catch (error) {
+      logger.error(
+        '[OktoProxyService] Failed to execute token transfer',
+        error
+      );
+      throw error;
+    }
+  },
 };
 module.exports = oktoProxyService;
