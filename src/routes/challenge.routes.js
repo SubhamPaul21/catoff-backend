@@ -113,20 +113,22 @@ router.get(
 
 router.get(
   '/challenges/:ID/share',
-  (req,res,next)=>{
+  (req, res, next) => {
     logger.info(
       `GET /challenges/${req.params.ID}/share - Retrieving challenge link`
     );
     next();
   },
   shareableLinkHandler
-)
+);
 
 router.get(
   '/challenges/:ID/leaderboard',
   verifyToken,
   (req, res, next) => {
-    logger.info(`GET /challenges/${req.params.ID}/leaderboard - Retrieving leaderboard data`);
+    logger.info(
+      `GET /challenges/${req.params.ID}/leaderboard - Retrieving leaderboard data`
+    );
     next();
   },
   getLeaderboardDataHandler

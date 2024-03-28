@@ -183,7 +183,7 @@ const getUserCurrentStandings = async (userId) => {
       include: [
         {
           model: Challenge,
-          as: 'challenge', // Ensure the alias matches the association definition
+          as: 'challenge',
           attributes: [
             'ChallengeID',
             'ChallengeName',
@@ -193,14 +193,13 @@ const getUserCurrentStandings = async (userId) => {
             'Wager',
             'Winner',
             'MaxParticipants',
-            'Players',
             'Media',
             'Target',
           ],
           include: [
             {
               model: Game,
-              as: 'game', // Ensure the alias matches the association definition
+              as: 'game',
               attributes: [
                 'GameName',
                 'ParticipationType',
@@ -216,13 +215,13 @@ const getUserCurrentStandings = async (userId) => {
 
     const results = await Promise.all(
       userChallenges.map(async ({ challenge }) => {
-        const now = new Date();
+        const now = new Date().getTime();
         const challengeStatus =
           challenge.IsActive &&
-          now >= challenge.StartDate &&
-          now <= challenge.EndDate
+          now >= Number(challenge.StartDate) &&
+          now <= Number(challenge.EndDate)
             ? 'Active'
-            : now > challenge.EndDate
+            : now > Number(challenge.EndDate)
               ? 'Completed'
               : 'Upcoming';
 
@@ -236,21 +235,21 @@ const getUserCurrentStandings = async (userId) => {
           allParticipants.findIndex(
             (participant) => participant.UserID === userId
           ) + 1;
-        const totalParticipants = allParticipants.length; // Total number of participants in the challenge
+        const totalParticipants = allParticipants.length;
         const totalWager = challenge.Wager * totalParticipants;
 
         return {
           challengeId: challenge.ChallengeID,
           challengeName: challenge.ChallengeName,
-          gameName: challenge.game.GameName, // Newly added Game details
+          gameName: challenge.game.GameName,
           participationType: challenge.game.ParticipationType,
           gameType: challenge.game.GameType,
           gameDescription: challenge.game.GameDescription,
           challengeStatus,
           startDate: challenge.StartDate,
           endDate: challenge.EndDate,
-          wagerAmount: totalWager, // Reflects total wager for consistency
-          currentValue: totalWager, // Assuming it should reflect the total wager involved
+          wagerAmount: totalWager,
+          currentValue: totalWager,
           rank,
         };
       })
@@ -269,7 +268,8 @@ const getUserCurrentStandings = async (userId) => {
 };
 
 // Helper function to format date as YYYY-MM-DD HH:MM where MM is the nearest 15-minute block
-const formatToNearest15Min = (date) => {
+const formatToNearest15Min = (timestamp) => {
+  const date = new Date(Number(timestamp)); // Convert BigInt to Number and then to Date
   const hours = date.getHours();
   const minutes = date.getMinutes();
   const nearest15Min = minutes - (minutes % 15);
@@ -285,14 +285,17 @@ const getUserProgressData = async (userId, period) => {
 
   switch (period) {
     case '30days':
-      dateFrom = new Date(new Date().setDate(new Date().getDate() - 30));
+      // Convert to BigInt after subtracting days
+      dateFrom = BigInt(new Date().getTime() - 30 * 24 * 60 * 60 * 1000);
       break;
     case '24hours':
-      dateFrom = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+      // Convert to BigInt after subtracting hours
+      dateFrom = BigInt(new Date().getTime() - 24 * 60 * 60 * 1000);
       aggregateByInterval = true; // Aggregate by the nearest 15-minute interval
       break;
     case 'all':
-      dateFrom = new Date(0); // Start from the Unix Epoch (1970-01-01)
+      // Start from the Unix Epoch (1970-01-01), represented as BigInt
+      dateFrom = BigInt(0);
       break;
     default:
       logger.error(
@@ -302,7 +305,6 @@ const getUserProgressData = async (userId, period) => {
   }
 
   try {
-    // Fetch transactions where the user is either the sender or the receiver
     const transactions = await Transaction.findAll({
       where: {
         [Op.or]: [{ To: userId }, { From: userId }],
@@ -312,19 +314,19 @@ const getUserProgressData = async (userId, period) => {
       attributes: ['Amount', 'Timestamp', 'To', 'From'],
     });
 
-    // Aggregate data for graph, considering credits and debits
     const aggregatedData = transactions.reduce(
       (acc, { Amount, Timestamp, To, From }) => {
+        const timestampDate = new Date(Number(Timestamp)); // Convert BigInt to Number then to Date
         const key = aggregateByInterval
           ? formatToNearest15Min(Timestamp)
-          : Timestamp.toISOString().split('T')[0];
+          : `${timestampDate.getFullYear()}-${String(timestampDate.getMonth() + 1).padStart(2, '0')}-${String(timestampDate.getDate()).padStart(2, '0')}`;
+
         if (!acc[key]) acc[key] = { credits: 0, debits: 0 };
 
-        // If the user is the receiver, it's a credit; if the sender, it's a debit
         if (To === userId) {
           acc[key].credits += Amount;
         } else if (From === userId) {
-          acc[key].debits -= Amount; // Assuming you want to show debits as negative
+          acc[key].debits -= Amount; // Debits shown as negative
         }
 
         return acc;
@@ -335,7 +337,7 @@ const getUserProgressData = async (userId, period) => {
     const creditsGraph = Object.entries(aggregatedData).map(
       ([time, { credits, debits }]) => ({
         time,
-        balanceChange: credits + debits, // Combine credits and debits for the net balance change
+        balanceChange: credits + debits,
       })
     );
 
@@ -391,7 +393,7 @@ const getUserDetailsData = async (userId) => {
       pastChallengesCount = await Challenge.count({
         where: {
           ChallengeID: { [Op.in]: participatedChallengeIds },
-          EndDate: { [Op.lt]: new Date() },
+          EndDate: { [Op.lt]: new Date().getTime() },
         },
       });
 
@@ -399,8 +401,8 @@ const getUserDetailsData = async (userId) => {
       const currentActiveChallenges = await Challenge.findAll({
         where: {
           ChallengeID: { [Op.in]: participatedChallengeIds },
-          StartDate: { [Op.lte]: new Date() },
-          EndDate: { [Op.gt]: new Date() },
+          StartDate: { [Op.lte]: new Date().getTime() },
+          EndDate: { [Op.gt]: new Date().getTime() },
         },
         attributes: ['Wager'],
       });
