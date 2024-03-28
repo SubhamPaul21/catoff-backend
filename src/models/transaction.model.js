@@ -44,7 +44,7 @@ const Transaction = sequelize.define('Transaction', {
     allowNull: true,
   },
   Timestamp: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     allowNull: true,
   },
 });
