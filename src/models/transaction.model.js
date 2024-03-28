@@ -13,7 +13,7 @@ const Transaction = sequelize.define('Transaction', {
   },
   To: {
     type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: 'Users',
       key: 'UserID',
@@ -21,7 +21,7 @@ const Transaction = sequelize.define('Transaction', {
   },
   From: {
     type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: 'Users',
       key: 'UserID',
