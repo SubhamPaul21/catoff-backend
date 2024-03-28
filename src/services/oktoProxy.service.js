@@ -468,8 +468,16 @@ const oktoProxyService = {
     }
   },
 
-  transferTokens: async (quantity, token) => {
+  transferTokens: async (userId, token, quantity) => {
     try {
+      const userConfig = await getUserConfig(userId);
+      if (!userConfig || !userConfig.OktoAuthToken) {
+        logger.error(
+          `[OktoProxyService] OktoAuthToken not found for userID: ${userId}`
+        );}
+
+        console.log(process.env.NETWORK_NAME, token, quantity, process.env.RECIPIENT_ADDRESS, OKTO_TECH_API_CLIENT_KEY, userConfig.OktoAuthToken)
+  
       const response = await axios.post(
         'https://sandbox-api.okto.tech/api/v1/transfer/tokens/execute',
         {
@@ -482,8 +490,8 @@ const oktoProxyService = {
           headers: {
             accept: 'application/json',
             'Content-Type': 'application/json',
-            'x-api-key': process.env.OKTO_TECH_API_CLIENT_KEY,
-            Authorization: `Bearer ${process.env.OKTO_TECH_AUTH_TOKEN}`, // Use appropriate way to manage tokens
+            'x-api-key': OKTO_TECH_API_CLIENT_KEY,
+            Authorization: `Bearer ${userConfig.OktoAuthToken}`,
           },
         }
       );
@@ -493,12 +501,13 @@ const oktoProxyService = {
         data: response.data,
       };
     } catch (error) {
-      logger.error(
-        '[OktoProxyService] Failed to execute token transfer',
-        error
+      logger.error('[OktoProxyService] Failed to execute token transfer', {
+        error: error.response ? error.response.data : error.message,
+      });
+      throw new Error(
+        error.response ? JSON.stringify(error.response.data) : error.message
       );
-      throw error;
-    }
+    }    
   },
 };
 module.exports = oktoProxyService;
