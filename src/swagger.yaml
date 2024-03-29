@@ -434,6 +434,42 @@ paths:
         '500':
           description: Failed to fetch transaction status
 
+  /oktoProxy/transfer/tokens/execute:
+    post:
+      summary: Execute a token transfer on a network
+      tags:
+        - OktoProxy
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                quantity:
+                  type: string
+      responses:
+        '200':
+          description: Token transfer executed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      jobId:
+                        type: string
+        '500':
+          description: Failed to execute token transfer
+
   /challenge/challenges:
     post:
       summary: Create a new challenge

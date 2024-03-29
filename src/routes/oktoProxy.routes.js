@@ -98,4 +98,14 @@ router.get(
   oktoProxyController.getRawTransactionStatus
 );
 
+router.post(
+  '/transfer/tokens/execute',
+  verifyToken,
+  (req, res, next) => {
+    logger.info('POST /transfer/tokens/execute - Executing token transfer');
+    next();
+  },
+  oktoProxyController.executeTokenTransfer
+);
+
 module.exports = router;
