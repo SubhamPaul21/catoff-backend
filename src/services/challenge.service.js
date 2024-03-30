@@ -167,6 +167,7 @@ const getOngoingChallenges = async (type, page, limit) => {
 
     // Map the challenges to include the required fields
     const mappedChallenges = challenges.map(challenge => ({
+      ChallengeID: challenge.ChallengeID,
       PlayerJoined: challenge.players.length,
       GameType: GameType[challenge.game?.GameType] || 'Unknown',
       ChallengeName: challenge.ChallengeName,
