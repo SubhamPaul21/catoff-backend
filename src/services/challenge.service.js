@@ -116,9 +116,7 @@ const searchChallenge = async (searchTerm, limit, page) => {
 };
 
 const getOngoingChallenges = async (type, page, limit) => {
-  logger.debug(
-    `[ChallengeService] Getting ongoing challenges of type: ${type}, page: ${page}`
-  );
+  logger.debug(`[ChallengeService] Getting ongoing challenges of type: ${type}, page: ${page}`);
   try {
     const offset = (page - 1) * limit;
     let challenges;
@@ -126,6 +124,18 @@ const getOngoingChallenges = async (type, page, limit) => {
       challenges = await Challenge.findAll({
         where: { IsActive: true },
         order: [['StartDate', 'DESC']],
+        include: [
+          {
+            model: Player,
+            as: 'players',
+            attributes: ['PlayerID'], // Only need the ID to count
+          },
+          {
+            model: Game,
+            as: 'game',
+            attributes: ['GameType'], // Include GameType for each challenge
+          }
+        ],
         offset,
         limit,
       });
@@ -137,19 +147,43 @@ const getOngoingChallenges = async (type, page, limit) => {
           GameID: { [Op.in]: gameIDs },
         },
         order: [['StartDate', 'DESC']],
+        include: [
+          {
+            model: Player,
+            as: 'players',
+            attributes: ['PlayerID'], // Only need the ID to count
+          },
+          {
+            model: Game,
+            as: 'game',
+            attributes: ['GameType'], // Include GameType for each challenge
+          }
+        ],
         offset,
         limit,
       });
     }
     logger.info('[ChallengeService] Ongoing challenges retrieved successfully');
-    return challenges;
+
+    // Map the challenges to include the required fields
+    const mappedChallenges = challenges.map(challenge => ({
+      PlayerJoined: challenge.players.length,
+      GameType: GameType[challenge.game?.GameType] || 'Unknown',
+      ChallengeName: challenge.ChallengeName,
+      Wager: challenge.Wager,
+      StartDate: challenge.StartDate,
+      EndDate: challenge.EndDate,
+      CurrentPool: challenge.Wager * challenge.players.length, 
+      Media: challenge.Media,
+    }));
+
+    return mappedChallenges;
   } catch (error) {
-    logger.error(
-      `[ChallengeService] Error getting ongoing challenges: ${error.message}`
-    );
+    logger.error(`[ChallengeService] Error getting ongoing challenges: ${error.message}`);
     throw error;
   }
 };
+
 
 const checkIfChallengeAvailableForEntry = async (challengeId, userId) => {
   try {

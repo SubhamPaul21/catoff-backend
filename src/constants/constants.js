@@ -6,8 +6,8 @@ module.exports = {
   },
 
   GameType: {
-    0: 'steps',
-    1: 'calories',
+    0: 'Steps',
+    1: 'Calories',
   },
 
   ParticipationTypeRev: {
