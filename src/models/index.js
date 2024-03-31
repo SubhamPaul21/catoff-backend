@@ -60,6 +60,23 @@ Challenge.belongsTo(Game, {
   foreignKey: 'GameID',
   as: 'game',
 });
+Challenge.belongsTo(User, {
+  foreignKey: 'ChallengeCreator',
+  as: 'creator',
+});
+User.hasMany(Challenge, {
+  foreignKey: 'ChallengeCreator',
+  as: 'challenges',
+});
+// Challenge has one Winner (Player)
+Challenge.belongsTo(Player, {
+  foreignKey: 'Winner',
+  as: 'winner',
+});
+Player.hasMany(Challenge, {
+  foreignKey: 'Winner',
+  as: 'wonChallenges',
+});
 
 sequelize
   .sync()

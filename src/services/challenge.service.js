@@ -317,6 +317,16 @@ const getChallengeDashboardById = async (challengeId) => {
           as: 'game',
           attributes: ['GameType', 'GameName', 'ParticipationType'],
         },
+        {
+          model: User,
+          as: 'creator',
+          attributes: ['UserName'],
+        },
+        {
+          model: Player,
+          as: 'winner',
+          attributes: ['UserID', 'PlayerID'],
+        },
       ],
     });
 
@@ -325,6 +335,15 @@ const getChallengeDashboardById = async (challengeId) => {
         `[ChallengeService] Challenge not found for dashboard ID: ${challengeId}`
       );
       return null;
+    }
+
+    // Additional logic to fetch winner's username if not included in the original query
+    let winnerUsername = 'Winner not decided yet!';
+    if (challenge.winner) {
+      const winnerUser = await User.findByPk(challenge.winner.UserID);
+      winnerUsername = winnerUser
+        ? winnerUser.UserName
+        : 'Winner not decided yet!';
     }
 
     const totalWagerStaked =
@@ -340,6 +359,11 @@ const getChallengeDashboardById = async (challengeId) => {
       PlayersJoined: challenge.players.length,
       StakedWager: challenge.Wager,
       TotalWagerStaked: totalWagerStaked,
+      ChallengeName: challenge.ChallengeName,
+      ChallengeDescription: challenge.ChallengeDescription,
+      ChallengeWinner: winnerUsername,
+      ChallengeCreatorUsername: challenge.creator?.UserName || 'Unknown',
+      ChallengeMedia: challenge.Media,
       Target: challenge.Target,
       Value: challenge.players
         ? challenge.players.reduce((acc, player) => acc + player.Value, 0)
