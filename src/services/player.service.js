@@ -1,4 +1,4 @@
-const Players = require('../models/player.model');
+const { Player } = require('../models/index');
 const logger = require('../utils/logger');
 const {
   checkIfChallengeAvailableForEntry,
@@ -6,12 +6,12 @@ const {
   getChallenge,
 } = require('./challenge.service');
 const { updateCredit } = require('./user.service');
-const {createTransaction} = require('./transaction.service')
+const { createTransaction } = require('./transaction.service');
 
 const createPlayer = async (playerData) => {
   logger.debug('[PlayerService] Creating player');
   try {
-    const isPlayerExist = await Players.findOne({
+    const isPlayerExist = await Player.findOne({
       where: { UserID: playerData.UserID, ChallengeID: playerData.ChallengeID },
     });
     if (!isPlayerExist) {
@@ -21,21 +21,25 @@ const createPlayer = async (playerData) => {
           playerData.UserID
         )
       ) {
-        const player = await Players.create(playerData);
+        const player = await Player.create(playerData);
         const challenge = await getChallenge(playerData.ChallengeID);
         await updateCredit(playerData.UserID, challenge.Wager);
-        await checkAndUpdateIsStartedChallenge(playerData.ChallengeID);
+        // if (!challenge.StartDate){
+        //   await checkAndUpdateIsStartedChallenge(playerData.ChallengeID);
+        // }
+        // TODO: StartDate will be null in case of challenge starting logic is based on no. of participants
+        // await checkAndUpdateIsStartedChallenge(playerData.ChallengeID);
         const transactionData = {
           From: playerData.UserID,
           CreditAmount: challenge.Wager,
-          Description: "PARTICIPATION",
-          Timestamp: Date.now()
-        }
-        await createTransaction(transactionData)
+          Description: 'PARTICIPATION',
+          Timestamp: Date.now(),
+        };
+        await createTransaction(transactionData);
         logger.info('[PlayerService] Player created successfully');
         return player;
       } else {
-        throw new Error('Unable to join the challenge');
+        throw new Error(`Unable to join the challenge`);
       }
     } else {
       throw new Error('User already joined the challenge');
@@ -49,7 +53,7 @@ const createPlayer = async (playerData) => {
 const getPlayer = async (id) => {
   logger.debug(`[PlayerService] Fetching player with ID: ${id}`);
   try {
-    const player = await Players.findByPk(id);
+    const player = await Player.findByPk(id);
     if (!player) {
       logger.info(`[PlayerService] Player with ID: ${id} not found`);
       return null;
@@ -65,7 +69,7 @@ const getPlayer = async (id) => {
 const updatePlayer = async (id, playerData) => {
   logger.debug(`[PlayerService] Updating player with ID: ${id}`);
   try {
-    const [updated] = await Players.update(playerData, {
+    const [updated] = await Player.update(playerData, {
       where: { PlayerID: id },
     });
     if (updated) {
@@ -84,7 +88,7 @@ const updatePlayer = async (id, playerData) => {
 const deletePlayer = async (id) => {
   logger.debug(`[PlayerService] Deleting player with ID: ${id}`);
   try {
-    const deleted = await Players.destroy({ where: { PlayerID: id } });
+    const deleted = await Player.destroy({ where: { PlayerID: id } });
     if (deleted) {
       logger.info('[PlayerService] Player deleted successfully');
       return deleted;
@@ -103,7 +107,7 @@ const getAllPlayersOfChallenge = async (challengeId) => {
     `[PlayerService] Fetching all players for challenge ID: ${challengeId}`
   );
   try {
-    const players = await Players.findAll({
+    const players = await Player.findAll({
       where: { ChallengeID: challengeId },
     });
     logger.info('[PlayerService] Players for challenge fetched successfully');
@@ -118,7 +122,7 @@ const getAllPlayersOfChallenge = async (challengeId) => {
 
 const checkAndUpdateIsStartedChallenge = async (challengeId) => {
   try {
-    let players = await Players.findAll({
+    let players = await Player.findAll({
       where: { ChallengeID: challengeId },
     });
     await updateIsStarted(challengeId, players.length);
