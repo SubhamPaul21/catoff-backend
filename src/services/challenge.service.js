@@ -116,7 +116,9 @@ const searchChallenge = async (searchTerm, limit, page) => {
 };
 
 const getOngoingChallenges = async (type, page, limit) => {
-  logger.debug(`[ChallengeService] Getting ongoing challenges of type: ${type}, page: ${page}`);
+  logger.debug(
+    `[ChallengeService] Getting ongoing challenges of type: ${type}, page: ${page}`
+  );
   try {
     const offset = (page - 1) * limit;
     let challenges;
@@ -134,7 +136,7 @@ const getOngoingChallenges = async (type, page, limit) => {
             model: Game,
             as: 'game',
             attributes: ['GameType'], // Include GameType for each challenge
-          }
+          },
         ],
         offset,
         limit,
@@ -157,7 +159,7 @@ const getOngoingChallenges = async (type, page, limit) => {
             model: Game,
             as: 'game',
             attributes: ['GameType'], // Include GameType for each challenge
-          }
+          },
         ],
         offset,
         limit,
@@ -166,7 +168,7 @@ const getOngoingChallenges = async (type, page, limit) => {
     logger.info('[ChallengeService] Ongoing challenges retrieved successfully');
 
     // Map the challenges to include the required fields
-    const mappedChallenges = challenges.map(challenge => ({
+    const mappedChallenges = challenges.map((challenge) => ({
       ChallengeID: challenge.ChallengeID,
       PlayerJoined: challenge.players.length,
       GameType: GameType[challenge.game?.GameType] || 'Unknown',
@@ -174,17 +176,18 @@ const getOngoingChallenges = async (type, page, limit) => {
       Wager: challenge.Wager,
       StartDate: challenge.StartDate,
       EndDate: challenge.EndDate,
-      CurrentPool: challenge.Wager * challenge.players.length, 
+      CurrentPool: challenge.Wager * challenge.players.length,
       Media: challenge.Media,
     }));
 
     return mappedChallenges;
   } catch (error) {
-    logger.error(`[ChallengeService] Error getting ongoing challenges: ${error.message}`);
+    logger.error(
+      `[ChallengeService] Error getting ongoing challenges: ${error.message}`
+    );
     throw error;
   }
 };
-
 
 const checkIfChallengeAvailableForEntry = async (challengeId, userId) => {
   try {
@@ -200,22 +203,18 @@ const checkIfChallengeAvailableForEntry = async (challengeId, userId) => {
     );
   } catch (err) {
     logger.error(
-      `[ChallengeService] Error in retrieving challenge checkIfChallengeAvailableForEntry: ${error.message}`
+      `[ChallengeService] Error in retrieving challenge checkIfChallengeAvailableForEntry: ${err.message}`
     );
     throw err;
   }
 };
 
-const updateIsStarted = async (challengeId, totalNum) => {
+const updateIsStarted = async (challengeId) => {
   try {
     let challenge = await Challenge.findOne({
       where: { ChallengeID: challengeId },
     });
-    if (
-      challenge.IsActive &&
-      !challenge.IsStarted &&
-      totalNum >= challenge.MaxParticipants
-    ) {
+    if (challenge.IsActive && !challenge.IsStarted) {
       await Challenge.update(
         { IsStarted: true },
         { where: { ChallengeID: challengeId } }
@@ -225,7 +224,7 @@ const updateIsStarted = async (challengeId, totalNum) => {
     }
   } catch (err) {
     logger.error(
-      `[ChallengeService] Error in retrieving challenge updateIsStarted: ${error.message}`
+      `[ChallengeService] Error in retrieving challenge updateIsStarted: ${err.message}`
     );
     throw err;
   }
@@ -236,12 +235,47 @@ const getAllStartedChallenges = async () => {
     let challenges = await Challenge.findAll({
       where: { IsStarted: true, IsActive: true },
     });
-    logger.info('[ChallengeService] Started challenges fetched successfully');
+    logger.debug('[ChallengeService] Started challenges fetched successfully');
     return challenges;
   } catch (err) {
     logger.error(
       `[ChallengeService] Error in retrieving challenge getAllStartedChallenge: ${err.message}`
     );
+    throw err;
+  }
+};
+
+const checkAndUpdateIsStartedChallenge = async () => {
+  try {
+    const challenges = await Challenge.findAll({
+      where: {
+        StartDate: {
+          [Op.lt]: Date.now(),
+        },
+        IsStarted: false,
+      },
+    });
+
+    // Iterate over each challenge and update its IsStarted status
+    for (const challenge of challenges) {
+      // Assuming updateIsStarted function accepts challengeId as its parameter
+      await updateIsStarted(challenge.ChallengeID);
+      logger.info(
+        `[ChallengeService] Challenge with ID ${challenge.ChallengeID} has been started.`
+      );
+    }
+
+    if (challenges.length > 0) {
+      logger.debug(
+        '[ChallengeService] All applicable challenges have been updated to started.'
+      );
+    } else {
+      logger.debug(
+        '[ChallengeService] No challenges needed to be started at this time.'
+      );
+    }
+  } catch (err) {
+    logger.error(`[playerService]  checkAndUpdateIsStartedChallenge error`);
     throw err;
   }
 };
@@ -362,4 +396,5 @@ module.exports = {
   getChallengeDashboardById,
   shareChallenge,
   getLeaderboardData,
+  checkAndUpdateIsStartedChallenge,
 };

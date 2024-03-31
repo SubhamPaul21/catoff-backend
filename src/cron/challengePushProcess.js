@@ -1,6 +1,10 @@
 const cron = require('node-cron');
 const Queue = require('bull');
-const { getAllStartedChallenges } = require('../services/challenge.service');
+const {
+  getAllStartedChallenges,
+  checkAndUpdateIsStartedChallenge,
+} = require('../services/challenge.service');
+const logger = require('../utils/logger');
 
 const queue = new Queue('challenge-updates', {
   redis: {
@@ -25,4 +29,11 @@ async function pushToChallengeQueue() {
   });
 }
 
-module.exports = { pushToChallengeQueue };
+async function updateIsStartedIfStartDateReached() {
+  logger.info('Starting Cron Job to update IsStarted If StartDate Reached');
+  cron.schedule('*/10 * * * * *', async () => {
+    await checkAndUpdateIsStartedChallenge();
+  });
+}
+
+module.exports = { pushToChallengeQueue, updateIsStartedIfStartDateReached };
