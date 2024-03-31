@@ -28,6 +28,7 @@ const validateChallengeCreation = [
   body('MaxParticipants').isInt().withMessage('MaxParticipant must be int'),
   body('Wager').isInt().withMessage('Wager must be defined'),
   body('Target').isInt().withMessage('Target must be int'),
+  // body('TTL').isInt().withMessage('TTL must be int'),
 
   logValidationErrors,
   // Winners array validation could be more complex depending on requirements

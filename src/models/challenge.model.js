@@ -84,6 +84,11 @@ const Challenge = sequelize.define(
       type: DataTypes.FLOAT.UNSIGNED,
       allowNull: true,
     },
+    // TTL: {
+    //   type: DataTypes.INTEGER.UNSIGNED,
+    //   allowNull: true,
+    // },
+    // TODO: Time to live for the case when the challenge will only start once n number of participants have joined the challenge
   },
   {
     timestamps: false, // Disable automatic createdAt and updatedAt columns
