@@ -8,6 +8,7 @@ const {
 } = require('../models/index');
 const { Op } = require('sequelize');
 const logger = require('../utils/logger'); // Ensure this path is correct for your logger setup
+const { ParticipationTypeRev, GameType } = require('../constants/constants');
 
 // const getUserCurrentStandings = async (userId) => {
 //   logger.debug(
@@ -239,18 +240,19 @@ const getUserCurrentStandings = async (userId) => {
         const totalWager = challenge.Wager * totalParticipants;
 
         return {
-          challengeId: challenge.ChallengeID,
-          challengeName: challenge.ChallengeName,
-          gameName: challenge.game.GameName,
-          participationType: challenge.game.ParticipationType,
-          gameType: challenge.game.GameType,
-          gameDescription: challenge.game.GameDescription,
-          challengeStatus,
-          startDate: challenge.StartDate,
-          endDate: challenge.EndDate,
-          wagerAmount: totalWager,
-          currentValue: totalWager,
-          rank,
+          ChallengeID: challenge.ChallengeID,
+          ChallengeName: challenge.ChallengeName,
+          GameName: challenge.game.GameName,
+          ParticipationType:
+            ParticipationTypeRev[challenge.game.ParticipationType],
+          GameType: GameType[challenge.game.GameType],
+          GameDescription: challenge.game.GameDescription,
+          ChallengeStatus: challengeStatus,
+          StartDate: challenge.StartDate,
+          EndDate: challenge.EndDate,
+          WagerStaked: challenge.Wager,
+          TotalWagerStaked: totalWager,
+          Rank: rank,
         };
       })
     );
@@ -311,11 +313,11 @@ const getUserProgressData = async (userId, period) => {
         Timestamp: { [Op.gte]: dateFrom },
       },
       order: [['Timestamp', 'ASC']],
-      attributes: ['Amount', 'Timestamp', 'To', 'From'],
+      attributes: ['CreditAmount', 'Timestamp', 'To', 'From'],
     });
 
     const aggregatedData = transactions.reduce(
-      (acc, { Amount, Timestamp, To, From }) => {
+      (acc, { CreditAmount, Timestamp, To, From }) => {
         const timestampDate = new Date(Number(Timestamp)); // Convert BigInt to Number then to Date
         const key = aggregateByInterval
           ? formatToNearest15Min(Timestamp)
@@ -324,9 +326,9 @@ const getUserProgressData = async (userId, period) => {
         if (!acc[key]) acc[key] = { credits: 0, debits: 0 };
 
         if (To === userId) {
-          acc[key].credits += Amount;
+          acc[key].credits += CreditAmount;
         } else if (From === userId) {
-          acc[key].debits -= Amount; // Debits shown as negative
+          acc[key].debits -= CreditAmount; // Debits shown as negative
         }
 
         return acc;
@@ -415,7 +417,8 @@ const getUserDetailsData = async (userId) => {
     }
 
     const totalRewardsWon =
-      (await Transaction.sum('Amount', { where: { UserID: userId } })) || 0;
+      (await Transaction.sum('CreditAmount', { where: { UserID: userId } })) ||
+      0;
 
     logger.info(
       `[UserBoardService] User details data fetched successfully for ID: ${userId}`
