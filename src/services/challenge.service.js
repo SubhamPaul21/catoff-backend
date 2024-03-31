@@ -53,7 +53,7 @@ const getChallenge = async (id) => {
       ChallengeCreator: challenge.ChallengeCreator,
       StartDate: challenge.StartDate,
       EndDate: challenge.EndDate,
-      GameType: challenge.game?.GameType,
+      GameType: GameType[challenge.game?.GameType],
       IsActive: challenge.IsActive,
       IsSettled: challenge.IsSettled,
       IsStarted: challenge.IsStarted,
@@ -62,7 +62,7 @@ const getChallenge = async (id) => {
       Wager: challenge.Wager,
       Target: challenge.Target,
       PlayersJoined: challenge.players.length,
-      ParticipationType: challenge.game?.ParticipationType,
+      ParticipationType: ParticipationTypeRev[challenge.game?.ParticipationType],
       ChallengeMedia: challenge.Media, // Assuming the field is named 'Media' in your Challenge model
     };
 
