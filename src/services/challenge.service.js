@@ -23,19 +23,53 @@ const createChallenge = async (challengeData) => {
 const getChallenge = async (id) => {
   logger.debug(`[ChallengeService] Attempting to get challenge with ID: ${id}`);
   try {
-    let challenge = await Challenge.findByPk(id);
-    challenge.dataValues.GameType = await getGameType(challenge.GameID);
-    if (challenge) {
-      logger.info('[ChallengeService] Challenge retrieved successfully');
-      return challenge;
-    } else {
+    let challenge = await Challenge.findByPk(id, {
+      include: [
+        {
+          model: Player,
+          as: 'players',
+          attributes: ['PlayerID'], // For counting total players
+        },
+        {
+          model: Game,
+          as: 'game',
+          attributes: ['GameType', 'ParticipationType'], // For game details
+        },
+      ],
+    });
+
+    if (!challenge) {
       logger.warn('[ChallengeService] Challenge not found');
       return null;
     }
+
+    // Calculate TotalWagerStaked
+    const totalWagerStaked = challenge.Wager * challenge.players.length;
+
+    // Construct the response object with only the required fields
+    const challengeData = {
+      ChallengeName: challenge.ChallengeName,
+      ChallengeDescription: challenge.ChallengeDescription,
+      ChallengeCreator: challenge.ChallengeCreator,
+      StartDate: challenge.StartDate,
+      EndDate: challenge.EndDate,
+      GameType: challenge.game?.GameType,
+      IsActive: challenge.IsActive,
+      IsSettled: challenge.IsSettled,
+      IsStarted: challenge.IsStarted,
+      Winner: challenge.Winner || 'Winner not decided yet!', 
+      TotalWagerStaked: totalWagerStaked,
+      Wager: challenge.Wager,
+      Target: challenge.Target,
+      PlayersJoined: challenge.players.length,
+      ParticipationType: challenge.game?.ParticipationType,
+      ChallengeMedia: challenge.Media, // Assuming the field is named 'Media' in your Challenge model
+    };
+
+    logger.debug('[ChallengeService] Challenge retrieved successfully');
+    return challengeData;
   } catch (error) {
-    logger.error(
-      `[ChallengeService] Error getting challenge: ${error.message}`
-    );
+    logger.error(`[ChallengeService] Error getting challenge: ${error.message}`);
     throw error;
   }
 };
