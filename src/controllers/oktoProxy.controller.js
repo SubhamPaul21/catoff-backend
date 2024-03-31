@@ -232,7 +232,7 @@ const oktoProxyController = {
       const result = await oktoProxyService.transferTokens(
         userId,
         token,
-        quantity,
+        quantity
       );
       logger.debug(
         '[OktoProxyController] Token transfer executed successfully'

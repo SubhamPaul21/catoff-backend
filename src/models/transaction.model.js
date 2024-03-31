@@ -31,9 +31,9 @@ const Transaction = sequelize.define('Transaction', {
     type: DataTypes.FLOAT,
     allowNull: true,
   },
-  Token:{
+  Token: {
     type: DataTypes.STRING,
-    allowNull: true
+    allowNull: true,
   },
   CreditAmount: {
     type: DataTypes.FLOAT,

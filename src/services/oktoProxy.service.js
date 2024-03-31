@@ -474,10 +474,18 @@ const oktoProxyService = {
       if (!userConfig || !userConfig.OktoAuthToken) {
         logger.error(
           `[OktoProxyService] OktoAuthToken not found for userID: ${userId}`
-        );}
+        );
+      }
 
-        console.log(process.env.NETWORK_NAME, token, quantity, process.env.RECIPIENT_ADDRESS, OKTO_TECH_API_CLIENT_KEY, userConfig.OktoAuthToken)
-  
+      console.log(
+        process.env.NETWORK_NAME,
+        token,
+        quantity,
+        process.env.RECIPIENT_ADDRESS,
+        OKTO_TECH_API_CLIENT_KEY,
+        userConfig.OktoAuthToken
+      );
+
       const response = await axios.post(
         'https://sandbox-api.okto.tech/api/v1/transfer/tokens/execute',
         {
@@ -507,7 +515,7 @@ const oktoProxyService = {
       throw new Error(
         error.response ? JSON.stringify(error.response.data) : error.message
       );
-    }    
+    }
   },
 };
 module.exports = oktoProxyService;
