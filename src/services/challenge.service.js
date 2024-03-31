@@ -194,8 +194,28 @@ const checkIfChallengeAvailableForEntry = async (challengeId, userId) => {
     const challenge = await Challenge.findOne({
       where: { ChallengeID: challengeId },
     });
+    const players = await Player.findAll({
+      where: { ChallengeID: challengeId },
+    });
     const user = await getUserById(userId);
     logger.info('[ChallengeService] data retrieved successfully');
+
+    if (challenge.IsStarted) {
+      throw new Error(
+        `Unable to join the challenge: Challenge already started!`
+      );
+    }
+    if (players.length >= challenge.MaxParticipants) {
+      throw new Error(
+        `Unable to join the challenge: Challenge Pool is filled!`
+      );
+    }
+    if (!challenge.IsActive) {
+      throw new Error(`Unable to join the challenge: Challenge is not active!`);
+    }
+    if (user.Credits < challenge.Wager) {
+      throw new Error(`Unable to join the challenge: Not enough credits!`);
+    }
     return (
       !challenge.IsStarted &&
       challenge.IsActive &&
