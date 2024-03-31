@@ -142,11 +142,12 @@ const getOnGoingChallengesHandler = async (req, res) => {
 
 const getChallengeDashboardByIdHandler = async (req, res) => {
   const challengeId = req.params.ID;
+  const userId = req.UserID;
   logger.debug(
     `[ChallengeController] Attempting to retrieve dashboard for challenge with ID: ${challengeId}`
   );
   try {
-    const dashboardData = await getChallengeDashboardById(challengeId);
+    const dashboardData = await getChallengeDashboardById(challengeId, userId);
     if (!dashboardData) {
       logger.debug(
         `[ChallengeController] Challenge dashboard not found for ID: ${challengeId}`

@@ -57,19 +57,22 @@ const getChallenge = async (id) => {
       IsActive: challenge.IsActive,
       IsSettled: challenge.IsSettled,
       IsStarted: challenge.IsStarted,
-      Winner: challenge.Winner || 'Winner not decided yet!', 
+      Winner: challenge.Winner || 'Winner not decided yet!',
       TotalWagerStaked: totalWagerStaked,
       Wager: challenge.Wager,
       Target: challenge.Target,
       PlayersJoined: challenge.players.length,
-      ParticipationType: ParticipationTypeRev[challenge.game?.ParticipationType],
+      ParticipationType:
+        ParticipationTypeRev[challenge.game?.ParticipationType],
       ChallengeMedia: challenge.Media, // Assuming the field is named 'Media' in your Challenge model
     };
 
     logger.debug('[ChallengeService] Challenge retrieved successfully');
     return challengeData;
   } catch (error) {
-    logger.error(`[ChallengeService] Error getting challenge: ${error.message}`);
+    logger.error(
+      `[ChallengeService] Error getting challenge: ${error.message}`
+    );
     throw error;
   }
 };
@@ -228,11 +231,14 @@ const checkIfChallengeAvailableForEntry = async (challengeId, userId) => {
     const challenge = await Challenge.findOne({
       where: { ChallengeID: challengeId },
     });
+    if (!challenge) {
+      throw new Error(`Challenge with ID ${challengeId} not found.`);
+    }
     const players = await Player.findAll({
       where: { ChallengeID: challengeId },
     });
     const user = await getUserById(userId);
-    logger.info('[ChallengeService] data retrieved successfully');
+    logger.debug('[ChallengeService] data retrieved successfully');
 
     if (challenge.IsStarted) {
       throw new Error(
@@ -334,7 +340,7 @@ const checkAndUpdateIsStartedChallenge = async () => {
   }
 };
 
-const getChallengeDashboardById = async (challengeId) => {
+const getChallengeDashboardById = async (challengeId, userId) => {
   logger.debug(
     `[ChallengeService] Fetching dashboard for challenge ID: ${challengeId}`
   );
@@ -382,6 +388,11 @@ const getChallengeDashboardById = async (challengeId) => {
 
     const totalWagerStaked =
       challenge.Wager * (challenge.players ? challenge.players.length : 0);
+    // Find the player's value for the current user
+    const userPlayer = challenge.players.find(
+      (player) => player.UserID === userId
+    );
+    const userValue = userPlayer ? userPlayer.Value : 0;
 
     const dashboardData = {
       GameType: GameType[challenge.game?.GameType] || 'Unknown', // Fallback if no game data
@@ -399,9 +410,7 @@ const getChallengeDashboardById = async (challengeId) => {
       ChallengeCreatorUsername: challenge.creator?.UserName || 'Unknown',
       ChallengeMedia: challenge.Media,
       Target: challenge.Target,
-      Value: challenge.players
-        ? challenge.players.reduce((acc, player) => acc + player.Value, 0)
-        : 0, // Sum of all players' values
+      Value: userValue,
     };
 
     logger.info(
