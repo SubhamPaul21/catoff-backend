@@ -4,12 +4,13 @@ const {
   getAllStartedChallenges,
   checkAndUpdateIsStartedChallenge,
 } = require('../services/challenge.service');
+require('dotenv').config();
 const logger = require('../utils/logger');
 
 const queue = new Queue('challenge-updates', {
   redis: {
-    port: 6379,
-    host: 'localhost',
+    port: process.env.REDIS_PORT, //6379,
+    host: process.env.REDIS_HOST //'localhost',
   },
 });
 
