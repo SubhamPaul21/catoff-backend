@@ -374,6 +374,7 @@ const getUserDetailsData = async (userId) => {
         'WalletAddress',
         'Credits',
         'ProfilePicture',
+        'InvestedCredits',
       ],
     });
 
@@ -392,7 +393,7 @@ const getUserDetailsData = async (userId) => {
 
     let pastChallengesCount = 0;
     let currentActiveChallengesCount = 0;
-    let currentStaked = 0;
+    // let currentStaked = 0;
 
     if (participatedChallengeIds.length) {
       // Past Challenges Count
@@ -414,10 +415,10 @@ const getUserDetailsData = async (userId) => {
       });
 
       currentActiveChallengesCount = currentActiveChallenges.length;
-      currentStaked = currentActiveChallenges.reduce(
-        (sum, challenge) => sum + challenge.Wager,
-        0
-      );
+      // currentStaked = currentActiveChallenges.reduce(
+      //   (sum, challenge) => sum + challenge.Wager,
+      //   0
+      // );
     }
 
     const totalRewardsWon =
@@ -436,7 +437,7 @@ const getUserDetailsData = async (userId) => {
       ProfilePicture: user.ProfilePicture, // Now directly accessed
       PastChallenges: pastChallengesCount,
       CurrentActiveChallenges: currentActiveChallengesCount,
-      CurrentStaked: currentStaked,
+      CurrentStaked: user.InvestedCredits,
       TotalRewardsWon: totalRewardsWon,
     };
   } catch (error) {
