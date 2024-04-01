@@ -275,14 +275,42 @@ const updateIsStarted = async (challengeId) => {
   try {
     let challenge = await Challenge.findOne({
       where: { ChallengeID: challengeId },
+      include: [
+        {
+          model: Game,
+          as: 'game',
+          attributes: ['ParticipationType'],
+        },
+      ],
     });
-    if (challenge.IsActive && !challenge.IsStarted) {
+    let players = await Player.findAll({
+      where: { ChallengeID: challengeId },
+    });
+    if (players.length > 0) {
+      if (
+        challenge.game.ParticipationType >= 1
+          ? players.length >= 2 && challenge.IsActive && !challenge.IsStarted
+          : challenge.IsActive && !challenge.IsStarted
+      ) {
+        await Challenge.update(
+          { IsStarted: true },
+          { where: { ChallengeID: challengeId } }
+        );
+        logger.info('[ChallengeService] isStarted updated successfully');
+        return true;
+      }
+    } else {
+      logger.error(
+        `[ChallengeService] Nobody joined the challenge with ID: ${challengeId}`
+      );
       await Challenge.update(
-        { IsStarted: true },
+        { IsStarted: false, IsActive: false },
         { where: { ChallengeID: challengeId } }
       );
-      logger.info('[ChallengeService] isStarted updated successfully');
-      return true;
+      logger.info(
+        `[ChallengeService] Cancelling challenge with ID: ${challengeId}`
+      );
+      return false;
     }
   } catch (err) {
     logger.error(
@@ -315,6 +343,7 @@ const checkAndUpdateIsStartedChallenge = async () => {
           [Op.lt]: Date.now(),
         },
         IsStarted: false,
+        IsActive: true,
       },
     });
 
