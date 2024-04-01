@@ -196,6 +196,8 @@ const getUserCurrentStandings = async (userId) => {
             'MaxParticipants',
             'Media',
             'Target',
+            'IsStarted',
+            'IsActive',
           ],
           include: [
             {
@@ -253,6 +255,8 @@ const getUserCurrentStandings = async (userId) => {
           WagerStaked: challenge.Wager,
           TotalWagerStaked: totalWager,
           Rank: rank,
+          IsStarted: challenge.IsStarted,
+          IsActive: challenge.IsActive,
         };
       })
     );

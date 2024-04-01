@@ -215,6 +215,8 @@ const getOngoingChallenges = async (type, page, limit) => {
       EndDate: challenge.EndDate,
       CurrentPool: challenge.Wager * challenge.players.length,
       Media: challenge.Media,
+      IsStarted: challenge.IsStarted,
+      IsActive: challenge.IsActive,
     }));
 
     return mappedChallenges;
@@ -411,6 +413,8 @@ const getChallengeDashboardById = async (challengeId, userId) => {
       ChallengeMedia: challenge.Media,
       Target: challenge.Target,
       Value: userValue,
+      IsStarted: challenge.IsStarted,
+      IsActive: challenge.IsActive,
     };
 
     logger.info(
